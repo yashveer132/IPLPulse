@@ -1,0 +1,4 @@
+// Static assets directory.
+// Place images, icons, fonts, and other static files here.
+// Import them in components like:
+//   import logo from '@/assets/logo.svg';

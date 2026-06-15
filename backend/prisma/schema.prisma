@@ -1,0 +1,461 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+
+
+model Franchise {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  shortName   String   @unique
+  city        String
+  homeGround  String?
+  titles      Int      @default(0)
+  titleYears  Int[]
+  foundedYear Int?
+  color       String?
+  logoUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+
+  auctionEntries     AuctionEntry[]
+  seasonStats        FranchiseSeasonStats[]
+  FranchiseAnalytics FranchiseAnalytics[]
+}
+
+model Player {
+  id           String   @id @default(cuid())
+  name         String
+  cricsheetId  String?  @unique
+  nationality  String
+  role         String
+  battingStyle String?
+  bowlingStyle String?
+  isCapped     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+
+  auctionEntries  AuctionEntry[]
+  matchStats      PlayerMatchStats[]
+  seasonStats     PlayerSeasonStats[]
+  PlayerAnalytics PlayerAnalytics?
+  h2hBatting      HeadToHeadStat[] @relation("H2HBatter")
+  h2hBowling      HeadToHeadStat[] @relation("H2HBowler")
+  venueStats      VenueMasteryStat[]
+  crazyStats      PlayerCrazyStats?
+  aliases         PlayerAlias[]
+
+  @@index([name])
+  @@index([role])
+  @@index([nationality])
+}
+
+model PlayerAlias {
+  id          Int      @id @default(autoincrement())
+  alias       String   @unique
+  playerId    String
+  confidence  Float
+  needsReview Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  player      Player   @relation(fields: [playerId], references: [id])
+
+  @@index([playerId])
+}
+
+
+
+model AuctionEntry {
+  id                 String   @id @default(cuid())
+  season             Int
+  playerId           String
+  franchiseId        String?
+  basePrice          Float
+  soldPrice          Float?
+  status             String
+  isRetained         Boolean  @default(false)
+  retentionRank      Int?
+  preRetentionScore  Float?
+  postRetentionScore Float?
+  createdAt          DateTime @default(now())
+
+
+  player    Player     @relation(fields: [playerId], references: [id])
+  franchise Franchise? @relation(fields: [franchiseId], references: [id])
+
+  @@unique([playerId, season])
+  @@index([season])
+  @@index([playerId])
+  @@index([franchiseId])
+  @@index([status])
+  @@index([season, franchiseId])
+}
+
+
+
+model FranchiseAnalytics {
+  id                String   @id @default(cuid())
+  franchiseId       String
+  season            Int
+  auctionScore      Float    @default(0)
+  developmentScore  Float    @default(0)
+  retentionScore    Float    @default(0)
+  trophyEfficiency  Float    @default(0)
+  intelligenceScore Float    @default(0)
+  createdAt         DateTime @default(now())
+
+
+  franchise Franchise @relation(fields: [franchiseId], references: [id])
+
+  @@unique([franchiseId, season])
+  @@index([season])
+}
+
+model PlayerAnalytics {
+  id                 String   @id @default(cuid())
+  playerId           String   @unique
+  lifetimeValueScore Float    @default(0)
+  battingValueScore  Float    @default(0)
+  bowlingValueScore  Float    @default(0)
+  consistencyScore   Float    @default(0)
+  createdAt          DateTime @default(now())
+
+  player Player @relation(fields: [playerId], references: [id])
+}
+
+
+
+model Match {
+  id            String   @id @default(cuid())
+  cricsheetId   String   @unique
+  season        Int
+  matchNumber   Int?
+  date          DateTime
+  venue         String
+  city          String?
+  team1         String
+  team2         String
+  tossWinner    String?
+  tossDecision  String?
+  winner        String?
+  winMargin     Int?
+  winType       String?
+  playerOfMatch String?
+  createdAt     DateTime @default(now())
+
+
+  playerStats PlayerMatchStats[]
+
+  @@index([season])
+  @@index([team1])
+  @@index([team2])
+}
+
+model PlayerMatchStats {
+  id       String @id @default(cuid())
+  matchId  String
+  playerId String
+  team     String
+  season   Int
+
+
+  runsScored    Int     @default(0)
+  ballsFaced    Int     @default(0)
+  fours         Int     @default(0)
+  sixes         Int     @default(0)
+  isOut         Boolean @default(false)
+  dismissalKind String?
+
+
+  oversBowled  Float @default(0)
+  runsConceded Int   @default(0)
+  wickets      Int   @default(0)
+  maidens      Int   @default(0)
+  dotBalls     Int   @default(0)
+  wides        Int   @default(0)
+  noBalls      Int   @default(0)
+
+
+  catches   Int @default(0)
+  stumpings Int @default(0)
+  runOuts   Int @default(0)
+
+
+  match  Match  @relation(fields: [matchId], references: [id])
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@unique([matchId, playerId])
+  @@index([matchId])
+  @@index([playerId])
+  @@index([season])
+  @@index([team])
+}
+
+
+
+model PlayerSeasonStats {
+  id       String @id @default(cuid())
+  playerId String
+  season   Int
+  team     String
+
+
+  matches      Int   @default(0)
+  innings      Int   @default(0)
+  totalRuns    Int   @default(0)
+  highestScore Int   @default(0)
+  average      Float @default(0)
+  strikeRate   Float @default(0)
+  fifties      Int   @default(0)
+  hundreds     Int   @default(0)
+  fours        Int   @default(0)
+  sixes        Int   @default(0)
+
+
+  totalWickets Int     @default(0)
+  bestBowling  String?
+  bowlingAvg   Float   @default(0)
+  economyRate  Float   @default(0)
+  dotBallPct   Float   @default(0)
+
+
+  catches   Int @default(0)
+  stumpings Int @default(0)
+
+
+  playerOfMatch Int @default(0)
+
+
+  performanceScore Float @default(0)
+
+
+  battingContribution     Float @default(0)
+  bowlingContribution     Float @default(0)
+  consistencyContribution Float @default(0)
+  awardContribution       Float @default(0)
+  valueScore              Float @default(0)
+
+
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@unique([playerId, season])
+  @@index([season])
+  @@index([team])
+}
+
+model FranchiseSeasonStats {
+  id          String @id @default(cuid())
+  franchiseId String
+  season      Int
+
+
+  totalSpent      Float @default(0)
+  playersBought   Int   @default(0)
+  playersRetained Int   @default(0)
+  purseRemaining  Float @default(0)
+
+
+  matchesPlayed Int     @default(0)
+  matchesWon    Int     @default(0)
+  matchesLost   Int     @default(0)
+  finalPosition Int?
+  isChampion    Boolean @default(false)
+
+
+  roiScore        Float @default(0)
+  spendEfficiency Float @default(0)
+
+
+  franchise Franchise @relation(fields: [franchiseId], references: [id])
+
+  @@unique([franchiseId, season])
+  @@index([season])
+}
+
+
+
+model HeadToHeadStat {
+  id          String   @id @default(cuid())
+  batterId    String
+  bowlerId    String
+  
+  runsScored  Int      @default(0)
+  ballsFaced  Int      @default(0)
+  dismissals  Int      @default(0)
+  fours       Int      @default(0)
+  sixes       Int      @default(0)
+  dotBalls    Int      @default(0)
+
+  strikeRate  Float    @default(0)
+
+
+  seasonDetails    Json?
+  phaseDetails     Json?
+  dismissalDetails Json?
+
+  batter Player @relation("H2HBatter", fields: [batterId], references: [id])
+  bowler Player @relation("H2HBowler", fields: [bowlerId], references: [id])
+
+  @@unique([batterId, bowlerId])
+  @@index([batterId])
+  @@index([bowlerId])
+}
+
+model VenueMasteryStat {
+  id           String   @id @default(cuid())
+  playerId     String
+  venue        String
+  
+
+  matchesPlayed Int      @default(0)
+  matchLogs     Json?
+
+
+  inningsBat   Int      @default(0)
+  runsScored   Int      @default(0)
+  ballsFaced   Int      @default(0)
+  highestScore Int      @default(0)
+  notOuts      Int      @default(0)
+  fours        Int      @default(0)
+  sixes        Int      @default(0)
+  fifties      Int      @default(0)
+  centuries    Int      @default(0)
+
+
+  inningsBowl        Int      @default(0)
+  wickets            Int      @default(0)
+  runsConceded       Int      @default(0)
+  ballsBowled        Int      @default(0)
+  bestBowlingWickets Int      @default(0)
+  bestBowlingRuns    Int      @default(0)
+
+
+  catches   Int @default(0)
+  stumpings Int @default(0)
+  runOuts   Int @default(0)
+  
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@unique([playerId, venue])
+  @@index([playerId])
+  @@index([venue])
+}
+
+model PlayerCrazyStats {
+  id String @id @default(cuid())
+  playerId String @unique
+  
+
+  successfulChasesPresent Int @default(0)
+  successfulChasesNotOut  Int @default(0)
+  
+
+  deathOversRunsScored    Int @default(0)
+  deathOversBallsFaced    Int @default(0)
+  deathOversRunsConceded  Int @default(0)
+  deathOversBallsBowled   Int @default(0)
+  deathOversWickets       Int @default(0)
+  
+
+  powerplayRunsConceded   Int @default(0)
+  powerplayBallsBowled    Int @default(0)
+  powerplayWickets        Int @default(0)
+  
+  player Player @relation(fields: [playerId], references: [id])
+}
+
+model Flashpoint {
+  id               String   @id @default(cuid())
+  year             Int
+  title            String
+
+  severity         Int      
+  importance       Int      
+  reliability      Int      
+  mediaAttention   Int      @default(5)
+
+  legacyScore        Float    @default(0)
+  impactScore        Float    @default(0)
+  significanceScore  Float    @default(0)
+  historicalRank     Int      @default(0)
+
+  impactType       String   
+  resolutionStatus String   
+  tier             String   @default("C") 
+  entryType        String   @default("Controversy") 
+  eventType        String   @default("General") 
+  category         String   
+  
+  shortSummary     String
+  fullStory        String   @db.Text
+  outcome          String
+
+  historicalSignificance String?
+  impactMetrics    Json?  
+  whyItMatters     String[]
+  outcomes         Json?   
+  howIplChanged    Json?   
+  beforeAndAfter   Json?   
+  sourceIntelligence Json?   
+
+  affectedTeams    String[]
+  affectedPlayers  String[]
+  tags             String[]
+
+  coverImage       String?
+  videoUrl         String?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  outgoingRelationships FlashpointRelationship[] @relation("Source")
+  incomingRelationships FlashpointRelationship[] @relation("Target")
+  entities              FlashpointEntity[]
+}
+
+model ArchiveEntity {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  type        String   
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  flashpoints FlashpointEntity[]
+}
+
+model FlashpointEntity {
+  id           String   @id @default(cuid())
+  flashpointId String
+  entityId     String
+  role         String   
+  
+  flashpoint   Flashpoint    @relation(fields: [flashpointId], references: [id], onDelete: Cascade)
+  entity       ArchiveEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([flashpointId, entityId, role])
+  @@index([flashpointId])
+  @@index([entityId])
+}
+
+model FlashpointRelationship {
+  id               String @id @default(cuid())
+  sourceId         String
+  targetId         String
+  relationshipType String 
+  
+  source Flashpoint @relation("Source", fields: [sourceId], references: [id], onDelete: Cascade)
+  target Flashpoint @relation("Target", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, targetId, relationshipType])
+}

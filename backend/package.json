@@ -1,0 +1,57 @@
+{
+  "name": "iplpulse-backend",
+  "version": "1.0.0",
+  "description": "IPLPulse — IPL Franchise Intelligence Platform API",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write \"src/**/*.js\"",
+    "format:check": "prettier --check \"src/**/*.js\"",
+    "db:generate": "npx prisma generate",
+    "db:migrate": "npx prisma migrate dev",
+    "db:push": "npx prisma db push",
+    "db:studio": "npx prisma studio",
+    "db:seed": "node prisma/seed.js",
+    "etl": "node data/etl/01-import-franchises.js && node data/etl/02-import-auctions.js && node data/etl/03-import-matches.js && node data/etl/04-compute-season-stats.js && node data/etl/05-compute-franchise-stats.js && node data/etl/06-compute-roi-scores.js && node data/etl/07-compute-advanced-analytics.js",
+    "etl:franchises": "node data/etl/01-import-franchises.js",
+    "etl:auctions": "node data/etl/02-import-auctions.js",
+    "etl:matches": "node data/etl/03-import-matches.js",
+    "etl:stats": "node data/etl/04-compute-season-stats.js && node data/etl/05-compute-franchise-stats.js && node data/etl/06-compute-roi-scores.js"
+  },
+  "keywords": [
+    "ipl",
+    "franchise",
+    "analytics",
+    "cricket"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.4.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.4",
+    "prisma": "^5.22.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@supabase/supabase-js": "^2.108.1",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "csv-parse": "^6.2.1",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "glob": "^13.0.6",
+    "helmet": "^8.2.0",
+    "morgan": "^1.11.0",
+    "string-similarity": "^4.0.4"
+  }
+}

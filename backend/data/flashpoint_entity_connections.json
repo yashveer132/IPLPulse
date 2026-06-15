@@ -1,0 +1,127 @@
+[
+  {
+    "fpTitle": "Spot Fixing",
+    "entityName": "Gurunath Meiyappan",
+    "role": "Investigated"
+  },
+  {
+    "fpTitle": "Spot Fixing",
+    "entityName": "Raj Kundra",
+    "role": "Investigated"
+  },
+  {
+    "fpTitle": "Spot Fixing",
+    "entityName": "Chennai Super Kings",
+    "role": "Affected"
+  },
+  {
+    "fpTitle": "Spot Fixing",
+    "entityName": "Rajasthan Royals",
+    "role": "Affected"
+  },
+  {
+    "fpTitle": "Mudgal",
+    "entityName": "Justice Mudgal",
+    "role": "Led Investigation"
+  },
+  {
+    "fpTitle": "Mudgal",
+    "entityName": "Supreme Court of India",
+    "role": "Oversight"
+  },
+  {
+    "fpTitle": "Lodha",
+    "entityName": "Justice Lodha",
+    "role": "Led Reforms"
+  },
+  {
+    "fpTitle": "Lodha",
+    "entityName": "Supreme Court of India",
+    "role": "Mandated"
+  },
+  {
+    "fpTitle": "Lodha",
+    "entityName": "BCCI",
+    "role": "Reformed"
+  },
+  {
+    "fpTitle": "CSK & RR Suspensions",
+    "entityName": "Chennai Super Kings",
+    "role": "Suspended"
+  },
+  {
+    "fpTitle": "CSK & RR Suspensions",
+    "entityName": "Rajasthan Royals",
+    "role": "Suspended"
+  },
+  {
+    "fpTitle": "Srinivasan",
+    "entityName": "N Srinivasan",
+    "role": "Investigated"
+  },
+  {
+    "fpTitle": "Srinivasan",
+    "entityName": "India Cements",
+    "role": "Conflict of Interest"
+  },
+  {
+    "fpTitle": "Srinivasan",
+    "entityName": "Supreme Court of India",
+    "role": "Intervened"
+  },
+  {
+    "fpTitle": "Lalit Modi",
+    "entityName": "Lalit Modi",
+    "role": "Investigated & Removed"
+  },
+  {
+    "fpTitle": "Lalit Modi",
+    "entityName": "BCCI",
+    "role": "Oversight"
+  },
+  {
+    "fpTitle": "Kochi",
+    "entityName": "Kochi Tuskers Kerala",
+    "role": "Terminated"
+  },
+  {
+    "fpTitle": "Kochi",
+    "entityName": "BCCI",
+    "role": "Oversight"
+  },
+  {
+    "fpTitle": "Deccan Chargers Termination",
+    "entityName": "Deccan Chargers",
+    "role": "Terminated"
+  },
+  {
+    "fpTitle": "Deccan Chargers Termination",
+    "entityName": "BCCI",
+    "role": "Oversight"
+  },
+  {
+    "fpTitle": "Pune Warriors Withdrawal",
+    "entityName": "Pune Warriors India",
+    "role": "Withdrew"
+  },
+  {
+    "fpTitle": "Pune Warriors Withdrawal",
+    "entityName": "Sahara Group",
+    "role": "Owner"
+  },
+  {
+    "fpTitle": "Expansion Era",
+    "entityName": "Lucknow Super Giants",
+    "role": "Created"
+  },
+  {
+    "fpTitle": "Expansion Era",
+    "entityName": "Gujarat Titans",
+    "role": "Created"
+  },
+  {
+    "fpTitle": "Expansion Era",
+    "entityName": "BCCI",
+    "role": "Auctioned"
+  }
+]

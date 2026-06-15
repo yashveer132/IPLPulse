@@ -1,0 +1,87 @@
+[
+  {
+    "name": "Lalit Modi",
+    "type": "Person",
+    "description": "Founding Chairman of the IPL."
+  },
+  {
+    "name": "N Srinivasan",
+    "type": "Person",
+    "description": "Former BCCI President and owner of India Cements (CSK)."
+  },
+  {
+    "name": "Gurunath Meiyappan",
+    "type": "Person",
+    "description": "Former CSK Team Principal, banned for betting."
+  },
+  {
+    "name": "Raj Kundra",
+    "type": "Person",
+    "description": "Former Rajasthan Royals co-owner, banned for betting."
+  },
+  {
+    "name": "Justice Lodha",
+    "type": "Person",
+    "description": "Headed the Lodha Committee which reformed the BCCI."
+  },
+  {
+    "name": "Justice Mudgal",
+    "type": "Person",
+    "description": "Headed the Mudgal probe into the 2013 fixing scandal."
+  },
+  {
+    "name": "Supreme Court of India",
+    "type": "Organization",
+    "description": "The highest judicial court in India, intervened in IPL governance."
+  },
+  {
+    "name": "BCCI",
+    "type": "Organization",
+    "description": "The Board of Control for Cricket in India."
+  },
+  {
+    "name": "India Cements",
+    "type": "Organization",
+    "description": "The cement company that owned the Chennai Super Kings."
+  },
+  {
+    "name": "Chennai Super Kings",
+    "type": "Franchise",
+    "description": "One of the most successful IPL franchises, suspended for 2 years."
+  },
+  {
+    "name": "Rajasthan Royals",
+    "type": "Franchise",
+    "description": "Inaugural IPL champions, suspended for 2 years."
+  },
+  {
+    "name": "Kochi Tuskers Kerala",
+    "type": "Franchise",
+    "description": "Terminated in 2011 after a single season."
+  },
+  {
+    "name": "Pune Warriors India",
+    "type": "Franchise",
+    "description": "Withdrew in 2013 after financial disputes."
+  },
+  {
+    "name": "Deccan Chargers",
+    "type": "Franchise",
+    "description": "Terminated in 2012 over financial issues."
+  },
+  {
+    "name": "Lucknow Super Giants",
+    "type": "Franchise",
+    "description": "Joined the IPL in 2022 for ₹7,090 crore."
+  },
+  {
+    "name": "Gujarat Titans",
+    "type": "Franchise",
+    "description": "Joined the IPL in 2022 and won the title in their debut season."
+  },
+  {
+    "name": "Sahara Group",
+    "type": "Organization",
+    "description": "Former owners of Pune Warriors India."
+  }
+]

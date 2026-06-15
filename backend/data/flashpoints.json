@@ -1,0 +1,1977 @@
+[
+  {
+    "year": 2008,
+    "title": "Slapgate: Harbhajan vs Sreesanth",
+    "severity": 8,
+    "importance": 88,
+    "reliability": 10,
+    "impactType": "Player",
+    "resolutionStatus": "Resolved",
+    "category": "Player Conduct",
+    "shortSummary": "Harbhajan Singh slapped Sreesanth after a match between MI and KXIP.",
+    "fullStory": "Following the conclusion of the match between Mumbai Indians and Kings XI Punjab, television cameras captured Sreesanth crying on the field. It was soon revealed that Harbhajan Singh had slapped him during the post-match handshakes. The incident caused massive uproar as it was the first major controversy of the newly formed IPL. The BCCI launched an immediate investigation.",
+    "outcome": "Harbhajan suspended from IPL and banned for 5 ODIs.",
+    "affectedTeams": [
+      "Mumbai Indians",
+      "Kings XI Punjab"
+    ],
+    "affectedPlayers": [
+      "Harbhajan Singh",
+      "Sreesanth"
+    ],
+    "tags": [
+      "fight",
+      "slapgate",
+      "disciplinary"
+    ],
+    "mediaAttention": 7,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": [
+        "Harbhajan was banned for the remainder of the inaugural IPL season.",
+        "Strict Code of Conduct implementations for player behavior were introduced."
+      ]
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Harbhajan was banned for the remainder of the inaugural IPL season.",
+        "Strict Code of Conduct implementations for player behavior were introduced."
+      ]
+    },
+    "sourceIntelligence": [
+      {
+        "url": "https://www.espncricinfo.com/story/harbhajan-banned-for-rest-of-ipl-347895",
+        "evidenceStrength": "Credible Reporting",
+        "description": "News Report"
+      }
+    ],
+    "relationships": [],
+    "tier": "B",
+    "entryType": "Controversy",
+    "eventType": "Player Conduct",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2009,
+    "title": "IPL Shifted to South Africa",
+    "severity": 7,
+    "importance": 80,
+    "reliability": 10,
+    "impactType": "League",
+    "resolutionStatus": "Resolved",
+    "category": "Governance",
+    "shortSummary": "The entire IPL was moved out of India due to general elections.",
+    "fullStory": "Due to a clash with the Indian general elections and security concerns, the BCCI took the unprecedented step of moving the entire 2009 IPL season to South Africa in less than a month. It was a massive logistical controversy and political headache.",
+    "outcome": "Tournament successfully held in South Africa.",
+    "affectedTeams": [],
+    "affectedPlayers": [],
+    "tags": [
+      "logistics",
+      "politics"
+    ],
+    "mediaAttention": 9,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Proved the IPL's global viability as an independent brand.",
+        "Set a precedent for hosting IPLs overseas (later UAE) when domestic issues arise."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Proved the IPL's global viability as an independent brand.",
+        "Set a precedent for hosting IPLs overseas (later UAE) when domestic issues arise."
+      ]
+    },
+    "sourceIntelligence": [
+      {
+        "url": "https://www.espncricinfo.com/story/ipl-shifted-to-south-africa-396593",
+        "evidenceStrength": "Credible Reporting",
+        "description": "News Report"
+      }
+    ],
+    "relationships": [],
+    "tier": "B",
+    "entryType": "Controversy",
+    "eventType": "Governance",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2010,
+    "title": "Lalit Modi's Removal",
+    "severity": 10,
+    "importance": 95,
+    "reliability": 10,
+    "impactType": "Governance",
+    "resolutionStatus": "Resolved",
+    "category": "Governance",
+    "shortSummary": "IPL founder Lalit Modi was suspended on charges of financial irregularities and misconduct.",
+    "fullStory": "Following the conclusion of IPL 2010, the BCCI launched a massive internal investigation into Lalit Modi, the architect and founding chairman of the IPL. He faced 22 charges of financial irregularities, including allegations of rigging bids for the Rajasthan Royals and Kings XI Punjab, undisclosed broadcast deals, and conflict of interest.\n\nJust moments after the IPL 2010 final concluded, the BCCI suspended Lalit Modi, the architect and chairman of the IPL. The suspension was based on 22 charges of financial impropriety, rigging bids, and governance failures. The saga involved political figures, massive broadcast deals, and franchise ownership controversies, permanently altering the administration of the league.",
+    "outcome": "Lalit Modi fled to London and was permanently banned by BCCI.",
+    "affectedTeams": [],
+    "affectedPlayers": [
+      "Lalit Modi"
+    ],
+    "tags": [
+      "administration",
+      "financial",
+      "bcci"
+    ],
+    "mediaAttention": 9,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Lalit Modi was permanently banned from the BCCI in 2013.",
+        "BCCI took direct and tighter control over IPL operations.",
+        "More transparent franchise bidding processes were established."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Lalit Modi was permanently banned from the BCCI in 2013.",
+        "BCCI took direct and tighter control over IPL operations.",
+        "More transparent franchise bidding processes were established."
+      ]
+    },
+    "sourceIntelligence": [
+      {
+        "url": "https://www.espncricinfo.com/story/modi-suspended-from-bcci-457388",
+        "evidenceStrength": "Credible Reporting",
+        "description": "News Report"
+      }
+    ],
+    "relationships": [],
+    "tier": "S",
+    "entryType": "Controversy",
+    "eventType": "Governance",
+    "whyItMatters": [
+      "Removed the founding architect of the IPL",
+      "Exposed massive internal financial irregularities",
+      "Shifted power balance in BCCI"
+    ],
+    "outcomes": {},
+    "historicalSignificance": "The fall of the architect who created the IPL.",
+    "impactMetrics": {
+      "officialsBanned": 1,
+      "chargesFiled": 22
+    }
+  },
+  {
+    "year": 2010,
+    "title": "Shashi Tharoor - Sunanda Pushkar - Kochi Saga",
+    "severity": 9,
+    "importance": 90,
+    "reliability": 9,
+    "impactType": "Ownership",
+    "resolutionStatus": "Resolved",
+    "category": "Ownership",
+    "shortSummary": "Political controversy regarding sweat equity in the Kochi franchise.",
+    "fullStory": "A massive political storm erupted when Lalit Modi tweeted the ownership details of the newly formed Kochi franchise, revealing that Sunanda Pushkar (close to Minister Shashi Tharoor) had received sweat equity worth 70 crores. This led to Tharoor's resignation from the government and sparked widespread investigations into IPL ownership.",
+    "outcome": "Minister resigned, sweat equity surrendered.",
+    "affectedTeams": [
+      "Kochi Tuskers Kerala"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "politics",
+      "ownership",
+      "scandal"
+    ],
+    "mediaAttention": 8,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [],
+      "franchiseChanges": [
+        "Shashi Tharoor resigned as Union Minister.",
+        "Led to severe scrutiny of all franchise ownership structures."
+      ],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Shashi Tharoor resigned as Union Minister.",
+        "Led to severe scrutiny of all franchise ownership structures."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [],
+    "tier": "C",
+    "entryType": "Legal",
+    "eventType": "Ownership Dispute",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2010,
+    "title": "Kochi Tuskers Ownership Dispute",
+    "severity": 7,
+    "importance": 75,
+    "reliability": 10,
+    "impactType": "Ownership",
+    "resolutionStatus": "Resolved",
+    "category": "Ownership",
+    "shortSummary": "A dispute over sweat equity and ownership structure led to the eventual termination of the Kochi franchise.",
+    "fullStory": "Following the Tharoor saga, the franchise struggled with internal consortium disputes and failed to submit their bank guarantee on time in 2011.",
+    "outcome": "Kochi Tuskers Kerala terminated by BCCI in 2011.",
+    "affectedTeams": [
+      "Kochi Tuskers Kerala"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "ownership",
+      "legal",
+      "termination"
+    ],
+    "mediaAttention": 8,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [],
+      "franchiseChanges": [
+        "The franchise was terminated after just one season (2011).",
+        "Stricter background checks and financial guarantees required for new teams."
+      ],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "The franchise was terminated after just one season (2011).",
+        "Stricter background checks and financial guarantees required for new teams."
+      ]
+    },
+    "sourceIntelligence": [
+      {
+        "url": "https://www.espncricinfo.com/story/kochi-franchise-terminated-by-bcci-533038",
+        "evidenceStrength": "Credible Reporting",
+        "description": "News Report"
+      }
+    ],
+    "relationships": [
+      {
+        "target": "Kochi Political Fallout",
+        "type": "LED_TO"
+      },
+      {
+        "target": "BCCI vs Kochi Arbitration",
+        "type": "LED_TO"
+      },
+      {
+        "target": "Deccan Chargers Termination",
+        "type": "PRECEDED"
+      }
+    ],
+    "tier": "A",
+    "entryType": "Legal",
+    "eventType": "Ownership Dispute",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2011,
+    "title": "Sahara vs BCCI Conflict",
+    "severity": 8,
+    "importance": 85,
+    "reliability": 10,
+    "impactType": "Franchise",
+    "resolutionStatus": "Resolved",
+    "category": "Governance",
+    "shortSummary": "Sahara Group withdrew from team sponsorship and faced a massive legal fight over Pune Warriors.",
+    "fullStory": "Sahara, owners of Pune Warriors India and long-time sponsors of the Indian team, broke ties with BCCI citing non-fulfillment of promises regarding player retention and auction rules. The bitter dispute escalated into legal battles regarding franchise fees.",
+    "outcome": "Pune Warriors terminated. Pune Warriors India exited IPL permanently.",
+    "affectedTeams": [
+      "Pune Warriors India"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "ownership",
+      "legal"
+    ],
+    "mediaAttention": 6,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Pune Warriors India eventually pulled out and was terminated in 2013.",
+        "Marked the end of Sahara's dominance as a major Indian cricket sponsor."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Pune Warriors India eventually pulled out and was terminated in 2013.",
+        "Marked the end of Sahara's dominance as a major Indian cricket sponsor."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [
+      {
+        "target": "Pune Warriors India Withdrawal",
+        "type": "LED_TO"
+      }
+    ],
+    "tier": "A",
+    "entryType": "Legal",
+    "eventType": "Ownership Dispute",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2012,
+    "title": "Shah Rukh Khan Wankhede Ban",
+    "severity": 8,
+    "importance": 85,
+    "reliability": 10,
+    "impactType": "Ownership",
+    "resolutionStatus": "Resolved",
+    "category": "Team Management",
+    "shortSummary": "KKR owner Shah Rukh Khan was banned from Wankhede Stadium after an altercation with security staff.",
+    "fullStory": "Following KKR's victory over Mumbai Indians, owner Shah Rukh Khan was involved in a massive verbal and allegedly physical altercation with MCA officials and security personnel at Wankhede Stadium. Khan claimed security staff manhandled children with him.",
+    "outcome": "5-year stadium ban for SRK.",
+    "affectedTeams": [
+      "Kolkata Knight Riders"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "owner",
+      "stadium-ban",
+      "altercation"
+    ],
+    "mediaAttention": 6,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Khan was banned from entering the Wankhede Stadium for 5 years.",
+        "Highlighted the tense relationship between team owners and state associations."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Khan was banned from entering the Wankhede Stadium for 5 years.",
+        "Highlighted the tense relationship between team owners and state associations."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [],
+    "tier": "B",
+    "entryType": "Controversy",
+    "eventType": "Team Management",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2012,
+    "title": "Deccan Chargers Termination",
+    "severity": 8,
+    "importance": 80,
+    "reliability": 10,
+    "impactType": "Ownership",
+    "resolutionStatus": "Resolved",
+    "category": "Ownership",
+    "shortSummary": "The BCCI terminated the Deccan Chargers franchise due to financial breaches.",
+    "fullStory": "Deccan Chronicle Holdings Ltd, the owners of Deccan Chargers, faced severe financial distress. After failing to furnish a bank guarantee of Rs 100 crore by the BCCI deadline, the franchise was terminated. This marked the end of the 2009 IPL Champions, forcing a new auction for a Hyderabad-based team.",
+    "outcome": "Franchise terminated and replaced by Sunrisers Hyderabad.",
+    "affectedTeams": [
+      "Deccan Chargers"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "termination",
+      "financial",
+      "ownership"
+    ],
+    "mediaAttention": 10,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [],
+      "franchiseChanges": [
+        "The franchise was replaced by Sunrisers Hyderabad (Sun TV Network).",
+        "Reinforced the BCCI's strict stance on financial stability of owners."
+      ],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "The franchise was replaced by Sunrisers Hyderabad (Sun TV Network).",
+        "Reinforced the BCCI's strict stance on financial stability of owners."
+      ]
+    },
+    "sourceIntelligence": [
+      {
+        "url": "https://www.espncricinfo.com/story/bcci-terminates-deccan-chargers-franchise-582310",
+        "evidenceStrength": "Credible Reporting",
+        "description": "News Report"
+      }
+    ],
+    "relationships": [
+      {
+        "target": "League Contraction to 8 Teams",
+        "type": "LED_TO"
+      }
+    ],
+    "tier": "A",
+    "entryType": "Legal",
+    "eventType": "Ownership Dispute",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2013,
+    "title": "2013 Spot Fixing Scandal",
+    "severity": 10,
+    "importance": 100,
+    "reliability": 10,
+    "impactType": "League",
+    "resolutionStatus": "Resolved",
+    "category": "Betting & Fixing",
+    "shortSummary": "Three Rajasthan Royals players were arrested for spot-fixing, triggering the darkest chapter in IPL history.",
+    "fullStory": "Delhi Police arrested Sreesanth, Ajit Chandila, and Ankeet Chavan for allegedly fulfilling promises made to bookies regarding conceding specific amounts of runs in specific overs (spot-fixing). This bust blew the lid off a massive underground betting syndicate that reached the owners of multiple franchises.",
+    "outcome": "Players arrested, triggering widespread structural changes.",
+    "affectedTeams": [
+      "Rajasthan Royals"
+    ],
+    "affectedPlayers": [
+      "Sreesanth",
+      "Ajit Chandila",
+      "Ankeet Chavan"
+    ],
+    "tags": [
+      "spot-fixing",
+      "arrest",
+      "corruption"
+    ],
+    "mediaAttention": 8,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Led to the formation of the Supreme Court-appointed Mudgal Committee and later the Lodha Committee.",
+        "Sreesanth and Chavan received life bans (later reduced).",
+        "Massive overhaul of the BCCI administration and creation of the Anti-Corruption Unit (ACU) protocols."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Led to the formation of the Supreme Court-appointed Mudgal Committee and later the Lodha Committee.",
+        "Sreesanth and Chavan received life bans (later reduced).",
+        "Massive overhaul of the BCCI administration and creation of the Anti-Corruption Unit (ACU) protocols."
+      ]
+    },
+    "sourceIntelligence": [
+      {
+        "id": "delhi-police-fir-2013",
+        "title": "Delhi Police Arrests Sreesanth, Chavan, Chandila",
+        "publisher": "The Hindu",
+        "publishedDate": "2013-05-16",
+        "sourceType": "Investigative Reporting",
+        "confidence": "Verified",
+        "url": "https://www.thehindu.com/sport/cricket/sreesanth-two-other-rajasthan-royals-players-arrested-for-spot-fixing/article4719582.ece",
+        "description": "Initial reporting on the midnight arrests that blew the lid off the 2013 scandal."
+      },
+      {
+        "id": "mudgal-supreme-court-2014",
+        "title": "Mudgal Committee Report Submitted to SC",
+        "publisher": "Supreme Court of India",
+        "publishedDate": "2014-02-10",
+        "sourceType": "Primary Source",
+        "confidence": "Verified",
+        "url": "https://main.sci.gov.in/pdf/mudgal_committee_report.pdf",
+        "description": "The official Mudgal Committee findings confirming betting rings and prompting the creation of the Lodha Committee."
+      }
+    ],
+    "relationships": [
+      {
+        "target": "Gurunath Meiyappan Investigation",
+        "type": "TRIGGERED"
+      },
+      {
+        "target": "Raj Kundra Betting Investigation",
+        "type": "TRIGGERED"
+      }
+    ],
+    "tier": "S",
+    "entryType": "Controversy",
+    "eventType": "Corruption",
+    "whyItMatters": [
+      "Shattered the public trust in IPL",
+      "Triggered Supreme Court intervention",
+      "Led to the largest governance reform in cricket history"
+    ],
+    "outcomes": {},
+    "historicalSignificance": "The single most damaging integrity crisis in IPL history.",
+    "impactMetrics": {
+      "teamsAffected": 2,
+      "playersSuspended": 3,
+      "seasonsDisrupted": 2,
+      "courtInterventions": 1
+    }
+  },
+  {
+    "year": 2013,
+    "title": "Raj Kundra Betting Investigation",
+    "severity": 9,
+    "importance": 92,
+    "reliability": 10,
+    "impactType": "Franchise",
+    "resolutionStatus": "Resolved",
+    "category": "Betting & Fixing",
+    "shortSummary": "Rajasthan Royals co-owner Raj Kundra was investigated and suspended for betting on IPL matches.",
+    "fullStory": "Delhi Police revealed that RR co-owner Raj Kundra had confessed to betting on his own team. This was a monumental breach of anti-corruption rules by a team owner.",
+    "outcome": "Life ban for Kundra.",
+    "affectedTeams": [
+      "Rajasthan Royals"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "betting",
+      "ownership"
+    ],
+    "mediaAttention": 9,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Kundra was banned from cricket activities for life.",
+        "Directly resulted in the Rajasthan Royals franchise suspension."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Kundra was banned from cricket activities for life.",
+        "Directly resulted in the Rajasthan Royals franchise suspension."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [
+      {
+        "target": "Mudgal Committee Formation",
+        "type": "LED_TO"
+      }
+    ],
+    "tier": "S",
+    "entryType": "Controversy",
+    "eventType": "Corruption",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2013,
+    "title": "Gurunath Meiyappan Investigation",
+    "severity": 9,
+    "importance": 95,
+    "reliability": 10,
+    "impactType": "Franchise",
+    "resolutionStatus": "Resolved",
+    "category": "Betting & Fixing",
+    "shortSummary": "CSK Team Principal Gurunath Meiyappan was arrested for illegal betting and sharing team information.",
+    "fullStory": "In the wake of the spot-fixing scandal, Mumbai Police arrested Gurunath Meiyappan, the son-in-law of BCCI President N. Srinivasan and the 'Team Principal' of Chennai Super Kings. He was accused of placing bets on IPL matches and passing insider information to bookies.",
+    "outcome": "Meiyappan banned for life.",
+    "affectedTeams": [
+      "Chennai Super Kings"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "betting",
+      "ownership",
+      "management"
+    ],
+    "mediaAttention": 9,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Meiyappan was banned for life from involvement in cricket.",
+        "N. Srinivasan was eventually forced to step down as BCCI President.",
+        "Directly led to the suspension of the CSK franchise."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Meiyappan was banned for life from involvement in cricket.",
+        "N. Srinivasan was eventually forced to step down as BCCI President.",
+        "Directly led to the suspension of the CSK franchise."
+      ]
+    },
+    "sourceIntelligence": [
+      {
+        "url": "https://www.espncricinfo.com/story/meiyappan-arrested-in-betting-case-637953",
+        "evidenceStrength": "Credible Reporting",
+        "description": "News Report"
+      }
+    ],
+    "relationships": [
+      {
+        "target": "Mudgal Committee Formation",
+        "type": "LED_TO"
+      }
+    ],
+    "tier": "S",
+    "entryType": "Controversy",
+    "eventType": "Betting & Fixing",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2013,
+    "title": "N Srinivasan Conflict of Interest Crisis",
+    "severity": 9,
+    "importance": 94,
+    "reliability": 10,
+    "impactType": "Governance",
+    "resolutionStatus": "Resolved",
+    "category": "Governance",
+    "shortSummary": "BCCI President N Srinivasan faced massive conflict of interest charges over his ownership of CSK and role in BCCI.",
+    "fullStory": "Following the arrest of his son-in-law Gurunath Meiyappan, massive pressure mounted on BCCI President N Srinivasan to resign. The Supreme Court stepped in, criticizing the blatant conflict of interest of the BCCI President owning a franchise (India Cements owning CSK) and refusing to step down during an independent probe.",
+    "outcome": "Srinivasan removed as BCCI President.",
+    "affectedTeams": [
+      "Chennai Super Kings"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "bcci",
+      "conflict-of-interest",
+      "governance"
+    ],
+    "mediaAttention": 10,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Srinivasan was forced by the Supreme Court to step aside from BCCI duties.",
+        "BCCI constitution amended regarding Conflict of Interest clauses."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Srinivasan was forced by the Supreme Court to step aside from BCCI duties.",
+        "BCCI constitution amended regarding Conflict of Interest clauses."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [
+      {
+        "target": "Lodha Committee Reforms",
+        "type": "RESULTED_IN"
+      }
+    ],
+    "tier": "S",
+    "entryType": "Controversy",
+    "eventType": "Governance",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2013,
+    "title": "Mudgal Committee Formation",
+    "severity": 8,
+    "importance": 85,
+    "reliability": 10,
+    "impactType": "League",
+    "resolutionStatus": "Resolved",
+    "category": "Governance",
+    "shortSummary": "The Supreme Court appointed the Mudgal Committee to investigate the 2013 IPL corruption scandal.",
+    "fullStory": "To bypass the conflicted BCCI internal probes, the Supreme Court of India appointed a three-member committee headed by Justice Mukul Mudgal to independently investigate allegations of betting and spot-fixing in the IPL.",
+    "outcome": "Committee indicted owners for betting.",
+    "affectedTeams": [],
+    "affectedPlayers": [],
+    "tags": [
+      "supreme-court",
+      "investigation"
+    ],
+    "mediaAttention": 9,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Produced a damning report that indicted Meiyappan and Kundra.",
+        "Paved the way for the Lodha Committee and sweeping BCCI reforms."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Produced a damning report that indicted Meiyappan and Kundra.",
+        "Paved the way for the Lodha Committee and sweeping BCCI reforms."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [
+      {
+        "target": "Lodha Committee Reforms",
+        "type": "RESULTED_IN"
+      }
+    ],
+    "tier": "S",
+    "entryType": "Governance",
+    "eventType": "Governance Crisis",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2013,
+    "title": "Rajasthan Royals Ownership Investigation",
+    "severity": 8,
+    "importance": 90,
+    "reliability": 10,
+    "impactType": "Ownership",
+    "resolutionStatus": "Resolved",
+    "category": "Ownership",
+    "shortSummary": "Investigations into Rajasthan Royals' ownership structure amidst the fixing scandal.",
+    "fullStory": "Following the spot-fixing and betting scandals, the complex and somewhat opaque ownership structure of the Rajasthan Royals came under intense scrutiny from the BCCI and the ED (Enforcement Directorate). The investigation looked into alleged FEMA (Foreign Exchange Management Act) violations and the exact roles of various stakeholders.",
+    "outcome": "Owners fined and structure restructured over years.",
+    "affectedTeams": [
+      "Rajasthan Royals"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "ownership",
+      "investigation",
+      "fema"
+    ],
+    "mediaAttention": 8,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "BCCI demanded absolute transparency in franchise ownership structures and holding companies."
+      ],
+      "franchiseChanges": [
+        "RR underwent ownership restructuring."
+      ],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Opaque holding companies were common."
+      ],
+      "after": [
+        "Strict KYCs and transparent structures required for all franchises."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [],
+    "tier": "C",
+    "entryType": "Controversy",
+    "eventType": "Ownership",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2014,
+    "title": "Sunanda Pushkar Death Controversy Connections",
+    "severity": 4,
+    "importance": 50,
+    "reliability": 8,
+    "impactType": "League",
+    "resolutionStatus": "Ongoing",
+    "category": "Legal",
+    "shortSummary": "The mysterious death of Sunanda Pushkar brought renewed scrutiny to the 2010 Kochi IPL sweat equity saga.",
+    "fullStory": "Following the mysterious death of Sunanda Pushkar, investigations occasionally probed back into her financial dealings, including the sweat equity from the Kochi Tuskers franchise. It kept the ghost of the Kochi franchise controversy in the media.",
+    "outcome": "Ongoing legal investigations largely separate from cricket.",
+    "affectedTeams": [
+      "Kochi Tuskers Kerala"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "politics",
+      "legal"
+    ],
+    "mediaAttention": 9,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Negative publicity for the political connections within the IPL."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Negative publicity for the political connections within the IPL."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [
+      {
+        "target": "Kochi Political Fallout",
+        "type": "LED_TO"
+      }
+    ],
+    "legacyScore": 40,
+    "significanceScore": 40,
+    "tier": "C",
+    "entryType": "Controversy",
+    "eventType": "Legal",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2015,
+    "title": "Lodha Committee Reforms",
+    "severity": 9,
+    "importance": 98,
+    "reliability": 10,
+    "impactType": "League",
+    "resolutionStatus": "Resolved",
+    "category": "Governance",
+    "shortSummary": "The Supreme Court-appointed Lodha panel announced massive structural reforms for the BCCI and IPL.",
+    "fullStory": "In response to the Mudgal report, the Supreme Court formed the Lodha Committee to decide punishments and recommend administrative reforms. The committee proposed sweeping changes to the BCCI structure, age caps for administrators, and strict conflict of interest rules.",
+    "outcome": "BCCI forced to adopt new constitution.",
+    "affectedTeams": [],
+    "affectedPlayers": [],
+    "tags": [
+      "supreme-court",
+      "reforms",
+      "bcci"
+    ],
+    "mediaAttention": 8,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Complete overhaul of BCCI governance and state association structures.",
+        "Legalized betting was recommended (but not implemented)."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Complete overhaul of BCCI governance and state association structures.",
+        "Legalized betting was recommended (but not implemented)."
+      ]
+    },
+    "sourceIntelligence": [
+      {
+        "id": "lodha-report-2015",
+        "title": "Justice Lodha Committee Report (Volume 1)",
+        "publisher": "Supreme Court of India",
+        "publishedDate": "2015-07-14",
+        "sourceType": "Primary Source",
+        "confidence": "Verified",
+        "url": "https://lodhacommittee.wordpress.com/",
+        "description": "The official judicial report mandating the 2-year suspension of CSK and RR, and recommending foundational governance reforms for the BCCI."
+      },
+      {
+        "id": "cricinfo-lodha-verdict",
+        "title": "CSK, Royals suspended for two years",
+        "publisher": "ESPNcricinfo",
+        "publishedDate": "2015-07-14",
+        "sourceType": "Mainstream Reporting",
+        "confidence": "Verified",
+        "url": "https://www.espncricinfo.com/story/csk-rr-suspended-from-ipl-for-two-years-898461",
+        "description": "Comprehensive day-of coverage detailing the immediate fallout of the Lodha verdict."
+      }
+    ],
+    "relationships": [
+      {
+        "target": "CSK and RR Suspensions",
+        "type": "CAUSED"
+      }
+    ],
+    "tier": "S",
+    "entryType": "Governance",
+    "eventType": "Governance Crisis",
+    "whyItMatters": [
+      "Restructured the entire BCCI constitution",
+      "Mandated age and tenure limits",
+      "Legalized sports betting discussions"
+    ],
+    "outcomes": {},
+    "historicalSignificance": "The largest governance overhaul in Indian cricket history.",
+    "impactMetrics": {
+      "franchisesSuspended": 2,
+      "officialsBanned": 2,
+      "reformsMandated": 15
+    }
+  },
+  {
+    "year": 2015,
+    "title": "CSK and RR Suspensions",
+    "severity": 10,
+    "importance": 100,
+    "reliability": 10,
+    "impactType": "League",
+    "resolutionStatus": "Resolved",
+    "category": "Governance",
+    "shortSummary": "Chennai Super Kings and Rajasthan Royals were suspended for two years by the Lodha Committee.",
+    "fullStory": "Due to the betting activities of team owners Gurunath Meiyappan (CSK) and Raj Kundra (RR), the Lodha Committee suspended both franchises from participating in the IPL for the 2016 and 2017 seasons. This was an unprecedented punishment that shook the foundation of the league.",
+    "outcome": "Two-year suspension for both franchises.",
+    "affectedTeams": [
+      "Chennai Super Kings",
+      "Rajasthan Royals"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "suspension",
+      "lodha-committee",
+      "punishment"
+    ],
+    "mediaAttention": 9,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "CSK and RR missed the 2016 and 2017 seasons.",
+        "Established that owners' actions directly impact the franchise's existence."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "CSK and RR missed the 2016 and 2017 seasons.",
+        "Established that owners' actions directly impact the franchise's existence."
+      ]
+    },
+    "sourceIntelligence": [
+      {
+        "url": "https://www.espncricinfo.com/story/csk-rr-suspended-for-two-years-898461",
+        "evidenceStrength": "Credible Reporting",
+        "description": "News Report"
+      }
+    ],
+    "relationships": [],
+    "tier": "S",
+    "entryType": "Controversy",
+    "eventType": "Governance",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2016,
+    "title": "CSK & RR Suspension Fallout",
+    "severity": 7,
+    "importance": 85,
+    "reliability": 10,
+    "impactType": "League",
+    "resolutionStatus": "Resolved",
+    "category": "Ownership",
+    "shortSummary": "Creation of temporary franchises Gujarat Lions and Rising Pune Supergiant.",
+    "fullStory": "With CSK and RR suspended, the BCCI auctioned two temporary franchise slots to maintain an 8-team league. Intex won Gujarat Lions, and Sanjiv Goenka won Rising Pune Supergiant. This led to massive player drafts scattering legendary CSK and RR players across new teams.",
+    "outcome": "Temporary franchises operated for 2016 and 2017.",
+    "affectedTeams": [
+      "Rising Pune Supergiant",
+      "Gujarat Lions"
+    ],
+    "affectedPlayers": [
+      "MS Dhoni",
+      "Suresh Raina"
+    ],
+    "tags": [
+      "expansion",
+      "draft"
+    ],
+    "mediaAttention": 10,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [],
+      "franchiseChanges": [
+        "MS Dhoni played for RPS, Suresh Raina captained Gujarat Lions.",
+        "Introduced Sanjiv Goenka to IPL (who later bought LSG)."
+      ],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "MS Dhoni played for RPS, Suresh Raina captained Gujarat Lions.",
+        "Introduced Sanjiv Goenka to IPL (who later bought LSG)."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [],
+    "tier": "C",
+    "entryType": "Controversy",
+    "eventType": "Ownership",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2018,
+    "title": "Warner-Smith Sandpapergate Impact on IPL",
+    "severity": 8,
+    "importance": 85,
+    "reliability": 10,
+    "impactType": "Franchise",
+    "resolutionStatus": "Resolved",
+    "category": "Player Conduct",
+    "shortSummary": "Steve Smith and David Warner were banned from the 2018 IPL due to the ball-tampering scandal.",
+    "fullStory": "Following the infamous 'Sandpapergate' ball-tampering scandal in South Africa, Cricket Australia banned Smith and Warner for a year. The BCCI followed suit, banning both captains from the 2018 IPL season. This threw Rajasthan Royals and Sunrisers Hyderabad into sudden captaincy crises.",
+    "outcome": "Banned from IPL 2018.",
+    "affectedTeams": [
+      "Rajasthan Royals",
+      "Sunrisers Hyderabad"
+    ],
+    "affectedPlayers": [
+      "Steve Smith",
+      "David Warner"
+    ],
+    "tags": [
+      "ball-tampering",
+      "ban",
+      "captaincy"
+    ],
+    "mediaAttention": 7,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": [
+        "Kane Williamson took over SRH and led them to the final.",
+        "Ajinkya Rahane took over RR captaincy."
+      ]
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Kane Williamson took over SRH and led them to the final.",
+        "Ajinkya Rahane took over RR captaincy."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [],
+    "tier": "A",
+    "entryType": "Controversy",
+    "eventType": "Player Conduct",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2019,
+    "title": "Dhoni Walks Onto the Field",
+    "severity": 7,
+    "importance": 78,
+    "reliability": 10,
+    "impactType": "Umpiring",
+    "resolutionStatus": "Resolved",
+    "category": "Umpiring",
+    "shortSummary": "MS Dhoni stormed onto the field to argue with umpires over a revoked no-ball call.",
+    "fullStory": "During a tense chase against Rajasthan Royals, umpire Ulhas Gandhe signaled a waist-high no-ball, but square-leg umpire Bruce Oxenford overruled it. In a highly uncharacteristic move, a furious MS Dhoni walked out of the dugout and onto the pitch to argue with the umpires. The incident sparked massive debate regarding player conduct and the 'Captain Cool' image.",
+    "outcome": "Dhoni fined 50% of match fee.",
+    "affectedTeams": [
+      "Chennai Super Kings",
+      "Rajasthan Royals"
+    ],
+    "affectedPlayers": [
+      "MS Dhoni"
+    ],
+    "tags": [
+      "umpiring",
+      "no-ball",
+      "player-conduct"
+    ],
+    "mediaAttention": 10,
+    "howIplChanged": {
+      "ruleChanges": [
+        "Dhoni was fined 50% of his match fee.",
+        "Raised serious questions about umpiring standards and the pressure umpires face from star players."
+      ],
+      "governanceChanges": [],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Dhoni was fined 50% of his match fee.",
+        "Raised serious questions about umpiring standards and the pressure umpires face from star players."
+      ]
+    },
+    "sourceIntelligence": [
+      {
+        "url": "https://www.espncricinfo.com/story/ms-dhoni-fined-50-percent-of-match-fee-1180709",
+        "evidenceStrength": "Credible Reporting",
+        "description": "News Report"
+      }
+    ],
+    "relationships": [],
+    "tier": "C",
+    "entryType": "Controversy",
+    "eventType": "Umpiring",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2019,
+    "title": "Ashwin Mankads Jos Buttler",
+    "severity": 8,
+    "importance": 85,
+    "reliability": 10,
+    "impactType": "League",
+    "resolutionStatus": "Resolved",
+    "category": "Spirit of Cricket",
+    "shortSummary": "R Ashwin ran out Jos Buttler at the non-striker's end, igniting a global 'Spirit of Cricket' debate.",
+    "fullStory": "During a KXIP vs RR match, KXIP captain R Ashwin stopped in his delivery stride and ran out a wandering Jos Buttler at the non-striker's end. While completely within the laws of the game, it caused a massive global meltdown over the 'Spirit of Cricket'.",
+    "outcome": "Buttler given out; massive rule discussions followed.",
+    "affectedTeams": [
+      "Kings XI Punjab",
+      "Rajasthan Royals"
+    ],
+    "affectedPlayers": [
+      "Ravichandran Ashwin",
+      "Jos Buttler"
+    ],
+    "tags": [
+      "mankad",
+      "spirit-of-cricket",
+      "rules"
+    ],
+    "mediaAttention": 6,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": [
+        "Forced the MCC to clarify and eventually destigmatize the non-striker run-out, moving it from 'Unfair Play' to the 'Run Out' section."
+      ]
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Forced the MCC to clarify and eventually destigmatize the non-striker run-out, moving it from 'Unfair Play' to the 'Run Out' section."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [],
+    "tier": "B",
+    "entryType": "Controversy",
+    "eventType": "Spirit of Cricket",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2020,
+    "title": "CSK Covid Bubble Breach",
+    "severity": 7,
+    "importance": 75,
+    "reliability": 10,
+    "impactType": "Franchise",
+    "resolutionStatus": "Resolved",
+    "category": "Covid/Bio Bubble",
+    "shortSummary": "Multiple CSK players and staff tested positive for COVID-19 before the UAE season began.",
+    "fullStory": "Ahead of the delayed 2020 IPL in the UAE, the CSK camp was hit by a massive Covid outbreak, with over a dozen staff and players (including Deepak Chahar and Ruturaj Gaikwad) testing positive. It caused panic regarding the viability of the bio-bubble.",
+    "outcome": "Tournament proceeded safely after isolation.",
+    "affectedTeams": [
+      "Chennai Super Kings"
+    ],
+    "affectedPlayers": [
+      "Deepak Chahar",
+      "Ruturaj Gaikwad"
+    ],
+    "tags": [
+      "covid",
+      "bio-bubble",
+      "health"
+    ],
+    "mediaAttention": 10,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "CSK's quarantine was extended, disrupting their preparations.",
+        "Bio-bubble protocols were made significantly stricter."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "CSK's quarantine was extended, disrupting their preparations.",
+        "Bio-bubble protocols were made significantly stricter."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [],
+    "tier": "A",
+    "entryType": "Structural",
+    "eventType": "Bio Bubble",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2021,
+    "title": "IPL 2021 Suspension Due To COVID",
+    "severity": 9,
+    "importance": 95,
+    "reliability": 10,
+    "impactType": "League",
+    "resolutionStatus": "Resolved",
+    "category": "Covid/Bio Bubble",
+    "shortSummary": "The IPL was halted mid-season due to a massive COVID-19 outbreak in India and inside the team bubbles.",
+    "fullStory": "As India battled a devastating second wave of COVID-19, the IPL attempted to continue inside bio-bubbles. However, after multiple players and staff across different franchises tested positive, the BCCI had no choice but to suspend the tournament indefinitely. It was later completed in the UAE.",
+    "outcome": "Tournament suspended and moved to UAE.",
+    "affectedTeams": [],
+    "affectedPlayers": [],
+    "tags": [
+      "covid",
+      "suspension",
+      "bio-bubble"
+    ],
+    "mediaAttention": 10,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Stricter bio-bubble protocols and contingency planning for overseas hosting."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Tournament played in India during the pandemic."
+      ],
+      "after": [
+        "Tournament suspended and moved to UAE."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [
+      {
+        "target": "IPL 2021 UAE Relocation",
+        "type": "RESULTED_IN"
+      }
+    ],
+    "tier": "A",
+    "entryType": "Structural",
+    "eventType": "Bio Bubble",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2021,
+    "title": "2021 Bio-Bubble Breach Cases",
+    "severity": 8,
+    "importance": 85,
+    "reliability": 10,
+    "impactType": "Player",
+    "resolutionStatus": "Resolved",
+    "category": "Covid/Bio Bubble",
+    "shortSummary": "Multiple players tested positive inside the 'secure' bio-bubble, leading to the tournament's halt.",
+    "fullStory": "The supposedly impenetrable bio-bubbles were breached when players like Varun Chakravarthy, Sandeep Warrier, Wriddhiman Saha, and Amit Mishra tested positive. This raised severe questions about the implementation and strictness of the bubbles managed by the BCCI.",
+    "outcome": "Triggered the suspension of the entire 2021 season.",
+    "affectedTeams": [
+      "Kolkata Knight Riders",
+      "Sunrisers Hyderabad",
+      "Delhi Capitals"
+    ],
+    "affectedPlayers": [
+      "Varun Chakravarthy",
+      "Wriddhiman Saha",
+      "Amit Mishra"
+    ],
+    "tags": [
+      "covid",
+      "bio-bubble",
+      "breach"
+    ],
+    "mediaAttention": 9,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Total revamp of bio-bubble security agencies and protocols."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": [
+        "Players faced extreme mental fatigue and strict isolation."
+      ]
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Assumed bio-bubbles were foolproof."
+      ],
+      "after": [
+        "Realized the vulnerability and complexity of managing bubbles in India."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [
+      {
+        "target": "IPL 2021 Suspension Due To COVID",
+        "type": "CAUSED"
+      }
+    ],
+    "tier": "C",
+    "entryType": "Controversy",
+    "eventType": "Covid/Bio Bubble",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2022,
+    "title": "Ravindra Jadeja Captaincy & Social Media Fallout",
+    "severity": 7,
+    "importance": 78,
+    "reliability": 8,
+    "impactType": "Franchise",
+    "resolutionStatus": "Resolved",
+    "category": "Team Management",
+    "shortSummary": "Jadeja stepped down as CSK captain mid-season, followed by rumors of a rift with the franchise.",
+    "fullStory": "MS Dhoni handed the CSK captaincy to Ravindra Jadeja before IPL 2022. After a disastrous start, Jadeja relinquished the captaincy back to Dhoni mid-season and subsequently left the tournament with a 'rib injury'. Unfollowing the franchise on Instagram sparked massive rumors of a rift.",
+    "outcome": "Captaincy reverted to Dhoni; rift eventually healed.",
+    "affectedTeams": [
+      "Chennai Super Kings"
+    ],
+    "affectedPlayers": [
+      "Ravindra Jadeja",
+      "MS Dhoni"
+    ],
+    "tags": [
+      "captaincy",
+      "rift",
+      "social-media"
+    ],
+    "mediaAttention": 6,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "Dhoni returned as captain.",
+        "Jadeja and CSK eventually reconciled for 2023, where Jadeja hit the winning runs in the final."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Dhoni returned as captain.",
+        "Jadeja and CSK eventually reconciled for 2023, where Jadeja hit the winning runs in the final."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [],
+    "tier": "C",
+    "entryType": "Controversy",
+    "eventType": "Team Management",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2024,
+    "title": "Rohit-Hardik Captaincy Crisis",
+    "severity": 9,
+    "importance": 95,
+    "reliability": 10,
+    "impactType": "Franchise",
+    "resolutionStatus": "Resolved",
+    "category": "Team Management",
+    "shortSummary": "The massive backlash and crisis following MI's decision to replace Rohit Sharma with Hardik Pandya.",
+    "fullStory": "In a blockbuster trade, Mumbai Indians brought back Hardik Pandya from Gujarat Titans and immediately named him captain, controversially displacing Rohit Sharma. The move triggered unprecedented hostility from fans, who relentlessly booed Hardik at stadiums across India, particularly at the Wankhede. This created a toxic atmosphere that derailed MI's season and became the biggest franchise management crisis in recent IPL history.",
+    "outcome": "Disastrous season for MI, massive PR damage.",
+    "affectedTeams": [
+      "Mumbai Indians"
+    ],
+    "affectedPlayers": [
+      "Rohit Sharma",
+      "Hardik Pandya"
+    ],
+    "tags": [
+      "captaincy",
+      "fans",
+      "booing"
+    ],
+    "mediaAttention": 9,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [
+        "MI finished at the bottom of the table.",
+        "Shattered the illusion of franchise loyalty overriding player loyalty for Indian fans."
+      ],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "MI finished at the bottom of the table.",
+        "Shattered the illusion of franchise loyalty overriding player loyalty for Indian fans."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [],
+    "tier": "B",
+    "entryType": "Controversy",
+    "eventType": "Team Management",
+    "whyItMatters": [
+      "Created the most hostile stadium atmospheres in IPL history",
+      "Highlighted the intense loyalty of franchise fanbases",
+      "Derailed Mumbai Indians' 2024 campaign"
+    ],
+    "outcomes": {}
+  },
+  {
+    "year": 2024,
+    "title": "Sanjiv Goenka vs KL Rahul On-field Confrontation",
+    "severity": 8,
+    "importance": 85,
+    "reliability": 10,
+    "impactType": "Franchise",
+    "resolutionStatus": "Resolved",
+    "category": "Ownership",
+    "shortSummary": "LSG owner Sanjiv Goenka publicly berated captain KL Rahul on the field.",
+    "fullStory": "After a crushing defeat to SRH, LSG owner Sanjiv Goenka was caught on camera aggressively and animatedly scolding captain KL Rahul on the field while Rahul stood silently. The public dressing down of a senior Indian player by an owner drew widespread condemnation from experts and fans.",
+    "outcome": "Public PR disaster for Goenka, KL Rahul left the franchise.",
+    "affectedTeams": [
+      "Lucknow Super Giants"
+    ],
+    "affectedPlayers": [
+      "KL Rahul"
+    ],
+    "tags": [
+      "owner",
+      "public-scolding"
+    ],
+    "mediaAttention": 8,
+    "howIplChanged": {
+      "ruleChanges": [],
+      "governanceChanges": [],
+      "franchiseChanges": [
+        "Sparked immense backlash against franchise owner overreach.",
+        "KL Rahul ultimately left LSG ahead of the 2025 mega auction."
+      ],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Sparked immense backlash against franchise owner overreach.",
+        "KL Rahul ultimately left LSG ahead of the 2025 mega auction."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [],
+    "tier": "C",
+    "entryType": "Controversy",
+    "eventType": "Ownership",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "year": 2025,
+    "title": "Impact Player Rule Backlash",
+    "severity": 7,
+    "importance": 75,
+    "reliability": 10,
+    "impactType": "League",
+    "resolutionStatus": "Ongoing",
+    "category": "League Rules",
+    "shortSummary": "Massive criticism from players regarding the Impact Player rule destroying all-rounders.",
+    "fullStory": "The Impact Player rule, which allowed teams to sub in a specialist batter or bowler, faced severe backlash. Current Indian captain Rohit Sharma openly stated he was not a fan of the rule because it hindered the development of all-rounders and artificially inflated scores to 250+ regularly.",
+    "outcome": "Rule retained for 2025 but remains highly controversial.",
+    "affectedTeams": [],
+    "affectedPlayers": [
+      "Rohit Sharma"
+    ],
+    "tags": [
+      "rules",
+      "impact-player",
+      "tactics"
+    ],
+    "mediaAttention": 7,
+    "howIplChanged": {
+      "ruleChanges": [
+        "Led to intense BCCI meetings regarding the future of the rule."
+      ],
+      "governanceChanges": [],
+      "franchiseChanges": [],
+      "playerBehaviorChanges": []
+    },
+    "beforeAndAfter": {
+      "before": [
+        "Standard procedures in place"
+      ],
+      "after": [
+        "Led to intense BCCI meetings regarding the future of the rule."
+      ]
+    },
+    "sourceIntelligence": [],
+    "relationships": [],
+    "tier": "A",
+    "entryType": "Controversy",
+    "eventType": "League Rules",
+    "whyItMatters": [],
+    "outcomes": {}
+  },
+  {
+    "title": "IPL Governance Reforms",
+    "year": 2016,
+    "severity": 7,
+    "importance": 90,
+    "reliability": 10,
+    "impactType": "Governance",
+    "resolutionStatus": "Resolved",
+    "category": "Governance",
+    "shortSummary": "Massive overhaul of BCCI and IPL governance following the Lodha committee.",
+    "fullStory": "The Supreme Court mandated sweeping changes to the BCCI and IPL operations to ensure transparency, ending conflicts of interest and imposing term limits.",
+    "outcome": "New constitution adopted.",
+    "affectedTeams": [],
+    "affectedPlayers": [],
+    "tags": [
+      "governance",
+      "lodha"
+    ],
+    "relationships": [],
+    "tier": "C",
+    "entryType": "Governance",
+    "eventType": "Governance Crisis",
+    "whyItMatters": [],
+    "outcomes": {},
+    "sourceIntelligence": []
+  },
+  {
+    "title": "Kochi Political Fallout",
+    "year": 2010,
+    "severity": 6,
+    "importance": 70,
+    "reliability": 10,
+    "impactType": "Governance",
+    "resolutionStatus": "Resolved",
+    "category": "Governance",
+    "shortSummary": "Political pressure builds after the Kochi ownership leaks.",
+    "fullStory": "The leaking of Kochi Tuskers' ownership structure led to a massive political storm in India, forcing Shashi Tharoor to resign.",
+    "outcome": "Minister resigned.",
+    "affectedTeams": [
+      "Kochi Tuskers Kerala"
+    ],
+    "affectedPlayers": [],
+    "tags": [
+      "politics"
+    ],
+    "relationships": [],
+    "tier": "A",
+    "entryType": "Legal",
+    "eventType": "Ownership Dispute",
+    "whyItMatters": [],
+    "outcomes": {},
+    "sourceIntelligence": []
+  },
+  {
+    "title": "Initial COVID Cases in Bio-Bubble",
+    "year": 2021,
+    "severity": 6,
+    "importance": 80,
+    "reliability": 10,
+    "impactType": "League",
+    "resolutionStatus": "Resolved",
+    "category": "Covid/Bio Bubble",
+    "shortSummary": "First signs of COVID-19 breaching the IPL 2021 bio-bubble.",
+    "fullStory": "A few isolated cases appeared inside the bubble, causing initial panic but the tournament proceeded.",
+    "outcome": "Cases isolated.",
+    "affectedTeams": [],
+    "affectedPlayers": [],
+    "tags": [
+      "covid"
+    ],
+    "relationships": [],
+    "tier": "A",
+    "entryType": "Structural",
+    "eventType": "Bio Bubble",
+    "whyItMatters": [],
+    "outcomes": {},
+    "sourceIntelligence": []
+  },
+  {
+    "title": "IPL 2021 UAE Relocation",
+    "year": 2021,
+    "severity": 6,
+    "importance": 70,
+    "reliability": 10,
+    "impactType": "League",
+    "resolutionStatus": "Resolved",
+    "category": "Covid/Bio Bubble",
+    "shortSummary": "The remainder of the 2021 IPL season was relocated to the UAE.",
+    "fullStory": "To complete the suspended season safely, the BCCI shifted the remaining matches to the UAE.",
+    "outcome": "Season completed in UAE.",
+    "affectedTeams": [],
+    "affectedPlayers": [],
+    "tags": [
+      "uae"
+    ],
+    "relationships": [],
+    "tier": "A",
+    "entryType": "Structural",
+    "eventType": "Bio Bubble",
+    "whyItMatters": [],
+    "outcomes": {},
+    "sourceIntelligence": []
+  },
+  {
+    "title": "IPL Media Rights Wars (Sony -> Star -> Viacom18)",
+    "year": 2022,
+    "category": "Business",
+    "shortSummary": "The exponential explosion of IPL broadcasting rights valuation.",
+    "fullStory": "From Sony's initial billion-dollar gamble in 2008 to the record-breaking $6.2 billion split between Star and Viacom18 in 2022, the media rights auctions have redefined global sports economics. It established the IPL as the second-most valuable sporting league per match in the world, behind only the NFL.",
+    "outcome": "IPL became a global financial juggernaut.",
+    "affectedTeams": [
+      "All Teams"
+    ],
+    "affectedPlayers": [],
+    "severity": 1,
+    "significanceScore": 100,
+    "mediaAttention": 10,
+    "impactType": "Financial Boom",
+    "resolutionStatus": "Ongoing",
+    "tier": "S",
+    "entryType": "Business",
+    "eventType": "Broadcasting Evolution",
+    "whyItMatters": [
+      "Made IPL the 2nd most valuable sports league globally",
+      "Fragmented digital and TV rights",
+      "Ensured financial invincibility for franchises"
+    ],
+    "outcomes": {},
+    "importance": 95,
+    "reliability": 10,
+    "sourceIntelligence": [
+      {
+        "id": "bcci-media-rights-2022",
+        "title": "BCCI announces successful bidders for IPL Media Rights",
+        "publisher": "BCCI Official",
+        "publishedDate": "2022-06-14",
+        "sourceType": "Official Document",
+        "confidence": "Verified",
+        "url": "https://www.iplt20.com/news/3760/bcci-announces-the-successful-bidders-for-tata-ipl-media-rights-for-the-seasons-2023-2027",
+        "description": "The official press release confirming the $6.2 billion combined valuation split between Star and Viacom18."
+      },
+      {
+        "id": "bloomberg-ipl-valuation",
+        "title": "How IPL Became the World’s Second Most Valuable Sports League",
+        "publisher": "Bloomberg",
+        "publishedDate": "2022-06-15",
+        "sourceType": "Secondary Analysis",
+        "confidence": "Verified",
+        "url": "https://www.bloomberg.com/news/articles/2022-06-15/ipl-cricket-media-rights-auction-makes-it-world-s-no-2-sports-league",
+        "description": "Business analysis detailing how the per-match valuation surpassed the Premier League and MLB."
+      }
+    ],
+    "historicalSignificance": "The event that transformed IPL into a global sports business powerhouse.",
+    "impactMetrics": {
+      "valuation": "$6.2 Billion",
+      "rightsSplit": 2,
+      "globalRank": 2
+    }
+  },
+  {
+    "title": "Pune Warriors India Withdrawal",
+    "year": 2013,
+    "category": "Ownership",
+    "shortSummary": "Sahara withdraws PWI from the IPL after financial disputes.",
+    "fullStory": "Following an ongoing standoff with the BCCI over franchise fees and bank guarantees, Sahara pulled Pune Warriors India out of the IPL. The BCCI subsequently encashed their bank guarantee, terminating the franchise.",
+    "outcome": "Pune Warriors ceased to exist.",
+    "affectedTeams": [
+      "Pune Warriors India"
+    ],
+    "affectedPlayers": [],
+    "severity": 7,
+    "significanceScore": 80,
+    "mediaAttention": 8,
+    "impactType": "Franchise Collapse",
+    "resolutionStatus": "Resolved",
+    "tier": "C",
+    "entryType": "Controversy",
+    "eventType": "Ownership",
+    "whyItMatters": [
+      "Second franchise to be terminated after Deccan Chargers",
+      "Highlighted the financial unsustainability of initial expansion bids"
+    ],
+    "outcomes": {},
+    "relationships": [
+      {
+        "target": "League Contraction to 8 Teams",
+        "type": "RESULTED_IN"
+      }
+    ],
+    "importance": 75,
+    "reliability": 10,
+    "sourceIntelligence": []
+  },
+  {
+    "title": "League Contraction to 8 Teams",
+    "year": 2014,
+    "category": "Governance",
+    "shortSummary": "The IPL stabilizes back to an 8-team format.",
+    "fullStory": "With the termination of Pune Warriors and Kochi Tuskers, the IPL formally reverted to its original 8-team format, realizing that rapid expansion had destabilized the league economics.",
+    "outcome": "League stabilized.",
+    "affectedTeams": [
+      "All Teams"
+    ],
+    "affectedPlayers": [],
+    "severity": 4,
+    "significanceScore": 75,
+    "mediaAttention": 5,
+    "impactType": "Structural Reform",
+    "resolutionStatus": "Resolved",
+    "tier": "C",
+    "entryType": "Controversy",
+    "eventType": "Governance",
+    "whyItMatters": [
+      "Ended the era of chaotic franchise expansion",
+      "Set the standard 8-team model that lasted until 2022"
+    ],
+    "outcomes": {},
+    "importance": 75,
+    "reliability": 10,
+    "sourceIntelligence": []
+  },
+  {
+    "title": "BCCI vs Kochi Arbitration",
+    "year": 2015,
+    "category": "Legal",
+    "shortSummary": "Kochi Tuskers owners win arbitration against BCCI for wrongful termination.",
+    "fullStory": "Former owners of Kochi Tuskers Kerala took the BCCI to arbitration over their 2011 termination. In 2015, a court-appointed arbitrator ruled in their favor, directing the BCCI to pay massive compensation for breaching the franchise agreement.",
+    "outcome": "Arbitrator ruled in favor of Kochi.",
+    "affectedTeams": [
+      "Kochi Tuskers Kerala"
+    ],
+    "affectedPlayers": [],
+    "severity": 8,
+    "significanceScore": 85,
+    "mediaAttention": 7,
+    "impactType": "Legal Defeat",
+    "resolutionStatus": "Resolved",
+    "tier": "C",
+    "entryType": "Legal",
+    "eventType": "Ownership Dispute",
+    "whyItMatters": [
+      "Rare instance of a franchise successfully suing the BCCI",
+      "Exposed flaws in BCCI's termination procedures"
+    ],
+    "outcomes": {},
+    "relationships": [
+      {
+        "target": "Kochi Massive Compensation Case",
+        "type": "RESULTED_IN"
+      }
+    ],
+    "importance": 75,
+    "reliability": 10,
+    "sourceIntelligence": [
+      {
+        "id": "kochi-arbitration-win-2015",
+        "title": "Arbitrator rules in favour of Kochi Tuskers",
+        "publisher": "ESPNcricinfo",
+        "publishedDate": "2015-07-08",
+        "sourceType": "Investigative Reporting",
+        "confidence": "Verified",
+        "url": "https://www.espncricinfo.com/story/bcci-asked-to-pay-rs-550-crore-to-kochi-tuskers-895857",
+        "description": "Details of former Chief Justice RC Lahoti ruling that the BCCI's encashment of the bank guarantee was illegal."
+      }
+    ]
+  },
+  {
+    "title": "Kochi Massive Compensation Case",
+    "year": 2017,
+    "category": "Legal",
+    "shortSummary": "BCCI ordered to pay ~₹800+ crores to Kochi owners.",
+    "fullStory": "The financial penalty against BCCI ballooned due to interest. The Supreme Court and arbitrators mandated payouts exceeding ₹800 crores, causing a massive financial headache for the board.",
+    "outcome": "BCCI forced to pay out.",
+    "affectedTeams": [
+      "Kochi Tuskers Kerala"
+    ],
+    "affectedPlayers": [],
+    "severity": 9,
+    "significanceScore": 88,
+    "mediaAttention": 8,
+    "impactType": "Financial Penalty",
+    "resolutionStatus": "Resolved",
+    "tier": "C",
+    "entryType": "Legal",
+    "eventType": "Ownership Dispute",
+    "whyItMatters": [
+      "Costliest legal blunder in BCCI history",
+      "Forced BCCI to renegotiate settlements"
+    ],
+    "outcomes": {},
+    "importance": 75,
+    "reliability": 10,
+    "sourceIntelligence": []
+  },
+  {
+    "title": "India Cements & CSK Ownership Conflict",
+    "year": 2014,
+    "category": "Governance",
+    "shortSummary": "The Supreme Court probes the structural link between BCCI President N. Srinivasan and CSK.",
+    "fullStory": "During the Spot Fixing probe, the Supreme Court highlighted a glaring conflict of interest: BCCI President N. Srinivasan was also the managing director of India Cements, which owned the Chennai Super Kings.",
+    "outcome": "Supreme Court declared the dual role illegal.",
+    "affectedTeams": [
+      "Chennai Super Kings"
+    ],
+    "affectedPlayers": [],
+    "severity": 9,
+    "significanceScore": 95,
+    "mediaAttention": 10,
+    "impactType": "Governance Crisis",
+    "resolutionStatus": "Resolved",
+    "tier": "A",
+    "entryType": "Controversy",
+    "eventType": "Governance",
+    "whyItMatters": [
+      "Directly led to N Srinivasan's removal from BCCI",
+      "Set a legal precedent banning BCCI officials from having commercial interests in IPL teams"
+    ],
+    "outcomes": {},
+    "importance": 75,
+    "reliability": 10,
+    "sourceIntelligence": []
+  },
+  {
+    "title": "IPL Expansion Era (LSG & GT Auction)",
+    "year": 2021,
+    "category": "Business",
+    "shortSummary": "The historic ₹12,000+ crore auction of two new franchises transforms the IPL into a 10-team mega-league.",
+    "fullStory": "In 2021, the BCCI auctioned two new IPL franchises to expand the league from 8 to 10 teams. The RPSG Group won the Lucknow franchise (LSG) for a staggering ₹7,090 crore, while CVC Capital Partners secured the Ahmedabad franchise (GT) for ₹5,625 crore. This unprecedented valuation shattered global sports business expectations and definitively established the IPL as one of the most lucrative sports properties on the planet.",
+    "outcome": "League expanded to 10 teams permanently, valuation exploded.",
+    "affectedTeams": [
+      "Lucknow Super Giants",
+      "Gujarat Titans"
+    ],
+    "affectedPlayers": [],
+    "severity": 1,
+    "importance": 95,
+    "reliability": 10,
+    "mediaAttention": 10,
+    "impactType": "Structural Reform",
+    "resolutionStatus": "Resolved",
+    "tier": "S",
+    "entryType": "Business",
+    "eventType": "Franchise Expansion",
+    "whyItMatters": [
+      "Generated ₹12,715 crore ($1.7B) for the BCCI in a single day",
+      "Proved the immense valuation scaling of IPL franchises since 2008",
+      "Permanently expanded the tournament structure and media rights package"
+    ],
+    "outcomes": {
+      "franchiseChanges": [
+        "Added Lucknow Super Giants",
+        "Added Gujarat Titans"
+      ],
+      "financial": [
+        "Record-breaking ₹12,715 crore combined bid"
+      ]
+    },
+    "relationships": [],
+    "sourceIntelligence": [],
+    "historicalSignificance": "The historic auction that pushed IPL into an elite 10-team mega-league.",
+    "impactMetrics": {
+      "teamsAdded": 2,
+      "revenueGenerated": "₹12,715 Crore"
+    }
+  },
+  {
+    "title": "Gujarat Lions & Rising Pune Supergiant Era",
+    "year": 2016,
+    "category": "Franchise",
+    "shortSummary": "Two temporary franchises are created to replace the suspended CSK and RR.",
+    "fullStory": "To maintain the 8-team format during the 2-year suspension of Chennai Super Kings and Rajasthan Royals, the BCCI auctioned two temporary franchises. Intex won the Gujarat Lions (Rajkot) and Sanjiv Goenka's RPSG Group won Rising Pune Supergiant. This marked the first time the IPL explicitly designed temporary, 2-year franchises to plug a governance hole, ensuring broadcasting revenue didn't collapse.",
+    "outcome": "League maintained 8 teams, players were dispersed via a draft.",
+    "affectedTeams": [
+      "Gujarat Lions",
+      "Rising Pune Supergiant",
+      "Chennai Super Kings",
+      "Rajasthan Royals"
+    ],
+    "affectedPlayers": [
+      "MS Dhoni",
+      "Suresh Raina"
+    ],
+    "severity": 5,
+    "importance": 75,
+    "reliability": 10,
+    "mediaAttention": 7,
+    "impactType": "Structural Reform",
+    "resolutionStatus": "Resolved",
+    "tier": "A",
+    "entryType": "Structural",
+    "eventType": "Franchise Changes",
+    "historicalSignificance": "The unprecedented creation of two temporary franchises to save the league's broadcasting format.",
+    "impactMetrics": {
+      "franchisesCreated": 2,
+      "seasonsAffected": 2,
+      "playersDrafted": 10
+    },
+    "whyItMatters": [
+      "Maintained the critical 8-team broadcasting inventory",
+      "First time MS Dhoni and Suresh Raina played against each other"
+    ],
+    "outcomes": {},
+    "relationships": [
+      {
+        "target": "IPL Expansion Era (LSG & GT Auction)",
+        "type": "PRECEDED"
+      }
+    ]
+  }
+]
