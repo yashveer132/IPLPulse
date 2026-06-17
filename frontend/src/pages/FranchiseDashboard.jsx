@@ -32,6 +32,8 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import GroupsIcon from "@mui/icons-material/Groups";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import SportsCricketIcon from "@mui/icons-material/SportsCricket";
 import {
   PieChart,
   Pie,
@@ -64,6 +66,11 @@ function FranchiseDashboard() {
   const { data: seasons, isLoading: loadingSeasons } = useFranchiseSeasons(id, {
     enabled: !!id,
   });
+
+  const filteredSeasons = useMemo(
+    () => seasons?.filter((s) => s.season >= 2013 && s.season <= 2022) || [],
+    [seasons],
+  );
 
   const { data: auctionSeasons } = useAuctionSeasons();
   const [selectedSeason, setSelectedSeason] = useState("");
@@ -110,19 +117,20 @@ function FranchiseDashboard() {
   };
 
   const seasonColumns = [
-    { id: "season", label: "Season" },
-    { id: "matchesWon", label: "Wins" },
-    { id: "matchesLost", label: "Losses" },
+    { id: "season", label: "Season", align: "center" },
+    { id: "matchesWon", label: "Wins", align: "center" },
+    { id: "matchesLost", label: "Losses", align: "center" },
     {
       id: "totalSpent",
       label: "Auction Spend",
+      align: "center",
       render: (val) => `₹${Math.round(val / 100)}Cr`,
     },
-    { id: "playersBought", label: "Players Bought" },
-    { id: "playersRetained", label: "Retained" },
+    { id: "playersBought", label: "Players Bought", align: "center" },
     {
       id: "isChampion",
       label: "Result",
+      align: "center",
       render: (val) =>
         val ? (
           <Chip
@@ -141,12 +149,21 @@ function FranchiseDashboard() {
     {
       id: "player",
       label: "Player",
+      headerAlign: "center",
+      align: "left",
       render: (val, row) => (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            justifyContent: "flex-start",
+          }}
+        >
           <Avatar sx={{ width: 32, height: 32, bgcolor: franchise.color }}>
             {row.player.name.charAt(0)}
           </Avatar>
-          <Box>
+          <Box sx={{ textAlign: "left" }}>
             <Typography variant="body2" fontWeight={800}>
               {row.player.name}
             </Typography>
@@ -157,21 +174,16 @@ function FranchiseDashboard() {
         </Box>
       ),
     },
-    { id: "role", label: "Role", render: (val, row) => row.player.role },
     {
-      id: "status",
-      label: "Status",
-      render: (val) => (
-        <Chip
-          size="small"
-          label={val}
-          color={val === "Retained" ? "primary" : "default"}
-        />
-      ),
+      id: "role",
+      label: "Role",
+      align: "center",
+      render: (val, row) => row.player.role,
     },
     {
       id: "soldPrice",
       label: "Price",
+      align: "center",
       render: (val) => `₹${Math.round(val / 100)}Cr`,
     },
   ];
@@ -190,10 +202,11 @@ function FranchiseDashboard() {
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 3, md: 6 },
+            py: { xs: 2, md: 2 },
+            px: { xs: 2, md: 4 },
             mb: 4,
             borderRadius: 4,
-            background: `linear-gradient(135deg, ${franchise.color || "#6366f1"} 0%, #111827 100%)`,
+            background: `linear-gradient(135deg, ${franchise.color || "#6366f1"} 0%, ${franchise.color || "#6366f1"}cc 50%, ${franchise.color || "#6366f1"}99 100%)`,
             color: "#fff",
             position: "relative",
             overflow: "hidden",
@@ -201,26 +214,40 @@ function FranchiseDashboard() {
         >
           <Box
             sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background:
+                "radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%)",
+              pointerEvents: "none",
+            }}
+          />
+          <Box
+            sx={{
               position: "relative",
               zIndex: 1,
               display: "flex",
-              flexWrap: "wrap",
+              flexDirection: "column",
               alignItems: "center",
-              gap: 4,
+              justifyContent: "center",
+              textAlign: "center",
+              gap: 2,
             }}
           >
             <Box
               sx={{
-                width: 100,
-                height: 100,
+                width: 70,
+                height: 70,
                 borderRadius: "50%",
-                bgcolor: "rgba(255,255,255,0.1)",
+                bgcolor: "rgba(255,255,255,0.15)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "2.5rem",
+                fontSize: "2rem",
                 fontWeight: 900,
-                border: "2px solid rgba(255,255,255,0.2)",
+                border: "2px solid rgba(255,255,255,0.3)",
                 backdropFilter: "blur(10px)",
               }}
             >
@@ -233,7 +260,7 @@ function FranchiseDashboard() {
                 gutterBottom
                 sx={{
                   letterSpacing: "-0.02em",
-                  fontSize: { xs: "2.5rem", md: "3.75rem" },
+                  fontSize: { xs: "2rem", md: "3rem" },
                 }}
               >
                 {franchise.name}
@@ -245,7 +272,9 @@ function FranchiseDashboard() {
                   fontWeight: 500,
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "center",
                   gap: 1,
+                  flexWrap: "wrap",
                 }}
               >
                 📍 {franchise.city} • 🏟️{" "}
@@ -257,30 +286,33 @@ function FranchiseDashboard() {
         </Paper>
       </motion.div>
 
-      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
-        >
+      <Box
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+          mb: 3,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <Tabs value={tabValue} onChange={handleTabChange} centered>
           <Tab
             icon={<MemoryIcon />}
             iconPosition="start"
             label="Intelligence"
-            sx={{ fontWeight: 700 }}
+            sx={{ fontWeight: 700, px: 4 }}
           />
           <Tab
             icon={<PointOfSaleIcon />}
             iconPosition="start"
             label="Overview & History"
-            sx={{ fontWeight: 700 }}
+            sx={{ fontWeight: 700, px: 4 }}
           />
           <Tab
             icon={<GroupsIcon />}
             iconPosition="start"
             label="Squads & Auctions"
-            sx={{ fontWeight: 700 }}
+            sx={{ fontWeight: 700, px: 4 }}
           />
         </Tabs>
       </Box>
@@ -290,8 +322,8 @@ function FranchiseDashboard() {
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid xs={12} sm={6} md={3}>
+        <Grid container spacing={3} sx={{ mb: 4 }} justifyContent="center">
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <StatCard
               title="Total Titles"
               value={franchise.titles}
@@ -299,31 +331,42 @@ function FranchiseDashboard() {
               color="#f59e0b"
             />
           </Grid>
-          <Grid xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <StatCard
               title="Win Rate"
               value={`${stats.winPct || 0}%`}
+              icon={TrendingUpIcon}
               color="success.main"
             />
           </Grid>
-          <Grid xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <StatCard
-              title="Total Spend"
+              title="Total Spend (2013-2022)"
               value={`₹${Math.round(stats.totalSpent / 100 || 0)}Cr`}
               icon={MonetizationOnIcon}
               color="primary.main"
             />
           </Grid>
-          <Grid xs={12} sm={6} md={3}>
-            <StatCard title="Matches Played" value={stats.totalMatches} />
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <StatCard
+              title="Matches Played"
+              value={stats.totalMatches}
+              icon={SportsCricketIcon}
+              color="info.main"
+            />
           </Grid>
         </Grid>
 
-        {seasons && seasons.length > 0 ? (
+        {filteredSeasons && filteredSeasons.length > 0 ? (
           <>
-            <Grid container spacing={4} sx={{ mb: 4 }}>
-              <Grid xs={12} md={12}>
-                <Typography variant="h6" fontWeight={800} sx={{ mb: 2 }}>
+            <Grid container spacing={4} sx={{ mb: 4 }} justifyContent="center">
+              <Grid size={{ xs: 12 }}>
+                <Typography
+                  variant="h6"
+                  fontWeight={800}
+                  align="center"
+                  sx={{ mb: 2 }}
+                >
                   Auction Spending Over Time
                 </Typography>
                 <Paper
@@ -335,18 +378,43 @@ function FranchiseDashboard() {
                     bgcolor: "background.paper",
                   }}
                 >
-                  <SpendingChart data={seasons} isLoading={loadingSeasons} />
+                  <SpendingChart
+                    data={filteredSeasons}
+                    isLoading={loadingSeasons}
+                  />
                 </Paper>
               </Grid>
             </Grid>
 
-            <Typography variant="h6" fontWeight={800} sx={{ mb: 2 }}>
-              Historical Season Breakdown
-            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                textAlign: "center",
+                mb: 3,
+              }}
+            >
+              <Typography variant="h6" fontWeight={800} align="center">
+                Historical Season Breakdown
+              </Typography>
+              {filteredSeasons && filteredSeasons.length > 0 && (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  align="center"
+                  sx={{ mt: 0.5 }}
+                >
+                  Showing data from IPL{" "}
+                  {filteredSeasons[filteredSeasons.length - 1].season} to IPL{" "}
+                  {filteredSeasons[0].season}
+                </Typography>
+              )}
+            </Box>
             <Box sx={{ overflowX: "auto" }}>
               <DataTable
                 columns={seasonColumns}
-                data={seasons}
+                data={filteredSeasons}
                 isLoading={loadingSeasons}
                 limit={20}
               />
@@ -375,25 +443,28 @@ function FranchiseDashboard() {
           sx={{
             mb: 4,
             display: "flex",
-            flexDirection: { xs: "column", md: "row" },
+            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "center",
+            textAlign: "center",
             gap: 2,
           }}
         >
           <Box>
             <Typography
-              variant="h5"
-              fontWeight={800}
+              variant="h4"
+              fontWeight={900}
+              align="center"
               sx={{ letterSpacing: "-0.01em" }}
             >
               Auction & Squad Details
             </Typography>
             {minAuctionYear && maxAuctionYear && (
               <Typography
-                variant="body2"
+                variant="body1"
                 color="text.secondary"
-                sx={{ mt: 0.5 }}
+                align="center"
+                sx={{ mt: 1, fontSize: "1.1rem" }}
               >
                 We currently track detailed auction data between{" "}
                 {minAuctionYear} and {maxAuctionYear}.
@@ -406,10 +477,14 @@ function FranchiseDashboard() {
               value={selectedSeason}
               label="Select Season"
               onChange={(e) => setSelectedSeason(e.target.value)}
-              sx={{ borderRadius: 2, fontWeight: 700 }}
+              sx={{ borderRadius: 2, fontWeight: 700, textAlign: "center" }}
             >
               {auctionSeasons?.map((year) => (
-                <MenuItem key={year} value={year} sx={{ fontWeight: 600 }}>
+                <MenuItem
+                  key={year}
+                  value={year}
+                  sx={{ fontWeight: 600, justifyContent: "center" }}
+                >
                   IPL {year}
                 </MenuItem>
               ))}
@@ -420,17 +495,21 @@ function FranchiseDashboard() {
         {loadingSquad ? (
           <CardSkeleton />
         ) : squad && squad.length > 0 ? (
-          <Grid container spacing={4}>
-            <Grid xs={12} md={4}>
+          <Grid
+            container
+            spacing={4}
+            justifyContent="center"
+            alignItems="flex-start"
+          >
+            <Grid size={{ xs: 12, md: 4 }}>
               <Paper
                 sx={{
                   p: 3,
                   borderRadius: 3,
-                  height: "100%",
                   border: "1px solid rgba(148, 163, 184, 0.1)",
                 }}
               >
-                <Typography variant="h6" fontWeight={800} mb={3}>
+                <Typography variant="h6" fontWeight={800} align="center" mb={3}>
                   Squad Composition
                 </Typography>
                 <Box sx={{ height: 250 }}>
@@ -488,29 +567,39 @@ function FranchiseDashboard() {
                 </Box>
               </Paper>
             </Grid>
-            <Grid xs={12} md={8}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Paper
                 sx={{
                   p: 3,
                   borderRadius: 3,
-                  height: "100%",
                   border: "1px solid rgba(148, 163, 184, 0.1)",
                 }}
               >
-                <Typography variant="h6" fontWeight={800} mb={3}>
+                <Typography variant="h6" fontWeight={800} align="center" mb={4}>
                   Top Acquisitions ({selectedSeason})
                 </Typography>
                 <Grid container spacing={2}>
                   {squad.slice(0, 3).map((purchase, idx) => (
-                    <Grid xs={12} sm={4} key={purchase.id}>
+                    <Grid size={{ xs: 12 }} key={purchase.id}>
                       <Box
                         sx={{
-                          p: 2,
-                          borderRadius: 2,
+                          p: 3,
+                          borderRadius: 3,
                           bgcolor: "background.default",
-                          border: "1px solid divider",
+                          border: "1px solid",
+                          borderColor: "divider",
                           textAlign: "center",
                           height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          transition: "transform 0.2s, box-shadow 0.2s",
+                          "&:hover": {
+                            transform: "translateY(-4px)",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                            borderColor: "primary.main",
+                          },
                         }}
                       >
                         <Typography
@@ -532,7 +621,7 @@ function FranchiseDashboard() {
                 </Grid>
               </Paper>
             </Grid>
-            <Grid xs={12}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Paper
                 sx={{
                   borderRadius: 3,
@@ -545,18 +634,22 @@ function FranchiseDashboard() {
                     p: 2,
                     borderBottom: "1px solid divider",
                     bgcolor: "rgba(255,255,255,0.02)",
+                    textAlign: "center",
                   }}
                 >
-                  <Typography variant="h6" fontWeight={800}>
+                  <Typography variant="h6" fontWeight={800} align="center">
                     Full Squad List
                   </Typography>
                 </Box>
-                <Box sx={{ overflowX: "auto" }}>
+                <Box
+                  sx={{ overflowX: "auto", overflowY: "auto", maxHeight: 400 }}
+                >
                   <DataTable
                     columns={squadColumns}
                     data={squad}
                     isLoading={loadingSquad}
                     limit={100}
+                    minWidth="auto"
                   />
                 </Box>
               </Paper>

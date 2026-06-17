@@ -9,32 +9,13 @@ import {
   Divider,
   Tooltip,
 } from "@mui/material";
-import TimelineIcon from "@mui/icons-material/Timeline";
 import CastleIcon from "@mui/icons-material/Castle";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import ShieldIcon from "@mui/icons-material/Shield";
 import StarIcon from "@mui/icons-material/Star";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
-import {
-  Radar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-} from "recharts";
 import {
   useFranchiseIntelligence,
   useFranchiseLegends,
@@ -267,60 +248,6 @@ export default function IntelligenceTab({ id, franchise }) {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {intelligence?.rating && (
-        <Box
-          sx={{
-            textAlign: "center",
-            py: 4,
-            mb: 2,
-            background: `radial-gradient(circle at center, ${franchise.color}20 0%, transparent 70%)`,
-          }}
-        >
-          <Typography
-            variant="h2"
-            fontWeight={900}
-            sx={{
-              color: franchise.color,
-              textShadow: "0 4px 20px rgba(0,0,0,0.5)",
-            }}
-          >
-            {intelligence.rating}{" "}
-            <span style={{ fontSize: "1.5rem", color: "#64748b" }}>/ 100</span>
-          </Typography>
-          <Typography variant="h5" fontWeight={800} color="text.primary" mt={1}>
-            {intelligence.classification}
-          </Typography>
-          {intelligence.leagueContext && (
-            <>
-              <Typography
-                variant="body1"
-                color="text.secondary"
-                fontWeight={800}
-                mt={1}
-              >
-                {intelligence.leagueContext.percentile}th Percentile
-              </Typography>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                fontWeight={600}
-                mt={0.5}
-              >
-                Rank #{intelligence.leagueContext.rank} of{" "}
-                {intelligence.leagueContext.totalTeams} Franchises
-              </Typography>
-              <Chip
-                size="small"
-                label={intelligence.leagueContext.comparisonText}
-                color="primary"
-                variant="outlined"
-                sx={{ mt: 1, fontWeight: 700 }}
-              />
-            </>
-          )}
-        </Box>
-      )}
-
       {intelligence?.archetype && (
         <Paper
           sx={{
@@ -328,9 +255,18 @@ export default function IntelligenceTab({ id, franchise }) {
             borderRadius: 4,
             background: `linear-gradient(135deg, ${franchise.color}20 0%, #0f172a 100%)`,
             border: `1px solid ${franchise.color}40`,
+            textAlign: "center",
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 2,
+              mb: 1,
+            }}
+          >
             <ShieldIcon sx={{ color: franchise.color, fontSize: 32 }} />
             <Typography variant="h4" fontWeight={900}>
               Archetype: {intelligence.archetype.name}
@@ -340,28 +276,31 @@ export default function IntelligenceTab({ id, franchise }) {
             variant="body1"
             fontSize="1.1rem"
             color="text.secondary"
-            sx={{ maxWidth: 800 }}
+            sx={{ maxWidth: 800, mx: "auto" }}
           >
             {intelligence.archetype.description}
           </Typography>
           <Divider sx={{ my: 3, borderColor: "rgba(255,255,255,0.1)" }} />
-          <Typography variant="body1" lineHeight={1.8}>
+          <Typography
+            variant="body1"
+            lineHeight={1.8}
+            sx={{ maxWidth: 900, mx: "auto", textAlign: "center" }}
+          >
             {intelligence.narrative}
           </Typography>
         </Paper>
       )}
 
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={6}>
+      <Grid container spacing={4} justifyContent="center">
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper
             sx={{
               p: 4,
               borderRadius: 3,
-              height: "100%",
               bgcolor: "rgba(255,255,255,0.02)",
             }}
           >
-            <Typography variant="h5" fontWeight={900} mb={3}>
+            <Typography variant="h5" fontWeight={900} align="center" mb={10}>
               What Makes Them Unique?
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -380,78 +319,27 @@ export default function IntelligenceTab({ id, franchise }) {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 4, borderRadius: 3, height: "100%" }}>
-            <Typography
-              variant="h5"
-              fontWeight={900}
-              mb={1}
-              display="flex"
-              alignItems="center"
-              gap={1}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                mb: 5,
+              }}
             >
-              <VerifiedIcon color="primary" /> Franchise Identity Radar
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              mb={2}
-              display="block"
-            >
-              Visualizes the core strategic DNA of the organization.
-            </Typography>
-            <Box sx={{ height: 300, width: "100%" }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart
-                  cx="50%"
-                  cy="50%"
-                  outerRadius="70%"
-                  data={intelligence?.radarData || []}
-                >
-                  <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                  <PolarAngleAxis
-                    dataKey="metric"
-                    tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 700 }}
-                  />
-                  <PolarRadiusAxis
-                    angle={30}
-                    domain={[0, 100]}
-                    tick={false}
-                    axisLine={false}
-                  />
-                  <Radar
-                    name="Franchise"
-                    dataKey="score"
-                    stroke={franchise.color}
-                    fill={franchise.color}
-                    fillOpacity={0.4}
-                  />
-                  <RechartsTooltip
-                    contentStyle={{
-                      backgroundColor: "#0f172a",
-                      border: "1px solid #1e293b",
-                    }}
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
+              <Typography
+                variant="h5"
+                fontWeight={900}
+                display="flex"
+                alignItems="center"
+                gap={1}
+              >
+                <EmojiEventsIcon sx={{ color: franchise.color }} /> Era
+                Composition
+              </Typography>
             </Box>
-          </Paper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={5}>
-          <Paper sx={{ p: 4, borderRadius: 3, height: "100%" }}>
-            <Typography
-              variant="h5"
-              fontWeight={900}
-              mb={4}
-              display="flex"
-              alignItems="center"
-              gap={1}
-            >
-              <EmojiEventsIcon sx={{ color: franchise.color }} /> Era Comparison
-            </Typography>
             <Box
               sx={{
                 display: "flex",
@@ -541,90 +429,14 @@ export default function IntelligenceTab({ id, franchise }) {
             </Box>
           </Paper>
         </Grid>
-
-        <Grid item xs={12} md={7}>
-          <Paper
-            sx={{
-              p: 4,
-              borderRadius: 3,
-              height: "100%",
-              bgcolor: "rgba(255,255,255,0.02)",
-            }}
-          >
-            <Typography
-              variant="h5"
-              fontWeight={900}
-              mb={1}
-              display="flex"
-              alignItems="center"
-              gap={1}
-            >
-              <TrendingUpIcon sx={{ color: franchise.color }} /> Franchise
-              Evolution
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              mb={4}
-              display="block"
-            >
-              Historical Strength Index tracing dynasty peaks and rebuild
-              periods.
-            </Typography>
-            <Box sx={{ height: 350, width: "100%" }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={intelligence?.evolutionData || []}
-                  margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="rgba(255,255,255,0.05)"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="year"
-                    stroke="#64748b"
-                    tick={{ fill: "#94a3b8", fontWeight: 700 }}
-                    tickMargin={10}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    domain={[40, 100]}
-                    stroke="#64748b"
-                    tick={{ fill: "#94a3b8", fontWeight: 700 }}
-                    tickMargin={10}
-                    axisLine={false}
-                  />
-                  <RechartsTooltip
-                    contentStyle={{
-                      backgroundColor: "#0f172a",
-                      border: "1px solid #1e293b",
-                      borderRadius: 8,
-                    }}
-                    itemStyle={{ color: "#fff", fontWeight: 800 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="strength"
-                    stroke={franchise.color}
-                    strokeWidth={4}
-                    dot={{ r: 4, fill: "#0f172a", strokeWidth: 2 }}
-                    activeDot={{ r: 8, fill: franchise.color }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </Box>
-          </Paper>
-        </Grid>
       </Grid>
 
-      <Typography variant="h4" fontWeight={900} mt={2}>
+      <Typography variant="h4" fontWeight={900} mt={2} align="center">
         Franchise Mount Rushmore
       </Typography>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} justifyContent="center">
         {legends?.mountRushmore?.map((goat) => (
-          <Grid item xs={12} sm={6} md={3} key={goat.player.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={goat.player.id}>
             <Paper
               sx={{
                 p: 3,
@@ -674,8 +486,8 @@ export default function IntelligenceTab({ id, franchise }) {
         ))}
       </Grid>
 
-      <Grid container spacing={4} sx={{ mt: 1 }}>
-        <Grid item xs={12} md={8}>
+      <Grid container spacing={4} sx={{ mt: 1 }} justifyContent="center">
+        <Grid size={{ xs: 12, md: 7 }}>
           <Paper
             sx={{
               p: 4,
@@ -688,39 +500,13 @@ export default function IntelligenceTab({ id, franchise }) {
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "center",
                 alignItems: "center",
                 mb: 3,
               }}
             >
               <Typography variant="h6" fontWeight={800} color="white">
                 All-Time Greatest XI
-              </Typography>
-              <ConfidenceTooltip
-                confidence={legends?.greatestXI?.confidence}
-                placement="left"
-              />
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                mb: 3,
-                p: 1.5,
-                bgcolor: "rgba(255,255,255,0.03)",
-                borderRadius: 2,
-              }}
-            >
-              <InfoOutlinedIcon
-                sx={{ color: "text.secondary", fontSize: 20 }}
-              />
-              <Typography variant="caption" color="text.secondary">
-                <span style={{ fontWeight: 800 }}>Selection Engine:</span>{" "}
-                Players are selected based on positional Role Probability (e.g.,
-                Opener, Finisher) multiplied by Career Value, ensuring true
-                role-fit over pure statistical aggregates.
               </Typography>
             </Box>
 
@@ -754,154 +540,106 @@ export default function IntelligenceTab({ id, franchise }) {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={4}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 4,
-              height: "100%",
-            }}
-          >
-            <Paper sx={{ p: 4, borderRadius: 3, flexGrow: 1 }}>
-              <Typography variant="h6" fontWeight={800} mb={3}>
-                Career GOAT Rankings
-              </Typography>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                {legends?.goatRankings?.map((goat, i) => (
-                  <Box
-                    key={goat.player.id}
-                    sx={{ display: "flex", alignItems: "center", gap: 2 }}
-                  >
-                    <Typography
-                      variant="body1"
-                      fontWeight={900}
-                      color="text.disabled"
-                      sx={{ width: 16 }}
-                    >
-                      {i + 1}
-                    </Typography>
-                    <Box>
-                      <Typography variant="body2" fontWeight={800}>
-                        {goat.player.name}
-                      </Typography>
-                      <Tooltip
-                        title={`Longevity: ${goat.breakdown?.longevity} | Perf: ${goat.breakdown?.performance} | Peak: ${goat.breakdown?.peak} | Impact: ${goat.breakdown?.impact}`}
-                        placement="top"
-                      >
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ borderBottom: "1px dotted", cursor: "help" }}
-                        >
-                          Score: {Math.round(goat.franchiseScore)} / 100
-                        </Typography>
-                      </Tooltip>
-                    </Box>
-                  </Box>
-                ))}
-              </Box>
-            </Paper>
-
-            <Paper
-              sx={{
-                p: 4,
-                borderRadius: 3,
-                bgcolor: "rgba(255,255,255,0.02)",
-                border: "1px solid rgba(255,255,255,0.05)",
-              }}
-            >
-              <Typography
-                variant="h6"
-                fontWeight={800}
-                mb={3}
-                display="flex"
-                alignItems="center"
-                gap={1}
-              >
-                <CompareArrowsIcon color="primary" /> Team Strength Comparison
-              </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography variant="body1" fontWeight={800}>
-                  Historical XI
-                </Typography>
-                <Typography variant="h4" fontWeight={900} color="primary.main">
-                  94
-                </Typography>
-              </Box>
-              <LinearProgress
-                variant="determinate"
-                value={94}
-                sx={{ height: 6, borderRadius: 3, mb: 3 }}
-              />
-
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography variant="body1" fontWeight={800}>
-                  Current Squad
-                </Typography>
-                <Typography
-                  variant="h4"
-                  fontWeight={900}
-                  color="text.secondary"
+        <Grid size={{ xs: 12, md: 5 }}>
+          <Paper sx={{ p: 4, borderRadius: 3, height: "100%" }}>
+            <Typography variant="h6" fontWeight={800} align="center" mb={5}>
+              Career GOAT Rankings
+            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              {legends?.goatRankings?.map((goat, i) => (
+                <Box
+                  key={goat.player.id}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 1,
+                    p: 2,
+                    borderRadius: 3,
+                    bgcolor: "rgba(255,255,255,0.02)",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    transition: "transform 0.2s, box-shadow 0.2s",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      bgcolor: "rgba(255,255,255,0.05)",
+                      borderColor: "primary.main",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+                    },
+                  }}
                 >
-                  81
-                </Typography>
-              </Box>
-              <LinearProgress
-                variant="determinate"
-                value={81}
-                sx={{
-                  height: 6,
-                  borderRadius: 3,
-                  bgcolor: "action.hover",
-                  "& .MuiLinearProgress-bar": { bgcolor: "text.secondary" },
-                }}
-              />
-
-              <Box
-                sx={{
-                  mt: 3,
-                  p: 2,
-                  bgcolor: "primary.dark",
-                  borderRadius: 2,
-                  textAlign: "center",
-                }}
-              >
-                <Typography variant="body2" fontWeight={800} color="white">
-                  Historical XI Advantage: +13
-                </Typography>
-              </Box>
-            </Paper>
-          </Box>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      bgcolor:
+                        i === 0
+                          ? "#f59e0b"
+                          : i === 1
+                            ? "#94a3b8"
+                            : i === 2
+                              ? "#b45309"
+                              : "rgba(255,255,255,0.1)",
+                      color: i < 3 ? "#000" : "#fff",
+                      fontWeight: 900,
+                      fontSize: "1.2rem",
+                    }}
+                  >
+                    {i + 1}
+                  </Box>
+                  <Box sx={{ textAlign: "center" }}>
+                    <Typography variant="h6" fontWeight={800}>
+                      {goat.player.name}
+                    </Typography>
+                    <Tooltip
+                      title={`Longevity: ${goat.breakdown?.longevity} | Perf: ${goat.breakdown?.performance} | Peak: ${goat.breakdown?.peak} | Impact: ${goat.breakdown?.impact}`}
+                      placement="top"
+                    >
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{
+                          borderBottom: "1px dotted",
+                          cursor: "help",
+                          display: "inline-block",
+                        }}
+                      >
+                        Score: {Math.round(goat.franchiseScore || 0)} / 100
+                      </Typography>
+                    </Tooltip>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+          </Paper>
         </Grid>
       </Grid>
 
-      <Typography
-        variant="h5"
-        fontWeight={900}
-        mt={2}
-        display="flex"
-        alignItems="center"
-        gap={1}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+          mt: 2,
+          mb: 1,
+        }}
       >
-        <MonetizationOnIcon sx={{ color: "#10b981" }} /> Auction Intelligence
-      </Typography>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={6}>
+        <Typography
+          variant="h5"
+          fontWeight={900}
+          display="flex"
+          alignItems="center"
+          gap={1}
+        >
+          <MonetizationOnIcon sx={{ color: "#10b981" }} /> Auction Intelligence
+        </Typography>
+      </Box>
+      <Grid container spacing={4} justifyContent="center">
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper
             sx={{
               p: 4,
@@ -910,17 +648,9 @@ export default function IntelligenceTab({ id, franchise }) {
               bgcolor: "rgba(16, 185, 129, 0.05)",
             }}
           >
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}
-            >
-              <Typography variant="h6" fontWeight={800}>
-                Best Value Signings
-              </Typography>
-              <ConfidenceTooltip
-                confidence={auctions?.confidence}
-                placement="top"
-              />
-            </Box>
+            <Typography variant="h6" fontWeight={800} align="center" mb={3}>
+              Best Value Signings
+            </Typography>
             {auctions?.bestPurchases?.length > 0 ? (
               auctions.bestPurchases.map((p) => (
                 <Box
@@ -946,7 +676,7 @@ export default function IntelligenceTab({ id, franchise }) {
                       <Typography
                         variant="caption"
                         color="text.secondary"
-                        display="block"
+                        sx={{ display: "block" }}
                       >
                         ₹{p.priceInCr} Cr Cost
                       </Typography>
@@ -954,6 +684,7 @@ export default function IntelligenceTab({ id, franchise }) {
                         variant="caption"
                         color="text.disabled"
                         fontWeight={700}
+                        sx={{ display: "block", mt: 0.5 }}
                       >
                         {p.runs} Runs{" "}
                         {p.wickets > 0 && `• ${p.wickets} Wickets`} •{" "}
@@ -993,7 +724,7 @@ export default function IntelligenceTab({ id, franchise }) {
             )}
           </Paper>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper
             sx={{
               p: 4,
@@ -1002,7 +733,7 @@ export default function IntelligenceTab({ id, franchise }) {
               bgcolor: "rgba(239, 68, 68, 0.05)",
             }}
           >
-            <Typography variant="h6" fontWeight={800} mb={3}>
+            <Typography variant="h6" fontWeight={800} align="center" mb={3}>
               Lowest Value Signings
             </Typography>
             {auctions?.worstPurchases?.length > 0 ? (
@@ -1030,7 +761,7 @@ export default function IntelligenceTab({ id, franchise }) {
                       <Typography
                         variant="caption"
                         color="text.secondary"
-                        display="block"
+                        sx={{ display: "block" }}
                       >
                         ₹{p.priceInCr} Cr Cost
                       </Typography>
@@ -1038,6 +769,7 @@ export default function IntelligenceTab({ id, franchise }) {
                         variant="caption"
                         color="text.disabled"
                         fontWeight={700}
+                        sx={{ display: "block", mt: 0.5 }}
                       >
                         {p.runs} Runs{" "}
                         {p.wickets > 0 && `• ${p.wickets} Wickets`} •{" "}
@@ -1079,32 +811,25 @@ export default function IntelligenceTab({ id, franchise }) {
         </Grid>
       </Grid>
 
-      <Typography variant="h5" fontWeight={900} mt={2}>
+      <Typography variant="h5" fontWeight={900} mt={2} align="center">
         Contextual Analytics
       </Typography>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={6}>
+      <Grid container spacing={4} justifyContent="center">
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 4, borderRadius: 3, height: "100%" }}>
-            <Box
+            <Typography
+              variant="h6"
+              fontWeight={800}
               sx={{
                 display: "flex",
-                justifyContent: "space-between",
                 alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
                 mb: 3,
               }}
             >
-              <Typography
-                variant="h6"
-                fontWeight={800}
-                sx={{ display: "flex", alignItems: "center", gap: 1 }}
-              >
-                <ShowChartIcon color="error" /> Greatest Rivalry
-              </Typography>
-              <ConfidenceTooltip
-                confidence={rivalries?.[0]?.confidence}
-                placement="top"
-              />
-            </Box>
+              <ShowChartIcon color="error" /> Greatest Rivalry
+            </Typography>
             {rivalries && rivalries.length > 0 ? (
               <Box>
                 <Box
@@ -1116,14 +841,14 @@ export default function IntelligenceTab({ id, franchise }) {
                     mb: 4,
                   }}
                 >
-                  <Typography variant="h4" fontWeight={900} textAlign="center">
+                  <Typography variant="h4" fontWeight={900} align="center">
                     {franchise.shortName}{" "}
                     <span style={{ color: "#ef4444" }}>VS</span>{" "}
                     {rivalries[0].opponentFullName}
                   </Typography>
                 </Box>
-                <Grid container spacing={2} textAlign="center">
-                  <Grid item xs={4}>
+                <Grid container spacing={2} align="center">
+                  <Grid size={4}>
                     <Typography
                       variant="h4"
                       fontWeight={900}
@@ -1139,7 +864,7 @@ export default function IntelligenceTab({ id, franchise }) {
                       WINS
                     </Typography>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid size={4}>
                     <Typography variant="h4" fontWeight={900}>
                       {rivalries[0].matches}
                     </Typography>
@@ -1151,7 +876,7 @@ export default function IntelligenceTab({ id, franchise }) {
                       MATCHES
                     </Typography>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid size={4}>
                     <Typography
                       variant="h4"
                       fontWeight={900}
@@ -1192,20 +917,28 @@ export default function IntelligenceTab({ id, franchise }) {
             )}
           </Paper>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 4, borderRadius: 3, height: "100%" }}>
-            <Typography
-              variant="h6"
-              fontWeight={800}
-              mb={3}
-              display="flex"
-              alignItems="center"
-              gap={1}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                mb: 3,
+              }}
             >
-              <CastleIcon color="success" /> Home Fortress
-            </Typography>
+              <Typography
+                variant="h6"
+                fontWeight={800}
+                display="flex"
+                alignItems="center"
+                gap={1}
+              >
+                <CastleIcon color="success" /> Home Fortress
+              </Typography>
+            </Box>
             {fortress ? (
-              <Box>
+              <Box align="center">
                 <Typography
                   variant="h6"
                   fontWeight={800}
@@ -1219,6 +952,7 @@ export default function IntelligenceTab({ id, franchise }) {
                   fontWeight={800}
                   color="primary.main"
                   display="block"
+                  align="center"
                   mb={4}
                 >
                   Rank #{fortress.rank} of 10 Franchises
@@ -1227,7 +961,8 @@ export default function IntelligenceTab({ id, franchise }) {
                 <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: "center",
+                    gap: 1,
                     mb: 1,
                   }}
                 >
@@ -1257,7 +992,8 @@ export default function IntelligenceTab({ id, franchise }) {
                 <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: "center",
+                    gap: 1,
                     mb: 1,
                   }}
                 >

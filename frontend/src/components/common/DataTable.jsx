@@ -22,6 +22,7 @@ function DataTable({
   onPageChange,
   onLimitChange,
   onRowClick,
+  minWidth = 650,
 }) {
   if (isLoading) {
     return <TableSkeleton rows={limit || 5} />;
@@ -38,13 +39,13 @@ function DataTable({
         elevation={0}
         sx={{ border: "1px solid", borderColor: "divider" }}
       >
-        <Table sx={{ minWidth: 650 }}>
+        <Table sx={{ minWidth: minWidth }}>
           <TableHead sx={{ bgcolor: "action.hover" }}>
             <TableRow>
               {columns.map((col) => (
                 <TableCell
                   key={col.id}
-                  align={col.align || "left"}
+                  align={col.headerAlign || col.align || "left"}
                   sx={{ fontWeight: 600, color: "text.secondary", py: 2 }}
                 >
                   {col.label}

@@ -51,16 +51,11 @@ export async function getFranchiseIntelligence(id) {
         { metric: "Auction Eff", score: 85 },
         { metric: "Youth Dev", score: 70 },
       ],
-      blueprint: [
-        { trait: "Captaincy Stability", score: 97 },
-        { trait: "Retention Efficiency", score: 94 },
-        { trait: "Playoff Conversion", score: 92 },
-      ],
       uniqueTraits: [
-        "Most retention-focused franchise in IPL history",
-        "Highest playoff qualification rate",
-        "Oldest average title-winning squad",
-        "Strongest home spin advantage at Chepauk",
+        "Most consistent playoff qualification record in IPL history",
+        "Built around long-term retention and leadership stability",
+        "Five-time IPL champions with multiple championship cycles",
+        "Strong spin-centric home advantage at Chepauk",
       ],
       eras: [
         {
@@ -77,8 +72,14 @@ export async function getFranchiseIntelligence(id) {
         },
         {
           start: 2022,
+          end: 2023,
+          name: "Dhoni's Last Dance",
+          core: "Dhoni, Gaikwad, Jadeja, Conway",
+        },
+        {
+          start: 2024,
           end: 2026,
-          name: "Gaikwad Era Begins",
+          name: "Gaikwad Era",
           core: "Gaikwad, Jadeja, Pathirana, Dube",
         },
       ],
@@ -97,34 +98,30 @@ export async function getFranchiseIntelligence(id) {
         { metric: "Auction Eff", score: 92 },
         { metric: "Youth Dev", score: 98 },
       ],
-      blueprint: [
-        { trait: "Scouting Excellence", score: 98 },
-        { trait: "Pace Dominance", score: 95 },
-        { trait: "Auction Aggression", score: 90 },
-      ],
       uniqueTraits: [
-        "Most successful scouting network (Bumrah, Hardik)",
-        "Highest win-rate in IPL Finals",
-        "Built the greatest T20 team ever (2020)",
+        "Most IPL titles in league history",
+        "Produced elite scouting discoveries including Bumrah and Hardik",
+        "Most successful IPL finals record among major franchises",
+        "Built multiple championship-winning cores across eras",
       ],
       eras: [
         {
           start: 2008,
           end: 2012,
-          name: "Finding the Formula",
+          name: "Building the Foundation",
           core: "Tendulkar, Malinga, Pollard",
         },
         {
           start: 2013,
           end: 2020,
-          name: "The Blueprint Era",
+          name: "The Rohit Dynasty",
           core: "Rohit, Bumrah, Hardik, Pollard",
         },
         {
           start: 2021,
           end: 2026,
-          name: "Transition Phase",
-          core: "Bumrah, Surya, Kishan, Hardik",
+          name: "The Transition",
+          core: "Bumrah, Surya, Hardik, Tilak",
         },
       ],
     },
@@ -142,34 +139,30 @@ export async function getFranchiseIntelligence(id) {
         { metric: "Auction Eff", score: 70 },
         { metric: "Youth Dev", score: 60 },
       ],
-      blueprint: [
-        { trait: "Batting Firepower", score: 98 },
-        { trait: "Brand Value", score: 95 },
-        { trait: "Entertainment Value", score: 99 },
-      ],
       uniqueTraits: [
-        "Most 200+ team totals in history",
-        "Highest fan engagement metrics",
-        "Historic reliance on top-heavy batting",
+        "Home of Kohli, Gayle and de Villiers during the IPL's most iconic batting era",
+        "One of the largest fanbases in franchise cricket",
+        "Record holders for the highest IPL team total",
+        "Historically built around superstar batting lineups",
       ],
       eras: [
         {
           start: 2008,
-          end: 2014,
-          name: "Foundation",
-          core: "Kohli, Gayle, de Villiers",
+          end: 2010,
+          name: "Searching for Identity",
+          core: "Dravid, Kallis, Kumble",
         },
         {
-          start: 2015,
-          end: 2020,
-          name: "The Kohli-ABD Show",
-          core: "Kohli, de Villiers, Chahal",
+          start: 2011,
+          end: 2021,
+          name: "The Kohli-ABD Era",
+          core: "Kohli, de Villiers, Gayle, Chahal",
         },
         {
-          start: 2021,
+          start: 2022,
           end: 2026,
-          name: "Championship Breakthrough",
-          core: "Kohli, Patidar, Jacks, Siraj",
+          name: "The New Core",
+          core: "Kohli, Patidar, Siraj, Jacks",
         },
       ],
     },
@@ -187,33 +180,29 @@ export async function getFranchiseIntelligence(id) {
         { metric: "Auction Eff", score: 90 },
         { metric: "Youth Dev", score: 85 },
       ],
-      blueprint: [
-        { trait: "Mystery Spin", score: 95 },
-        { trait: "Matchup Focus", score: 90 },
-        { trait: "Aggressive Starts", score: 88 },
-      ],
       uniqueTraits: [
-        "Pioneered the heavy-spin home strategy at Eden",
-        "Highest reliance on pinch hitters",
-        "Aggressive auction bidding patterns",
+        "Pioneered matchup-based T20 strategy before it became mainstream",
+        "Built championship teams around mystery spin",
+        "One of the most successful franchises since 2011",
+        "Strong record of backing unconventional match-winners",
       ],
       eras: [
         {
           start: 2008,
           end: 2010,
-          name: "Early Struggles",
+          name: "The Struggle Years",
           core: "Ganguly, McCullum",
         },
         {
           start: 2011,
           end: 2017,
-          name: "The Gambhir Glory Years",
+          name: "The Gambhir Dynasty",
           core: "Gambhir, Narine, Russell",
         },
         {
           start: 2018,
           end: 2026,
-          name: "Modern Matchups",
+          name: "The Modern Contenders",
           core: "Russell, Narine, Iyer, Rinku",
         },
       ],
@@ -232,21 +221,17 @@ export async function getFranchiseIntelligence(id) {
         { metric: "Auction Eff", score: 95 },
         { metric: "Youth Dev", score: 92 },
       ],
-      blueprint: [
-        { trait: "Youth Development", score: 95 },
-        { trait: "Budget Efficiency", score: 90 },
-        { trait: "Role Clarity", score: 85 },
-      ],
       uniqueTraits: [
-        "Highest ROI on uncapped player purchases",
-        "First-ever champions (2008)",
-        "Strongest pipeline of domestic talent",
+        "Champions of the inaugural IPL season",
+        "Known for identifying undervalued domestic talent",
+        "Strongest reputation for budget-efficient squad building",
+        "Developed multiple future Indian internationals",
       ],
       eras: [
         {
           start: 2008,
           end: 2013,
-          name: "Warne's Miracles",
+          name: "Warne's Miracle Men",
           core: "Warne, Watson, Rahane",
         },
         {
@@ -258,8 +243,8 @@ export async function getFranchiseIntelligence(id) {
         {
           start: 2022,
           end: 2026,
-          name: "Data-Driven Resurgence",
-          core: "Samson, Buttler, Chahal, Boult",
+          name: "Data-Driven Revival",
+          core: "Samson, Buttler, Chahal, Jaiswal",
         },
       ],
     },
@@ -277,22 +262,18 @@ export async function getFranchiseIntelligence(id) {
         { metric: "Auction Eff", score: 85 },
         { metric: "Youth Dev", score: 75 },
       ],
-      blueprint: [
-        { trait: "Pace Variations", score: 90 },
-        { trait: "Defending Totals", score: 85 },
-        { trait: "Powerplay Dominance", score: 88 },
-      ],
       uniqueTraits: [
-        "Most matches won defending under 150",
-        "Historically elite overseas captaincy",
-        "Explosive top-order transition",
+        "Historically built around elite bowling attacks",
+        "Won numerous low-scoring contests through bowling dominance",
+        "Home to several Orange Cap and Purple Cap winners",
+        "Successfully transitioned from defensive cricket to aggressive batting",
       ],
       eras: [
         {
           start: 2013,
           end: 2015,
-          name: "Finding Identity",
-          core: "Warner, Dhawan, Steyn",
+          name: "Finding an Identity",
+          core: "Dhawan, Steyn, Warner",
         },
         {
           start: 2016,
@@ -302,8 +283,14 @@ export async function getFranchiseIntelligence(id) {
         },
         {
           start: 2021,
+          end: 2023,
+          name: "The Reset",
+          core: "Markram, Bhuvneshwar, Tripathi",
+        },
+        {
+          start: 2024,
           end: 2026,
-          name: "Hyper-Aggression Phase",
+          name: "Hyper-Aggression",
           core: "Cummins, Head, Abhishek, Klaasen",
         },
       ],
@@ -322,34 +309,30 @@ export async function getFranchiseIntelligence(id) {
         { metric: "Auction Eff", score: 75 },
         { metric: "Youth Dev", score: 85 },
       ],
-      blueprint: [
-        { trait: "Indian Core", score: 90 },
-        { trait: "Express Pace", score: 85 },
-        { trait: "Top Order Aggression", score: 80 },
-      ],
       uniqueTraits: [
-        "Strongest young Indian batting core during 2019-21",
-        "Highest variation in team names/identities",
-        "Strong away record",
+        "One of the strongest young Indian cores during 2019-2021",
+        "Transformed from perennial underachievers into contenders",
+        "Consistently invested in emerging Indian talent",
+        "Produced several future national-team stars",
       ],
       eras: [
         {
           start: 2008,
           end: 2012,
-          name: "Daredevils Era",
+          name: "The Daredevils Peak",
           core: "Sehwag, Gambhir, Mishra",
         },
         {
           start: 2013,
           end: 2018,
-          name: "The Rebuild Years",
+          name: "The Lost Years",
           core: "Pant, Iyer, Rabada",
         },
         {
           start: 2019,
           end: 2026,
           name: "The Capitals Core",
-          core: "Pant, Axar, Kuldeep, Fraser-McGurk",
+          core: "Pant, Axar, Kuldeep, Stubbs",
         },
       ],
     },
@@ -367,34 +350,30 @@ export async function getFranchiseIntelligence(id) {
         { metric: "Auction Eff", score: 65 },
         { metric: "Youth Dev", score: 70 },
       ],
-      blueprint: [
-        { trait: "Auction Aggression", score: 95 },
-        { trait: "Entertainment", score: 85 },
-        { trait: "Overseas Reliance", score: 75 },
-      ],
       uniqueTraits: [
-        "Most captaincy changes in history",
-        "Highest average purse spent at mega auctions",
-        "Record chases in league phases",
+        "Most aggressive auction participants across IPL history",
+        "Frequent squad and leadership overhauls",
+        "Known for explosive batting-heavy lineups",
+        "One of the league's most unpredictable franchises",
       ],
       eras: [
         {
           start: 2008,
           end: 2013,
           name: "Early Promise",
-          core: "Marsh, Yuvraj, Miller",
+          core: "Yuvraj, Marsh, Miller",
         },
         {
           start: 2014,
           end: 2014,
-          name: "The 2014 Peak",
+          name: "The Maxwell Peak",
           core: "Maxwell, Miller, Bailey",
         },
         {
           start: 2015,
           end: 2026,
           name: "The Carousel",
-          core: "Rahul, Curran, Arshdeep",
+          core: "Rahul, Arshdeep, Curran, Shreyas",
         },
       ],
     },
@@ -412,22 +391,24 @@ export async function getFranchiseIntelligence(id) {
         { metric: "Auction Eff", score: 90 },
         { metric: "Youth Dev", score: 80 },
       ],
-      blueprint: [
-        { trait: "Run Chasing", score: 98 },
-        { trait: "Role Clarity", score: 95 },
-        { trait: "Death Bowling", score: 90 },
-      ],
       uniqueTraits: [
-        "Champions in debut season",
-        "Highest successful run-chase percentage",
-        "Most clinical lower-middle order",
+        "Won the IPL title in their debut season",
+        "Reached finals in consecutive seasons after joining the league",
+        "Built around role clarity and tactical discipline",
+        "Among the highest win-rate franchises since inception",
       ],
       eras: [
         {
           start: 2022,
-          end: 2026,
-          name: "The Clinical Force",
+          end: 2024,
+          name: "The Hardik Blueprint",
           core: "Hardik, Gill, Rashid, Shami",
+        },
+        {
+          start: 2025,
+          end: 2026,
+          name: "The Gill Era",
+          core: "Gill, Rashid, Sai Sudharsan, Tewatia",
         },
       ],
     },
@@ -445,22 +426,24 @@ export async function getFranchiseIntelligence(id) {
         { metric: "Auction Eff", score: 85 },
         { metric: "Youth Dev", score: 75 },
       ],
-      blueprint: [
-        { trait: "All-Rounder Depth", score: 95 },
-        { trait: "Pace Versatility", score: 85 },
-        { trait: "Top Order Anchors", score: 80 },
-      ],
       uniqueTraits: [
-        "Highest concentration of recognized all-rounders",
-        "Consistent playoff qualifications since inception",
-        "Strong defense of par scores",
+        "Qualified for playoffs in multiple early seasons after inception",
+        "Built around all-rounder depth and batting flexibility",
+        "Strong emphasis on squad balance over star power",
+        "One of the newest franchises with immediate competitiveness",
       ],
       eras: [
         {
           start: 2022,
-          end: 2026,
-          name: "The Grinders",
+          end: 2024,
+          name: "The Rahul Years",
           core: "Rahul, Stoinis, Pooran, Bishnoi",
+        },
+        {
+          start: 2025,
+          end: 2026,
+          name: "The Pant Era",
+          core: "Pant, Pooran, Bishnoi, Marsh",
         },
       ],
     },
@@ -480,11 +463,6 @@ export async function getFranchiseIntelligence(id) {
       { metric: "Auction Eff", score: 75 },
       { metric: "Youth Dev", score: 70 },
     ],
-    blueprint: [
-      { trait: "Batting Firepower", score: 85 },
-      { trait: "Entertainment Value", score: 92 },
-      { trait: "Auction Volatility", score: 88 },
-    ],
     uniqueTraits: ["High entertainment value", "Blockbuster auction signings"],
   };
 
@@ -499,14 +477,14 @@ export async function getFranchiseIntelligence(id) {
 
   const seasonsMap = new Map();
   matches.forEach((m) => {
-    if (!seasonsMap.has(m.season))
-      {seasonsMap.set(m.season, { matches: 0, wins: 0 });}
+    if (!seasonsMap.has(m.season)) {
+      seasonsMap.set(m.season, { matches: 0, wins: 0 });
+    }
     const s = seasonsMap.get(m.season);
     s.matches += 1;
     if (m.winner === franchise.shortName) s.wins += 1;
   });
 
-  const evolutionData = [];
   let totalMatches = 0;
   let totalWins = 0;
 
@@ -516,9 +494,6 @@ export async function getFranchiseIntelligence(id) {
       const s = seasonsMap.get(year);
       totalMatches += s.matches;
       totalWins += s.wins;
-      let strength = s.matches > 0 ? (s.wins / s.matches) * 100 : 50;
-      if (titleYears.includes(year)) strength = Math.min(strength + 20, 100);
-      evolutionData.push({ year, strength: Math.round(strength) });
     });
 
   const overallWinRate =
@@ -644,58 +619,14 @@ export async function getFranchiseIntelligence(id) {
       });
     }
   }
-
-  const getGrade = (val, thresholds) => {
-    if (val >= thresholds.aPlus) return { grade: "A+", percentile: 99 };
-    if (val >= thresholds.a) return { grade: "A", percentile: 90 };
-    if (val >= thresholds.b) return { grade: "B", percentile: 75 };
-    if (val >= thresholds.c) return { grade: "C", percentile: 50 };
-    return { grade: "D", percentile: 25 };
-  };
-
-  const scorecard = {
-    titles: getGrade(actualTitles, { aPlus: 4, a: 2, b: 1, c: 0 }),
-    consistency: getGrade(overallWinRate, { aPlus: 55, a: 52, b: 49, c: 45 }),
-    playoffSuccess: getGrade(context.radarData[2].score, {
-      aPlus: 90,
-      a: 80,
-      b: 70,
-      c: 50,
-    }),
-    auctionEfficiency: getGrade(context.radarData[3].score, {
-      aPlus: 90,
-      a: 80,
-      b: 70,
-      c: 60,
-    }),
-    youthDevelopment: getGrade(context.radarData[4].score, {
-      aPlus: 90,
-      a: 80,
-      b: 70,
-      c: 60,
-    }),
-    overallGrade:
-      overallWinRate > 55
-        ? "A+"
-        : overallWinRate > 51
-          ? "A"
-          : overallWinRate > 48
-            ? "B"
-            : "C",
-  };
-
   return {
     rating: ratingValue,
     classification,
     leagueContext,
     archetype: context.archetype,
     narrative,
-    radarData: context.radarData,
-    blueprint: context.blueprint,
     uniqueTraits: context.uniqueTraits,
-    scorecard,
     eraAnalysis,
-    evolutionData,
   };
 }
 
@@ -741,8 +672,9 @@ export async function getFranchiseLegends(id) {
     p.playerOfMatch += stat.playerOfMatch || 0;
     p.fifties += stat.fifties || 0;
     p.hundreds += stat.hundreds || 0;
-    if (stat.strikeRate > 0)
-      {p._estimatedBalls += stat.totalRuns / (stat.strikeRate / 100);}
+    if (stat.strikeRate > 0) {
+      p._estimatedBalls += stat.totalRuns / (stat.strikeRate / 100);
+    }
   });
 
   let aggregated = Array.from(playerMap.values());
@@ -821,15 +753,15 @@ export async function getFranchiseLegends(id) {
     else whySelected.push("Elite positional role fit");
 
     whySelected.push("Peak-adjusted franchise value");
-    if (p.totalRuns >= 2000)
-      {whySelected.push(
+    if (p.totalRuns >= 2000) {
+      whySelected.push(
         `${Math.floor(p.totalRuns / 1000) * 1000}+ franchise runs`,
-      );}
-    else if (p.totalWickets >= 50)
-      {whySelected.push(
+      );
+    } else if (p.totalWickets >= 50) {
+      whySelected.push(
         `${Math.floor(p.totalWickets / 50) * 50}+ franchise wickets`,
-      );}
-    else whySelected.push("Exceptional conversion stability");
+      );
+    } else whySelected.push("Exceptional conversion stability");
 
     return {
       ...p,
@@ -852,11 +784,11 @@ export async function getFranchiseLegends(id) {
     let achievement = "";
     if (i === 0) achievement = `Architect of the ${franchise.shortName} Legacy`;
     else if (i === 1) achievement = "Highest Franchise Impact Score";
-    else if (p.playstyle === "All-Rounder")
-      {achievement = "Greatest All-Round Franchise Asset";}
-    else if (p.playstyle === "Bowler")
-      {achievement = "Apex Franchise Strike Bowler";}
-    else achievement = "Elite Championship Match Winner";
+    else if (p.playstyle === "All-Rounder") {
+      achievement = "Greatest All-Round Franchise Asset";
+    } else if (p.playstyle === "Bowler") {
+      achievement = "Apex Franchise Strike Bowler";
+    } else achievement = "Elite Championship Match Winner";
 
     const titleText =
       history.actualTitles > 0
@@ -1068,8 +1000,9 @@ export async function getAuctionIntelligence(id) {
 
   const statsMap = new Map();
   playerStats.forEach((s) => {
-    if (!statsMap.has(s.playerId))
-      {statsMap.set(s.playerId, { matches: 0, runs: 0, wickets: 0, perf: 0 });}
+    if (!statsMap.has(s.playerId)) {
+      statsMap.set(s.playerId, { matches: 0, runs: 0, wickets: 0, perf: 0 });
+    }
     const p = statsMap.get(s.playerId);
     p.matches += s.matches;
     p.runs += s.totalRuns;
