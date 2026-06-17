@@ -1,26 +1,28 @@
-import { PrismaClient } from '@prisma/client';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { parseAuctionCsv } from './utils/parseAuctionCsv.js';
-import Logger from './utils/logger.js';
+import { PrismaClient } from "@prisma/client";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { parseAuctionCsv } from "./utils/parseAuctionCsv.js";
+import Logger from "./utils/logger.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const prisma = new PrismaClient();
-const log = new Logger('02-auctions');
+const log = new Logger("02-auctions");
 
-const RAW_DIR = path.resolve(__dirname, '../raw/auctions');
+const RAW_DIR = path.resolve(__dirname, "../raw/auctions");
 
 async function main() {
   if (!fs.existsSync(RAW_DIR)) {
     log.error(`Directory not found: ${RAW_DIR}`);
-    log.info('Please download auction CSV files from Kaggle and place them in data/raw/auctions/');
+    log.info(
+      "Please download auction CSV files from Kaggle and place them in data/raw/auctions/",
+    );
     process.exit(1);
   }
 
-  const csvFiles = fs.readdirSync(RAW_DIR).filter((f) => f.endsWith('.csv'));
+  const csvFiles = fs.readdirSync(RAW_DIR).filter((f) => f.endsWith(".csv"));
   if (csvFiles.length === 0) {
-    log.error('No CSV files found in data/raw/auctions/');
+    log.error("No CSV files found in data/raw/auctions/");
     process.exit(1);
   }
 
@@ -56,7 +58,7 @@ async function main() {
           role: entry.role,
           isCapped: true,
         });
-        playerMap[entry.playerName.toLowerCase()] = 'pending';
+        playerMap[entry.playerName.toLowerCase()] = "pending";
       }
     }
 
@@ -75,7 +77,7 @@ async function main() {
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i];
       const playerId = playerMap[entry.playerName.toLowerCase()];
-      if (!playerId || playerId === 'pending') continue;
+      if (!playerId || playerId === "pending") continue;
 
       const franchiseId = entry.team ? franchiseMap[entry.team] || null : null;
 
@@ -84,6 +86,7 @@ async function main() {
           season: entry.season,
           playerId: playerId,
           franchiseId,
+          role: entry.role,
           basePrice: entry.basePrice,
           soldPrice: entry.soldPrice,
           status: entry.status,
@@ -101,16 +104,18 @@ async function main() {
       totalPlayers += Object.keys(playerMap).length;
     }
 
-    log.progress(entries.length, entries.length, 'entries');
+    log.progress(entries.length, entries.length, "entries");
   }
 
-  log.success(`Imported ${totalEntries} auction entries for ${totalPlayers} players`);
+  log.success(
+    `Imported ${totalEntries} auction entries for ${totalPlayers} players`,
+  );
   log.done();
 }
 
 main()
   .catch((e) => {
-    log.error('Failed', e);
+    log.error("Failed", e);
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());

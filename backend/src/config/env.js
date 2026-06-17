@@ -1,9 +1,9 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
 const env = {
-  nodeEnv: process.env.NODE_ENV || 'development',
+  nodeEnv: process.env.NODE_ENV || "development",
   port: parseInt(process.env.PORT, 10) || 5000,
   host: process.env.HOST,
   appUrl: process.env.APP_URL,
@@ -20,10 +20,10 @@ const env = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN,
 
   get isDev() {
-    return this.nodeEnv === 'development';
+    return this.nodeEnv === "development";
   },
   get isProd() {
-    return this.nodeEnv === 'production';
+    return this.nodeEnv === "production";
   },
 };
 

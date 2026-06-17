@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client';
-import Logger from './utils/logger.js';
+import { PrismaClient } from "@prisma/client";
+import Logger from "./utils/logger.js";
 
 const prisma = new PrismaClient();
-const log = new Logger('06-roi-scores');
+const log = new Logger("06-roi-scores");
 
 function computePerformanceScore(stats) {
   let score = 0;
@@ -30,9 +30,9 @@ function computePerformanceScore(stats) {
 }
 
 async function main() {
-  log.info('Computing ROI scores...');
+  log.info("Computing ROI scores...");
 
-  log.info('Step 1: Player performance scores...');
+  log.info("Step 1: Player performance scores...");
 
   const allSeasonStats = await prisma.playerSeasonStats.findMany();
   log.info(`  Processing ${allSeasonStats.length} player-season records`);
@@ -53,11 +53,11 @@ async function main() {
     log.progress(
       Math.min(i + BATCH_SIZE, allSeasonStats.length),
       allSeasonStats.length,
-      'player scores batched'
+      "player scores batched",
     );
   }
 
-  log.info('Step 2: Franchise ROI scores...');
+  log.info("Step 2: Franchise ROI scores...");
 
   const franchiseStats = await prisma.franchiseSeasonStats.findMany({
     include: { franchise: true },
@@ -68,18 +68,25 @@ async function main() {
 
     const spentInCrores = fs.totalSpent / 100;
     const spendEfficiency =
-      spentInCrores > 0 ? Math.round((fs.matchesWon / spentInCrores) * 100) / 100 : 0;
+      spentInCrores > 0
+        ? Math.round((fs.matchesWon / spentInCrores) * 100) / 100
+        : 0;
 
-    const winPct = fs.matchesPlayed > 0 ? (fs.matchesWon / fs.matchesPlayed) * 100 : 0;
+    const winPct =
+      fs.matchesPlayed > 0 ? (fs.matchesWon / fs.matchesPlayed) * 100 : 0;
     const titleBonus = fs.isChampion ? 100 : 0;
 
     const normalizedSpendEff = Math.min(spendEfficiency * 10, 100);
 
     const totalPlayers = fs.playersBought + fs.playersRetained;
-    const retentionPct = totalPlayers > 0 ? (fs.playersRetained / totalPlayers) * 100 : 50;
+    const retentionPct =
+      totalPlayers > 0 ? (fs.playersRetained / totalPlayers) * 100 : 50;
 
     const roiScore = Math.round(
-      winPct * 0.4 + titleBonus * 0.2 + normalizedSpendEff * 0.2 + retentionPct * 0.2
+      winPct * 0.4 +
+        titleBonus * 0.2 +
+        normalizedSpendEff * 0.2 +
+        retentionPct * 0.2,
     );
 
     await prisma.franchiseSeasonStats.update({
@@ -88,17 +95,17 @@ async function main() {
     });
 
     if ((i + 1) % 20 === 0 || i === franchiseStats.length - 1) {
-      log.progress(i + 1, franchiseStats.length, 'franchise scores');
+      log.progress(i + 1, franchiseStats.length, "franchise scores");
     }
   }
 
-  log.success('ROI scores computed successfully');
+  log.success("ROI scores computed successfully");
   log.done();
 }
 
 main()
   .catch((e) => {
-    log.error('Failed', e);
+    log.error("Failed", e);
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());

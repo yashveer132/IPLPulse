@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { rankingApi } from '../api/index.js';
+import { useQuery } from "@tanstack/react-query";
+import { rankingApi } from "../api/index.js";
 
 export const useGreatestPurchases = (params, options = {}) => {
   return useQuery({
-    queryKey: ['greatestPurchases', params],
+    queryKey: ["greatestPurchases", params],
     queryFn: () => rankingApi.getGreatestPurchases(params),
     keepPreviousData: true,
     ...options,
@@ -12,7 +12,7 @@ export const useGreatestPurchases = (params, options = {}) => {
 
 export const useBiggestBargains = (params, options = {}) => {
   return useQuery({
-    queryKey: ['biggestBargains', params],
+    queryKey: ["biggestBargains", params],
     queryFn: () => rankingApi.getBiggestBargains(params),
     keepPreviousData: true,
     ...options,
@@ -21,7 +21,7 @@ export const useBiggestBargains = (params, options = {}) => {
 
 export const useBiggestDisasters = (params, options = {}) => {
   return useQuery({
-    queryKey: ['biggestDisasters', params],
+    queryKey: ["biggestDisasters", params],
     queryFn: () => rankingApi.getBiggestDisasters(params),
     keepPreviousData: true,
     ...options,
@@ -30,7 +30,7 @@ export const useBiggestDisasters = (params, options = {}) => {
 
 export const useFranchiseAuctionIq = (params, options = {}) => {
   return useQuery({
-    queryKey: ['franchiseAuctionIq', params],
+    queryKey: ["franchiseAuctionIq", params],
     queryFn: () => rankingApi.getFranchiseAuctionIq(params),
     ...options,
   });

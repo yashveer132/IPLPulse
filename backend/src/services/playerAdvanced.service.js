@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import { cosineSimilarity } from '../utils/math.js';
+import { PrismaClient } from "@prisma/client";
+import { cosineSimilarity } from "../utils/math.js";
 const prisma = new PrismaClient();
 
 const globalCache = {
@@ -11,13 +11,18 @@ const globalCache = {
 const CACHE_TTL = 1000 * 60 * 60;
 
 const getCachedAggregates = async () => {
-  if (globalCache.allSeasons && Date.now() - globalCache.lastFetched < CACHE_TTL) {
+  if (
+    globalCache.allSeasons &&
+    Date.now() - globalCache.lastFetched < CACHE_TTL
+  ) {
     return globalCache;
   }
   const [allSeasons, allStats, allCrazyStats] = await Promise.all([
-    prisma.playerSeasonStats.findMany({ include: { player: { select: { role: true } } } }),
+    prisma.playerSeasonStats.findMany({
+      include: { player: { select: { role: true } } },
+    }),
     prisma.playerSeasonStats.groupBy({
-      by: ['playerId'],
+      by: ["playerId"],
       _sum: {
         matches: true,
         innings: true,
@@ -49,7 +54,7 @@ const getCachedAggregates = async () => {
 export const getCareerTrajectory = async (playerId) => {
   const seasons = await prisma.playerSeasonStats.findMany({
     where: { playerId },
-    orderBy: { season: 'asc' },
+    orderBy: { season: "asc" },
     include: {
       player: {
         select: { name: true, role: true },
@@ -68,7 +73,6 @@ export const getCareerTrajectory = async (playerId) => {
       peakSeason = s;
     }
   });
-
 
   let bestWindow = { start: null, end: null, avgScore: -1 };
 
@@ -89,37 +93,39 @@ export const getCareerTrajectory = async (playerId) => {
       }
     }
   } else if (seasons.length > 0 && bestWindow.start === null) {
-
     bestWindow = {
       start: seasons[0].season,
       end: seasons[seasons.length - 1].season,
-      avgScore: seasons.reduce((sum, s) => sum + s.performanceScore, 0) / seasons.length,
+      avgScore:
+        seasons.reduce((sum, s) => sum + s.performanceScore, 0) /
+        seasons.length,
     };
   }
 
-
-  let trajectory = 'Stable';
+  let trajectory = "Stable";
   if (seasons.length >= 2) {
     const latest = seasons[seasons.length - 1].performanceScore;
     const previous = seasons[seasons.length - 2].performanceScore;
     const diff = latest - previous;
 
-    if (diff > 15) trajectory = 'Improving significantly';
-    else if (diff > 5) trajectory = 'Trending upwards';
-    else if (diff < -15) trajectory = 'Declining significantly';
-    else if (diff < -5) trajectory = 'Trending downwards';
+    if (diff > 15) trajectory = "Improving significantly";
+    else if (diff > 5) trajectory = "Trending upwards";
+    else if (diff < -15) trajectory = "Declining significantly";
+    else if (diff < -5) trajectory = "Trending downwards";
   }
-
 
   const eras = [];
   if (seasons.length > 0 && bestWindow.start) {
     let currentEraSeasons = [];
-    let currentEraName = 'Breakthrough';
+    let currentEraName = "Breakthrough";
 
     for (let i = 0; i < seasons.length; i++) {
       const s = seasons[i];
       if (s.season < bestWindow.start) {
-        if (currentEraName !== 'Breakthrough' && currentEraName !== 'Ascension') {
+        if (
+          currentEraName !== "Breakthrough" &&
+          currentEraName !== "Ascension"
+        ) {
           eras.push({
             name: currentEraName,
             start: currentEraSeasons[0].season,
@@ -127,40 +133,45 @@ export const getCareerTrajectory = async (playerId) => {
           });
           currentEraSeasons = [];
         }
-        currentEraName = s.season === seasons[0].season ? 'Breakthrough' : 'Ascension';
+        currentEraName =
+          s.season === seasons[0].season ? "Breakthrough" : "Ascension";
         currentEraSeasons.push(s);
       } else if (s.season >= bestWindow.start && s.season <= bestWindow.end) {
-        if (currentEraName !== 'Prime') {
+        if (currentEraName !== "Prime") {
           if (currentEraSeasons.length > 0)
-            eras.push({
+            {eras.push({
               name: currentEraName,
               start: currentEraSeasons[0].season,
               end: currentEraSeasons[currentEraSeasons.length - 1].season,
-            });
+            });}
           currentEraSeasons = [];
         }
-        currentEraName = 'Prime';
+        currentEraName = "Prime";
         currentEraSeasons.push(s);
       } else {
-        if (currentEraName !== 'Veteran Elite' && currentEraName !== 'Late Career') {
+        if (
+          currentEraName !== "Veteran Elite" &&
+          currentEraName !== "Late Career"
+        ) {
           if (currentEraSeasons.length > 0)
-            eras.push({
+            {eras.push({
               name: currentEraName,
               start: currentEraSeasons[0].season,
               end: currentEraSeasons[currentEraSeasons.length - 1].season,
-            });
+            });}
           currentEraSeasons = [];
         }
-        currentEraName = s.performanceScore > 40 ? 'Veteran Elite' : 'Late Career';
+        currentEraName =
+          s.performanceScore > 40 ? "Veteran Elite" : "Late Career";
         currentEraSeasons.push(s);
       }
     }
     if (currentEraSeasons.length > 0)
-      eras.push({
+      {eras.push({
         name: currentEraName,
         start: currentEraSeasons[0].season,
         end: currentEraSeasons[currentEraSeasons.length - 1].season,
-      });
+      });}
   }
 
   return {
@@ -196,24 +207,28 @@ export const getHistoricalRivalries = async (playerId) => {
   const asBatter = await prisma.headToHeadStat.findMany({
     where: { batterId: playerId },
     include: { bowler: { select: { name: true, role: true } } },
-    orderBy: { ballsFaced: 'desc' },
+    orderBy: { ballsFaced: "desc" },
     take: 50,
   });
 
   const asBowler = await prisma.headToHeadStat.findMany({
     where: { bowlerId: playerId },
     include: { batter: { select: { name: true, role: true } } },
-    orderBy: { ballsFaced: 'desc' },
+    orderBy: { ballsFaced: "desc" },
     take: 50,
   });
 
   const enrichMatchup = (m) => {
     const isBatter = !!m.bowler;
     const opponent = isBatter ? m.bowler.name : m.batter.name;
-    const average = m.dismissals > 0 ? (m.runsScored / m.dismissals).toFixed(1) : '∞';
-    const bpd = m.dismissals > 0 ? (m.ballsFaced / m.dismissals).toFixed(1) : '∞';
+    const average =
+      m.dismissals > 0 ? (m.runsScored / m.dismissals).toFixed(1) : "∞";
+    const bpd =
+      m.dismissals > 0 ? (m.ballsFaced / m.dismissals).toFixed(1) : "∞";
     const intensity = Math.round(
-      m.dismissals * 25 + (m.runsScored / Math.max(1, m.ballsFaced)) * 20 + m.ballsFaced * 0.5
+      m.dismissals * 25 +
+        (m.runsScored / Math.max(1, m.ballsFaced)) * 20 +
+        m.ballsFaced * 0.5,
     );
     return {
       opponent,
@@ -227,15 +242,16 @@ export const getHistoricalRivalries = async (playerId) => {
     };
   };
 
-
   const batterMatchups = asBatter
     .filter((m) => m.ballsFaced > 15)
     .map(enrichMatchup)
     .sort((a, b) => b.intensity - a.intensity);
 
   const batterNemesis = batterMatchups.length > 0 ? batterMatchups[0] : null;
-  const batterBunny = batterMatchups.length > 0 ? batterMatchups[batterMatchups.length - 1] : null;
-
+  const batterBunny =
+    batterMatchups.length > 0
+      ? batterMatchups[batterMatchups.length - 1]
+      : null;
 
   const bowlerMatchups = asBowler
     .filter((m) => m.ballsFaced > 15)
@@ -244,7 +260,9 @@ export const getHistoricalRivalries = async (playerId) => {
 
   const bowlerBunny = bowlerMatchups.length > 0 ? bowlerMatchups[0] : null;
   const bowlerNemesis =
-    bowlerMatchups.length > 0 ? bowlerMatchups[bowlerMatchups.length - 1] : null;
+    bowlerMatchups.length > 0
+      ? bowlerMatchups[bowlerMatchups.length - 1]
+      : null;
 
   return {
     topBattlesAsBatter: asBatter.slice(0, 10).map(enrichMatchup),
@@ -267,16 +285,14 @@ export const getPlayerDNA = async (playerId) => {
   let totalFours = 0;
   let totalSixes = 0;
 
-
   let batFirstRuns = 0,
     batFirstBalls = 0;
   let chaseRuns = 0,
     chaseBalls = 0;
-  let homeRuns = 0,
+  const homeRuns = 0,
     awayRuns = 0;
 
   matchStats.forEach((stat) => {
-
     totalRuns += stat.runsScored;
     totalBalls += stat.ballsFaced;
     totalFours += stat.fours;
@@ -285,14 +301,15 @@ export const getPlayerDNA = async (playerId) => {
     if (stat.match) {
       if (!stat.match.winner) return;
 
-
       let teamBattedFirst = stat.match.team1;
       if (stat.match.tossWinner && stat.match.tossDecision) {
-        if (stat.match.tossDecision === 'bat') {
+        if (stat.match.tossDecision === "bat") {
           teamBattedFirst = stat.match.tossWinner;
         } else {
           teamBattedFirst =
-            stat.match.tossWinner === stat.match.team1 ? stat.match.team2 : stat.match.team1;
+            stat.match.tossWinner === stat.match.team1
+              ? stat.match.team2
+              : stat.match.team1;
         }
       }
 
@@ -313,14 +330,19 @@ export const getPlayerDNA = async (playerId) => {
   const boundaryPct = totalRuns > 0 ? (boundaryRuns / totalRuns) * 100 : 0;
   const runningPct = totalRuns > 0 ? (runningRuns / totalRuns) * 100 : 0;
 
-  let playstyle = 'Anchor';
-  if (boundaryPct >= 65) playstyle = 'Pure Aggressor';
-  else if (boundaryPct >= 55) playstyle = 'Anchor + Aggressor';
-  else if (boundaryPct >= 45) playstyle = 'Accumulator';
+  let playstyle = "Anchor";
+  if (boundaryPct >= 65) playstyle = "Pure Aggressor";
+  else if (boundaryPct >= 55) playstyle = "Anchor + Aggressor";
+  else if (boundaryPct >= 45) playstyle = "Accumulator";
 
-
-  const powerplayImpact = Math.min(10, (totalFours / Math.max(1, totalRuns)) * 50 + 5).toFixed(1);
-  const deathImpact = Math.min(10, (totalSixes / Math.max(1, totalRuns)) * 80 + 4).toFixed(1);
+  const powerplayImpact = Math.min(
+    10,
+    (totalFours / Math.max(1, totalRuns)) * 50 + 5,
+  ).toFixed(1);
+  const deathImpact = Math.min(
+    10,
+    (totalSixes / Math.max(1, totalRuns)) * 80 + 4,
+  ).toFixed(1);
   const middleImpact = Math.min(10, runningPct / 10).toFixed(1);
 
   return {
@@ -355,7 +377,6 @@ export const getVenueAndOpposition = async (playerId) => {
   const MIN_MATCHES = 8;
   const validVenues = venues.filter((v) => v.matchesPlayed >= MIN_MATCHES);
 
-
   const venueRankings = validVenues
     .map((v) => {
       let score = 0;
@@ -374,8 +395,8 @@ export const getVenueAndOpposition = async (playerId) => {
     .sort((a, b) => b.score - a.score);
 
   const bestVenue = venueRankings.length > 0 ? venueRankings[0] : null;
-  const worstVenue = venueRankings.length > 1 ? venueRankings[venueRankings.length - 1] : null;
-
+  const worstVenue =
+    venueRankings.length > 1 ? venueRankings[venueRankings.length - 1] : null;
 
   const matchStats = await prisma.playerMatchStats.findMany({
     where: { playerId },
@@ -385,7 +406,8 @@ export const getVenueAndOpposition = async (playerId) => {
   const opponents = {};
   matchStats.forEach((stat) => {
     if (stat.match) {
-      const opp = stat.team === stat.match.team1 ? stat.match.team2 : stat.match.team1;
+      const opp =
+        stat.team === stat.match.team1 ? stat.match.team2 : stat.match.team1;
       if (!opponents[opp]) opponents[opp] = { runs: 0, wkts: 0, matches: 0 };
       opponents[opp].matches++;
       opponents[opp].runs += stat.runsScored;
@@ -407,7 +429,8 @@ export const getVenueAndOpposition = async (playerId) => {
     worstVenue,
     venueRankings: venueRankings.slice(0, 10),
     favoriteOpposition: oppArray.length > 0 ? oppArray[0] : null,
-    nemesisOpposition: oppArray.length > 1 ? oppArray[oppArray.length - 1] : null,
+    nemesisOpposition:
+      oppArray.length > 1 ? oppArray[oppArray.length - 1] : null,
   };
 };
 
@@ -433,13 +456,11 @@ export const getClutchAnalytics = async (playerId) => {
   matchStats.forEach((stat) => {
     if (!stat.match) return;
 
-
     if (stat.match.matchNumber === null) {
       playoffMatches++;
       playoffRuns += stat.runsScored;
       playoffWkts += stat.wickets;
     }
-
 
     if (stat.match.winner === stat.team) {
       winMatches++;
@@ -451,10 +472,9 @@ export const getClutchAnalytics = async (playerId) => {
       lossWkts += stat.wickets;
     }
 
-
     const isClose =
-      (stat.match.winType === 'runs' && stat.match.winMargin <= 10) ||
-      (stat.match.winType === 'wickets' && stat.match.winMargin <= 2);
+      (stat.match.winType === "runs" && stat.match.winMargin <= 10) ||
+      (stat.match.winType === "wickets" && stat.match.winMargin <= 2);
 
     if (isClose) {
       closeGameMatches++;
@@ -470,10 +490,18 @@ export const getClutchAnalytics = async (playerId) => {
 
   return {
     clutchScore: Math.min(100, clutchScore),
-    playoffs: { matches: playoffMatches, runs: playoffRuns, wickets: playoffWkts },
+    playoffs: {
+      matches: playoffMatches,
+      runs: playoffRuns,
+      wickets: playoffWkts,
+    },
     wins: { matches: winMatches, runs: winRuns, wickets: winWkts },
     losses: { matches: lossMatches, runs: lossRuns, wickets: lossWkts },
-    closeGames: { matches: closeGameMatches, runs: closeGameRuns, wickets: closeGameWkts },
+    closeGames: {
+      matches: closeGameMatches,
+      runs: closeGameRuns,
+      wickets: closeGameWkts,
+    },
   };
 };
 
@@ -484,44 +512,46 @@ export const getSimilarPlayers = async (playerId) => {
 
   if (!targetPlayer) return null;
 
-
   const { allStats, allCrazyStats } = await getCachedAggregates();
   const targetStats = allStats.find((s) => s.playerId === playerId);
   if (!targetStats) return null;
-
 
   if ((targetStats._sum.matches || 0) < 30) {
     return [
       {
         similarPlayers: [],
-        confidence: 'LOW',
-        reason: 'Insufficient career sample',
+        confidence: "LOW",
+        reason: "Insufficient career sample",
       },
     ];
   }
 
-
-  const isBowler = (targetStats._sum.totalRuns || 0) <= (targetStats._sum.totalWickets || 0) * 20;
-
+  const isBowler =
+    (targetStats._sum.totalRuns || 0) <=
+    (targetStats._sum.totalWickets || 0) * 20;
 
   const playersData = allStats
     .filter((s) => s._sum.matches >= 30)
     .map((s) => {
       let vector = [];
       const crazy = allCrazyStats.find((c) => c.playerId === s.playerId) || {};
-      const sIsBowler = (s._sum.totalRuns || 0) <= (s._sum.totalWickets || 0) * 20;
-
+      const sIsBowler =
+        (s._sum.totalRuns || 0) <= (s._sum.totalWickets || 0) * 20;
 
       if (isBowler !== sIsBowler) return null;
 
       if (!isBowler) {
-
         const rpi = s._sum.innings > 0 ? s._sum.totalRuns / s._sum.innings : 0;
         const boundPct =
-          s._sum.totalRuns > 0 ? (s._sum.fours * 4 + s._sum.sixes * 6) / s._sum.totalRuns : 0;
-        const sixPerInn = s._sum.innings > 0 ? s._sum.sixes / s._sum.innings : 0;
+          s._sum.totalRuns > 0
+            ? (s._sum.fours * 4 + s._sum.sixes * 6) / s._sum.totalRuns
+            : 0;
+        const sixPerInn =
+          s._sum.innings > 0 ? s._sum.sixes / s._sum.innings : 0;
         const fiftyFreq =
-          s._sum.innings > 0 ? (s._sum.fifties + s._sum.hundreds) / s._sum.innings : 0;
+          s._sum.innings > 0
+            ? (s._sum.fifties + s._sum.hundreds) / s._sum.innings
+            : 0;
         const deathSR =
           crazy.deathOversBallsFaced > 0
             ? (crazy.deathOversRunsScored / crazy.deathOversBallsFaced) * 100
@@ -539,12 +569,16 @@ export const getSimilarPlayers = async (playerId) => {
           s._sum.matches || 0,
         ];
       } else {
-
-        const wpm = s._sum.matches > 0 ? s._sum.totalWickets / s._sum.matches : 0;
+        const wpm =
+          s._sum.matches > 0 ? s._sum.totalWickets / s._sum.matches : 0;
         const deathWktPct =
-          s._sum.totalWickets > 0 ? (crazy.deathOversWickets || 0) / s._sum.totalWickets : 0;
+          s._sum.totalWickets > 0
+            ? (crazy.deathOversWickets || 0) / s._sum.totalWickets
+            : 0;
         const ppWktPct =
-          s._sum.totalWickets > 0 ? (crazy.powerplayWickets || 0) / s._sum.totalWickets : 0;
+          s._sum.totalWickets > 0
+            ? (crazy.powerplayWickets || 0) / s._sum.totalWickets
+            : 0;
 
         vector = [
           s._avg.economyRate || 10,
@@ -563,7 +597,6 @@ export const getSimilarPlayers = async (playerId) => {
 
   if (playersData.length === 0) return [];
 
-
   const vectorDim = playersData[0].vector.length;
   const means = new Array(vectorDim).fill(0);
   const stdDevs = new Array(vectorDim).fill(0);
@@ -576,7 +609,9 @@ export const getSimilarPlayers = async (playerId) => {
   playersData.forEach((p) => {
     p.vector.forEach((val, i) => (stdDevs[i] += Math.pow(val - means[i], 2)));
   });
-  stdDevs.forEach((val, i) => (stdDevs[i] = Math.sqrt(val / playersData.length)));
+  stdDevs.forEach(
+    (val, i) => (stdDevs[i] = Math.sqrt(val / playersData.length)),
+  );
 
   const normalize = (vec) => {
     return vec.map((val, i) => {
@@ -619,43 +654,50 @@ export const getSimilarPlayers = async (playerId) => {
   return {
     similarPlayers: similarities.map((s) => {
       const info = similarPlayersInfo.find((p) => p.id === s.playerId);
-      const roleName = info?.role || (s.isBowler ? 'Bowler' : 'Batter');
+      const roleName = info?.role || (s.isBowler ? "Bowler" : "Batter");
 
       const reasons = [];
       const tVec = targetPlayerData.vector;
       const sVec = s.vector;
 
       if (!isBowler) {
-
-        if (Math.abs(tVec[0] - sVec[0]) <= 3) reasons.push('Similar Career Average');
-        if (Math.abs(tVec[1] - sVec[1]) <= 5) reasons.push('Similar Strike Rate');
-        if (Math.abs(tVec[8] - sVec[8]) <= 20) reasons.push('Similar Longevity');
-        if (Math.abs(tVec[3] - sVec[3]) <= 0.05) reasons.push('Similar Boundary %');
+        if (Math.abs(tVec[0] - sVec[0]) <= 3)
+          {reasons.push("Similar Career Average");}
+        if (Math.abs(tVec[1] - sVec[1]) <= 5)
+          {reasons.push("Similar Strike Rate");}
+        if (Math.abs(tVec[8] - sVec[8]) <= 20)
+          {reasons.push("Similar Longevity");}
+        if (Math.abs(tVec[3] - sVec[3]) <= 0.05)
+          {reasons.push("Similar Boundary %");}
       } else {
-
-        if (Math.abs(tVec[0] - sVec[0]) <= 0.5) reasons.push('Similar Economy Rate');
-        if (Math.abs(tVec[1] - sVec[1]) <= 3) reasons.push('Similar Bowling Average');
-        if (Math.abs(tVec[8] - sVec[8]) <= 20) reasons.push('Similar Longevity');
-        if (Math.abs(tVec[5] - sVec[5]) <= 0.05) reasons.push('Similar Powerplay Impact');
+        if (Math.abs(tVec[0] - sVec[0]) <= 0.5)
+          {reasons.push("Similar Economy Rate");}
+        if (Math.abs(tVec[1] - sVec[1]) <= 3)
+          {reasons.push("Similar Bowling Average");}
+        if (Math.abs(tVec[8] - sVec[8]) <= 20)
+          {reasons.push("Similar Longevity");}
+        if (Math.abs(tVec[5] - sVec[5]) <= 0.05)
+          {reasons.push("Similar Powerplay Impact");}
       }
 
-
-      if (reasons.length === 0) reasons.push('Similar Overall DNA');
+      if (reasons.length === 0) reasons.push("Similar Overall DNA");
 
       return {
         playerId: s.playerId,
-        name: info ? info.name : 'Unknown',
+        name: info ? info.name : "Unknown",
         role: roleName,
         matchPercentage: Math.round(s.similarityScore),
         reasons: reasons.slice(0, 3),
       };
     }),
-    confidence: 'HIGH',
+    confidence: "HIGH",
   };
 };
 
 export const getHistoricalRankings = async (playerId) => {
-  const targetPlayer = await prisma.player.findUnique({ where: { id: playerId } });
+  const targetPlayer = await prisma.player.findUnique({
+    where: { id: playerId },
+  });
   if (!targetPlayer) return null;
 
   const { allSeasons } = await getCachedAggregates();
@@ -668,7 +710,7 @@ export const getHistoricalRankings = async (playerId) => {
         wkts: 0,
         matches: 0,
         scores: [],
-        role: s.player?.role || '',
+        role: s.player?.role || "",
       };
     }
     playerAggregates[s.playerId].runs += s.totalRuns;
@@ -677,8 +719,10 @@ export const getHistoricalRankings = async (playerId) => {
     playerAggregates[s.playerId].scores.push(s.performanceScore);
   });
 
-  const playersArr = Object.keys(playerAggregates).map((id) => ({ id, ...playerAggregates[id] }));
-
+  const playersArr = Object.keys(playerAggregates).map((id) => ({
+    id,
+    ...playerAggregates[id],
+  }));
 
   const runsSorted = [...playersArr].sort((a, b) => b.runs - a.runs);
   const wktsSorted = [...playersArr].sort((a, b) => b.wkts - a.wkts);
@@ -687,10 +731,11 @@ export const getHistoricalRankings = async (playerId) => {
   const wktRank = wktsSorted.findIndex((p) => p.id === playerId) + 1;
 
   const totalPlayers = playersArr.length;
-  const runPercentile = totalPlayers > 0 ? ((totalPlayers - runRank) / totalPlayers) * 100 : 0;
+  const runPercentile =
+    totalPlayers > 0 ? ((totalPlayers - runRank) / totalPlayers) * 100 : 0;
 
-
-  const isBowler = targetPlayer.role && targetPlayer.role.toLowerCase().includes('bowl');
+  const isBowler =
+    targetPlayer.role && targetPlayer.role.toLowerCase().includes("bowl");
   const rolePeers = playersArr.filter((p) => p.role === targetPlayer.role);
   let roleRank = 0;
   if (rolePeers.length > 0) {
@@ -703,12 +748,12 @@ export const getHistoricalRankings = async (playerId) => {
     }
   }
   const rolePercentile =
-    rolePeers.length > 0 ? ((rolePeers.length - roleRank) / rolePeers.length) * 100 : 0;
-
+    rolePeers.length > 0
+      ? ((rolePeers.length - roleRank) / rolePeers.length) * 100
+      : 0;
 
   const targetAgg = playerAggregates[playerId];
   if (!targetAgg) return null;
-
 
   playersArr.forEach((p) => {
     const maxPeak = Math.max(...p.scores, 0);
@@ -717,11 +762,12 @@ export const getHistoricalRankings = async (playerId) => {
     let consistencyScore = 0;
     if (p.scores.length > 2) {
       const mean = p.scores.reduce((a, b) => a + b) / p.scores.length;
-      const variance = p.scores.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / p.scores.length;
+      const variance =
+        p.scores.reduce((a, b) => a + Math.pow(b - mean, 2), 0) /
+        p.scores.length;
       const stdDev = Math.sqrt(variance);
       consistencyScore = Math.max(0, 100 - stdDev * 2);
     }
-
 
     const playoffComponent = Math.round(maxPeak * 0.1);
 
@@ -730,25 +776,23 @@ export const getHistoricalRankings = async (playerId) => {
     p.consistencyComponent = Math.round(consistencyScore);
     p.playoffComponent = playoffComponent;
 
-
     p.rawScore = Math.round(
       p.peakComponent +
         p.longevityComponent +
         p.consistencyComponent +
         p.runs / 50 +
         p.wkts / 2.5 +
-        p.playoffComponent
+        p.playoffComponent,
     );
   });
 
   const hofSorted = [...playersArr].sort((a, b) => b.rawScore - a.rawScore);
   const hofRank = hofSorted.findIndex((p) => p.id === playerId) + 1;
-  const hofPercentile = totalPlayers > 0 ? ((totalPlayers - hofRank) / totalPlayers) * 100 : 0;
+  const hofPercentile =
+    totalPlayers > 0 ? ((totalPlayers - hofRank) / totalPlayers) * 100 : 0;
 
   const targetScores = hofSorted.find((p) => p.id === playerId);
   const targetRawScore = targetScores?.rawScore || 0;
-
-
 
   let totalBallsFaced = 0;
   let totalInnings = 0;
@@ -766,31 +810,47 @@ export const getHistoricalRankings = async (playerId) => {
     totalFifties += s.fifties;
   });
 
-  const careerAverage = totalInnings > 0 ? (targetAgg.runs / totalInnings).toFixed(1) : 0;
+  const careerAverage =
+    totalInnings > 0 ? (targetAgg.runs / totalInnings).toFixed(1) : 0;
   const careerStrikeRate =
-    totalBallsFaced > 0 ? ((targetAgg.runs / totalBallsFaced) * 100).toFixed(1) : 0;
+    totalBallsFaced > 0
+      ? ((targetAgg.runs / totalBallsFaced) * 100).toFixed(1)
+      : 0;
 
-
-  const peerSeasons = allSeasons.filter((s) => s.player?.role === targetPlayer.role);
+  const peerSeasons = allSeasons.filter(
+    (s) => s.player?.role === targetPlayer.role,
+  );
   const peerMap = {};
   peerSeasons.forEach((s) => {
     if (!peerMap[s.playerId])
-      peerMap[s.playerId] = { runs: 0, inns: 0, balls: 0, hundreds: 0, fifties: 0, matches: 0 };
+      {peerMap[s.playerId] = {
+        runs: 0,
+        inns: 0,
+        balls: 0,
+        hundreds: 0,
+        fifties: 0,
+        matches: 0,
+      };}
     peerMap[s.playerId].runs += s.totalRuns;
     peerMap[s.playerId].inns += s.innings;
     peerMap[s.playerId].matches += s.matches;
     if (s.strikeRate > 0)
-      peerMap[s.playerId].balls += Math.round((s.totalRuns / s.strikeRate) * 100);
+      {peerMap[s.playerId].balls += Math.round(
+        (s.totalRuns / s.strikeRate) * 100,
+      );}
     peerMap[s.playerId].hundreds += s.hundreds;
     peerMap[s.playerId].fifties += s.fifties;
   });
 
   const validPeers = Object.values(peerMap).filter((p) => p.matches > 15);
   const srPeers = [...validPeers].sort(
-    (a, b) => (b.balls > 0 ? b.runs / b.balls : 0) - (a.balls > 0 ? a.runs / a.balls : 0)
+    (a, b) =>
+      (b.balls > 0 ? b.runs / b.balls : 0) -
+      (a.balls > 0 ? a.runs / a.balls : 0),
   );
   const avgPeers = [...validPeers].sort(
-    (a, b) => (b.inns > 0 ? b.runs / b.inns : 0) - (a.inns > 0 ? a.runs / a.inns : 0)
+    (a, b) =>
+      (b.inns > 0 ? b.runs / b.inns : 0) - (a.inns > 0 ? a.runs / a.inns : 0),
   );
   const hunPeers = [...validPeers].sort((a, b) => b.hundreds - a.hundreds);
   const fifPeers = [...validPeers].sort((a, b) => b.fifties - a.fifties);
@@ -798,15 +858,24 @@ export const getHistoricalRankings = async (playerId) => {
   const mySr = totalBallsFaced > 0 ? targetAgg.runs / totalBallsFaced : 0;
   const myAvg = totalInnings > 0 ? targetAgg.runs / totalInnings : 0;
 
-  const srRank = srPeers.findIndex((p) => (p.balls > 0 ? p.runs / p.balls : 0) <= mySr) + 1 || 1;
+  const srRank =
+    srPeers.findIndex((p) => (p.balls > 0 ? p.runs / p.balls : 0) <= mySr) +
+      1 || 1;
   const srPercentile =
-    validPeers.length > 0 ? ((validPeers.length - srRank) / validPeers.length) * 100 : 0;
+    validPeers.length > 0
+      ? ((validPeers.length - srRank) / validPeers.length) * 100
+      : 0;
 
-  const avgRank = avgPeers.findIndex((p) => (p.inns > 0 ? p.runs / p.inns : 0) <= myAvg) + 1 || 1;
+  const avgRank =
+    avgPeers.findIndex((p) => (p.inns > 0 ? p.runs / p.inns : 0) <= myAvg) +
+      1 || 1;
   const avgPercentile =
-    validPeers.length > 0 ? ((validPeers.length - avgRank) / validPeers.length) * 100 : 0;
+    validPeers.length > 0
+      ? ((validPeers.length - avgRank) / validPeers.length) * 100
+      : 0;
 
-  const hunRank = hunPeers.findIndex((p) => p.hundreds <= totalHundreds) + 1 || 1;
+  const hunRank =
+    hunPeers.findIndex((p) => p.hundreds <= totalHundreds) + 1 || 1;
   const fifRank = fifPeers.findIndex((p) => p.fifties <= totalFifties) + 1 || 1;
 
   return {
@@ -842,57 +911,71 @@ export const getCareerRecordsBook = async (playerId) => {
 
   if (!matchStats || matchStats.length === 0) return null;
 
-  const targetPlayer = await prisma.player.findUnique({ where: { id: playerId } });
-  const isBowler = targetPlayer?.role?.toLowerCase().includes('bowl');
+  const targetPlayer = await prisma.player.findUnique({
+    where: { id: playerId },
+  });
+  const isBowler = targetPlayer?.role?.toLowerCase().includes("bowl");
 
   const highestScoreKnock = matchStats.reduce(
     (prev, current) => (prev.runsScored > current.runsScored ? prev : current),
-    matchStats[0]
+    matchStats[0],
   );
 
-  const fifties = matchStats.filter((m) => m.runsScored >= 50 && m.runsScored < 100);
+  const fifties = matchStats.filter(
+    (m) => m.runsScored >= 50 && m.runsScored < 100,
+  );
   const fastestFifty =
     fifties.length > 0
-      ? fifties.reduce((prev, current) => (prev.ballsFaced < current.ballsFaced ? prev : current))
+      ? fifties.reduce((prev, current) =>
+          prev.ballsFaced < current.ballsFaced ? prev : current,
+        )
       : null;
 
   const hundreds = matchStats.filter((m) => m.runsScored >= 100);
   const fastestHundred =
     hundreds.length > 0
-      ? hundreds.reduce((prev, current) => (prev.ballsFaced < current.ballsFaced ? prev : current))
+      ? hundreds.reduce((prev, current) =>
+          prev.ballsFaced < current.ballsFaced ? prev : current,
+        )
       : null;
 
   const mostSixes = matchStats.reduce(
     (prev, current) => (prev.sixes > current.sixes ? prev : current),
-    matchStats[0]
+    matchStats[0],
   );
   const mostFours = matchStats.reduce(
     (prev, current) => (prev.fours > current.fours ? prev : current),
-    matchStats[0]
+    matchStats[0],
   );
 
   const chaseKnocks = matchStats.filter((stat) => {
     if (!stat.match || stat.match.winner !== stat.team) return false;
     let teamBattedFirst = stat.match.team1;
     if (stat.match.tossWinner && stat.match.tossDecision) {
-      if (stat.match.tossDecision === 'bat') teamBattedFirst = stat.match.tossWinner;
+      if (stat.match.tossDecision === "bat")
+        {teamBattedFirst = stat.match.tossWinner;}
       else
-        teamBattedFirst =
-          stat.match.tossWinner === stat.match.team1 ? stat.match.team2 : stat.match.team1;
+        {teamBattedFirst =
+          stat.match.tossWinner === stat.match.team1
+            ? stat.match.team2
+            : stat.match.team1;}
     }
     return stat.team !== teamBattedFirst;
   });
   const bestChaseKnock =
     chaseKnocks.length > 0
       ? chaseKnocks.reduce((prev, current) =>
-          prev.runsScored > current.runsScored ? prev : current
+          prev.runsScored > current.runsScored ? prev : current,
         )
       : null;
 
   const bestBowlingSpell = matchStats.reduce((prev, current) => {
     if (current.wickets > prev.wickets) return current;
-    if (current.wickets === prev.wickets && current.runsConceded < prev.runsConceded)
-      return current;
+    if (
+      current.wickets === prev.wickets &&
+      current.runsConceded < prev.runsConceded
+    )
+      {return current;}
     return prev;
   }, matchStats[0]);
 
@@ -900,22 +983,27 @@ export const getCareerRecordsBook = async (playerId) => {
   const bestEconomySpell =
     fourOvers.length > 0
       ? fourOvers.reduce((prev, current) =>
-          current.runsConceded < prev.runsConceded ? current : prev
+          current.runsConceded < prev.runsConceded ? current : prev,
         )
       : null;
 
   const mostDotBalls = matchStats.reduce(
     (prev, current) => (prev.dotBalls > current.dotBalls ? prev : current),
-    matchStats[0]
+    matchStats[0],
   );
 
-  const playoffSpells = matchStats.filter((m) => m.match && m.match.matchNumber === null);
+  const playoffSpells = matchStats.filter(
+    (m) => m.match && m.match.matchNumber === null,
+  );
   const bestPlayoffSpell =
     playoffSpells.length > 0
       ? playoffSpells.reduce((prev, current) => {
           if (current.wickets > prev.wickets) return current;
-          if (current.wickets === prev.wickets && current.runsConceded < prev.runsConceded)
-            return current;
+          if (
+            current.wickets === prev.wickets &&
+            current.runsConceded < prev.runsConceded
+          )
+            {return current;}
           return prev;
         })
       : null;
@@ -923,27 +1011,29 @@ export const getCareerRecordsBook = async (playerId) => {
   return {
     batterRecords: {
       highestScore: highestScoreKnock
-        ? `${highestScoreKnock.runsScored}${highestScoreKnock.isOut ? '' : '*'}`
-        : '-',
-      fastestFifty: fastestFifty ? `${fastestFifty.ballsFaced} balls` : '-',
-      fastestHundred: fastestHundred ? `${fastestHundred.ballsFaced} balls` : '-',
+        ? `${highestScoreKnock.runsScored}${highestScoreKnock.isOut ? "" : "*"}`
+        : "-",
+      fastestFifty: fastestFifty ? `${fastestFifty.ballsFaced} balls` : "-",
+      fastestHundred: fastestHundred
+        ? `${fastestHundred.ballsFaced} balls`
+        : "-",
       mostSixesInInnings: mostSixes ? mostSixes.sixes : 0,
       mostFoursInInnings: mostFours ? mostFours.fours : 0,
       bestChaseKnock: bestChaseKnock
-        ? `${bestChaseKnock.runsScored}${bestChaseKnock.isOut ? '' : '*'}`
-        : '-',
+        ? `${bestChaseKnock.runsScored}${bestChaseKnock.isOut ? "" : "*"}`
+        : "-",
     },
     bowlerRecords: {
       bestBowling: bestBowlingSpell
         ? `${bestBowlingSpell.wickets}/${bestBowlingSpell.runsConceded}`
-        : '-',
+        : "-",
       bestEconomy: bestEconomySpell
         ? `${(bestEconomySpell.runsConceded / 4).toFixed(1)} Econ`
-        : '-',
+        : "-",
       mostDotBalls: mostDotBalls ? mostDotBalls.dotBalls : 0,
       bestPlayoffSpell: bestPlayoffSpell
         ? `${bestPlayoffSpell.wickets}/${bestPlayoffSpell.runsConceded}`
-        : '-',
+        : "-",
     },
   };
 };
@@ -952,7 +1042,7 @@ export const getCareerMilestones = async (playerId) => {
   const matchStats = await prisma.playerMatchStats.findMany({
     where: { playerId },
     include: { match: true },
-    orderBy: [{ season: 'asc' }, { matchId: 'asc' }],
+    orderBy: [{ season: "asc" }, { matchId: "asc" }],
   });
 
   if (!matchStats || matchStats.length === 0) return [];
@@ -979,15 +1069,18 @@ export const getCareerMilestones = async (playerId) => {
     if (index === 0) {
       milestones.push({
         season: stat.season,
-        title: 'IPL Debut',
+        title: "IPL Debut",
         description: `Played first match for ${stat.team}`,
       });
     }
 
-    if (stat.runsScored >= 100 && !milestones.some((m) => m.title === 'First Century')) {
+    if (
+      stat.runsScored >= 100 &&
+      !milestones.some((m) => m.title === "First Century")
+    ) {
       milestones.push({
         season: stat.season,
-        title: 'First Century',
+        title: "First Century",
         description: `Scored ${stat.runsScored} runs in a match`,
       });
     }
@@ -1033,7 +1126,9 @@ export const getCareerMilestones = async (playerId) => {
 };
 
 export const getLegacyScore = async (playerId) => {
-  const seasons = await prisma.playerSeasonStats.findMany({ where: { playerId } });
+  const seasons = await prisma.playerSeasonStats.findMany({
+    where: { playerId },
+  });
   if (!seasons || seasons.length === 0) return 0;
 
   let totalPoM = 0;
@@ -1049,7 +1144,10 @@ export const getLegacyScore = async (playerId) => {
   const clutchStats = await getClutchAnalytics(playerId);
 
   const legacyPoints =
-    totalPoM * 3 + clutchStats.playoffs.matches * 2 + matches / 10 + maxPeak / 10;
+    totalPoM * 3 +
+    clutchStats.playoffs.matches * 2 +
+    matches / 10 +
+    maxPeak / 10;
 
   return Math.round(legacyPoints);
 };
@@ -1068,7 +1166,8 @@ export const getImpactDifferential = async (playerId) => {
 
   playerMatches.forEach((stat) => {
     if (!stat.match) return;
-    if (!activeFranchisesBySeason[stat.season]) activeFranchisesBySeason[stat.season] = new Set();
+    if (!activeFranchisesBySeason[stat.season])
+      {activeFranchisesBySeason[stat.season] = new Set();}
     activeFranchisesBySeason[stat.season].add(stat.team);
 
     if (stat.match.winner) {
@@ -1094,7 +1193,9 @@ export const getImpactDifferential = async (playerId) => {
       });
 
       const playedMatchIds = new Set(playerMatches.map((m) => m.matchId));
-      const matchesWithout = teamMatches.filter((m) => !playedMatchIds.has(m.id));
+      const matchesWithout = teamMatches.filter(
+        (m) => !playedMatchIds.has(m.id),
+      );
 
       matchesWithout.forEach((m) => {
         totalWithout++;
@@ -1104,20 +1205,20 @@ export const getImpactDifferential = async (playerId) => {
   }
 
   const winPctWith = totalWith > 0 ? (winsWith / totalWith) * 100 : 0;
-  const winPctWithout = totalWithout > 0 ? (winsWithout / totalWithout) * 100 : 0;
+  const winPctWithout =
+    totalWithout > 0 ? (winsWithout / totalWithout) * 100 : 0;
 
-
-  let confidence = 'LOW';
-  if (totalWith >= 30 && totalWithout >= 30) confidence = 'HIGH';
-  else if (totalWith >= 15 && totalWithout >= 15) confidence = 'MEDIUM';
+  let confidence = "LOW";
+  if (totalWith >= 30 && totalWithout >= 30) confidence = "HIGH";
+  else if (totalWith >= 15 && totalWithout >= 15) confidence = "MEDIUM";
 
   const isInsufficient = totalWith < 15 || totalWithout < 15;
   if (isInsufficient) {
     return {
-      status: 'INSUFFICIENT_SAMPLE',
+      status: "INSUFFICIENT_SAMPLE",
       metadata: {
-        label: 'Team Dependency Index',
-        warning: 'Correlation Metric. Not Causal.',
+        label: "Team Dependency Index",
+        warning: "Correlation Metric. Not Causal.",
       },
     };
   }
@@ -1129,10 +1230,10 @@ export const getImpactDifferential = async (playerId) => {
     matchesWith: totalWith,
     matchesWithout: totalWithout,
     confidence,
-    status: 'OK',
+    status: "OK",
     metadata: {
-      label: 'Team Dependency Index',
-      warning: 'Correlation Metric. Not Causal.',
+      label: "Team Dependency Index",
+      warning: "Correlation Metric. Not Causal.",
     },
   };
 };

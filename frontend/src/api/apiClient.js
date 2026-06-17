@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api/v1",
   timeout: 60000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -12,17 +12,19 @@ apiClient.interceptors.request.use(
   (config) => {
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 apiClient.interceptors.response.use(
-  (response) => (response.data?.data !== undefined ? response.data.data : response.data),
+  (response) =>
+    response.data?.data !== undefined ? response.data.data : response.data,
   (error) => {
-    const message = error.response?.data?.message || error.message || 'Something went wrong';
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
 
-    console.error('[API Error]', message);
+    console.error("[API Error]", message);
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

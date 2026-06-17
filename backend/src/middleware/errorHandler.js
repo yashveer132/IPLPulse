@@ -1,6 +1,6 @@
 const errorHandler = (err, _req, res, _next) => {
   const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  const message = err.message || "Internal Server Error";
 
   console.error(`[ERROR] ${statusCode} — ${message}`);
   if (err.stack) {
@@ -11,7 +11,7 @@ const errorHandler = (err, _req, res, _next) => {
     success: false,
     status: statusCode,
     message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
 };
 

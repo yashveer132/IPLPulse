@@ -275,11 +275,11 @@ export async function getPlayerValueRankings(
 
   let roleFilter = {};
   if (role === "batters")
-    roleFilter = { role: { contains: "Bat", mode: "insensitive" } };
+    {roleFilter = { role: { contains: "Bat", mode: "insensitive" } };}
   else if (role === "bowlers")
-    roleFilter = { role: { contains: "Bowl", mode: "insensitive" } };
+    {roleFilter = { role: { contains: "Bowl", mode: "insensitive" } };}
   else if (role === "all-rounders")
-    roleFilter = { role: { contains: "All", mode: "insensitive" } };
+    {roleFilter = { role: { contains: "All", mode: "insensitive" } };}
 
   const [analytics, total] = await Promise.all([
     prisma.playerAnalytics.findMany({
@@ -467,8 +467,8 @@ export async function getFastestMilestone(targetRuns) {
             }
             const venue = data.info.venue || data.info.city || "Unknown Venue";
 
-            let tossWinner = data.info.toss?.winner || "Unknown";
-            let tossDecision = data.info.toss?.decision || "Unknown";
+            const tossWinner = data.info.toss?.winner || "Unknown";
+            const tossDecision = data.info.toss?.decision || "Unknown";
 
             let primaryVictim = "None";
             let maxBowlerRuns = -1;

@@ -25,6 +25,7 @@ import TimelineIcon from "@mui/icons-material/Timeline";
 import { motion } from "framer-motion";
 import api from "../api/apiClient.js";
 import CausalHistoryEngine from "../components/common/CausalHistoryEngine.jsx";
+import PageLoader from "../components/common/PageLoader.jsx";
 
 const ConfidenceLabel = ({ strength }) => {
   const configs = {
@@ -78,12 +79,7 @@ const FlashpointDetail = () => {
     fetchDetail();
   }, [id]);
 
-  if (loading)
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", p: 10 }}>
-        <CircularProgress />
-      </Box>
-    );
+  if (loading) return <PageLoader />;
   if (!fp)
     return (
       <Box sx={{ p: 4 }}>
@@ -103,15 +99,6 @@ const FlashpointDetail = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Button
-        component={Link}
-        to="/flashpoints"
-        startIcon={<ArrowBackIcon />}
-        sx={{ mb: 4, color: "text.secondary" }}
-      >
-        Back to Intelligence Hub
-      </Button>
-
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Box sx={{ mb: 4 }}>
@@ -169,34 +156,15 @@ const FlashpointDetail = () => {
                 <Chip key={p} label={p} variant="outlined" />
               ))}
             </Box>
-
-            {fp.historicalSignificance && (
-              <Box
-                sx={{
-                  p: 3,
-                  mb: 4,
-                  bgcolor: "rgba(234, 179, 8, 0.1)",
-                  borderLeft: "4px solid #eab308",
-                  borderRadius: 1,
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: "#fde047",
-                    fontStyle: "italic",
-                    fontWeight: 600,
-                  }}
-                >
-                  "{fp.historicalSignificance}"
-                </Typography>
-              </Box>
-            )}
           </Box>
           <Paper
             sx={{ p: 4, mb: 4, bgcolor: "background.paper", borderRadius: 4 }}
           >
-            <Typography variant="h5" sx={{ fontWeight: 800, mb: 3 }}>
+            <Typography
+              variant="h5"
+              align="center"
+              sx={{ fontWeight: 800, mb: 3 }}
+            >
               The Full Investigation
             </Typography>
             <Typography
@@ -223,6 +191,7 @@ const FlashpointDetail = () => {
             >
               <Typography
                 variant="h5"
+                align="center"
                 sx={{ fontWeight: 800, mb: 3, color: "#eab308" }}
               >
                 Why It Matters
@@ -244,58 +213,6 @@ const FlashpointDetail = () => {
                 ))}
               </List>
             </Paper>
-          )}
-          {fp.beforeAndAfter && (
-            <Grid container spacing={3} sx={{ mb: 4 }}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Paper
-                  sx={{
-                    p: 3,
-                    height: "100%",
-                    bgcolor: "rgba(239, 68, 68, 0.05)",
-                    borderLeft: "4px solid #ef4444",
-                  }}
-                >
-                  <Typography
-                    variant="h6"
-                    sx={{ mb: 2, color: "#ef4444", fontWeight: 800 }}
-                  >
-                    Before the Incident
-                  </Typography>
-                  <List dense>
-                    {fp.beforeAndAfter.before?.map((b, i) => (
-                      <ListItem key={i} disablePadding sx={{ mb: 1 }}>
-                        <ListItemText primary={`• ${b}`} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Paper>
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Paper
-                  sx={{
-                    p: 3,
-                    height: "100%",
-                    bgcolor: "rgba(16, 185, 129, 0.05)",
-                    borderLeft: "4px solid #10b981",
-                  }}
-                >
-                  <Typography
-                    variant="h6"
-                    sx={{ mb: 2, color: "#10b981", fontWeight: 800 }}
-                  >
-                    Aftermath
-                  </Typography>
-                  <List dense>
-                    {fp.beforeAndAfter.after?.map((a, i) => (
-                      <ListItem key={i} disablePadding sx={{ mb: 1 }}>
-                        <ListItemText primary={`• ${a}`} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Paper>
-              </Grid>
-            </Grid>
           )}
           {fp.outcomes && Object.keys(fp.outcomes).length > 0 && (
             <Paper
@@ -339,77 +256,192 @@ const FlashpointDetail = () => {
             </Paper>
           )}
           {fp.howIplChanged && Object.keys(fp.howIplChanged).length > 0 && (
-            <Paper sx={{ p: 4, mb: 4, borderRadius: 4 }}>
-              <Typography variant="h5" sx={{ fontWeight: 800, mb: 3 }}>
+            <Paper sx={{ p: 4, mb: 4, borderRadius: 4, textAlign: "center" }}>
+              <Typography
+                variant="h5"
+                align="center"
+                sx={{ fontWeight: 800, mb: 3 }}
+              >
                 How IPL Changed
               </Typography>
-              <Grid container spacing={3}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  gap: 3,
+                }}
+              >
                 {fp.howIplChanged.ruleChanges?.length > 0 && (
-                  <Grid size={{ xs: 12, sm: 6 }}>
+                  <Box
+                    sx={{
+                      flex: "1 1 300px",
+                      maxWidth: { xs: "100%", md: "400px" },
+                    }}
+                  >
                     <Typography
                       variant="subtitle1"
                       sx={{
                         fontWeight: "bold",
                         display: "flex",
                         alignItems: "center",
-                        mb: 1,
+                        justifyContent: "center",
+                        mb: 2,
                       }}
                     >
                       <GavelIcon sx={{ mr: 1, fontSize: "1.2rem" }} /> Rule
                       Changes
                     </Typography>
                     {fp.howIplChanged.ruleChanges.map((c, i) => (
-                      <Typography key={i} variant="body2" sx={{ mb: 1 }}>
-                        ✓ {c}
-                      </Typography>
+                      <Box
+                        key={i}
+                        sx={{
+                          bgcolor: "rgba(255,255,255,0.05)",
+                          p: 2,
+                          borderRadius: 2,
+                          mb: 1.5,
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          align="center"
+                          sx={{ fontSize: "0.95rem" }}
+                        >
+                          {c}
+                        </Typography>
+                      </Box>
                     ))}
-                  </Grid>
+                  </Box>
                 )}
                 {fp.howIplChanged.governanceChanges?.length > 0 && (
-                  <Grid size={{ xs: 12, sm: 6 }}>
+                  <Box
+                    sx={{
+                      flex: "1 1 300px",
+                      maxWidth: { xs: "100%", md: "400px" },
+                    }}
+                  >
                     <Typography
                       variant="subtitle1"
                       sx={{
                         fontWeight: "bold",
                         display: "flex",
                         alignItems: "center",
-                        mb: 1,
+                        justifyContent: "center",
+                        mb: 2,
                       }}
                     >
                       <AccountBalanceIcon sx={{ mr: 1, fontSize: "1.2rem" }} />{" "}
                       Governance
                     </Typography>
                     {fp.howIplChanged.governanceChanges.map((c, i) => (
-                      <Typography key={i} variant="body2" sx={{ mb: 1 }}>
-                        ✓ {c}
-                      </Typography>
+                      <Box
+                        key={i}
+                        sx={{
+                          bgcolor: "rgba(255,255,255,0.05)",
+                          p: 2,
+                          borderRadius: 2,
+                          mb: 1.5,
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          align="center"
+                          sx={{ fontSize: "0.95rem" }}
+                        >
+                          {c}
+                        </Typography>
+                      </Box>
                     ))}
-                  </Grid>
+                  </Box>
                 )}
                 {fp.howIplChanged.franchiseChanges?.length > 0 && (
-                  <Grid size={{ xs: 12, sm: 6 }}>
+                  <Box
+                    sx={{
+                      flex: "1 1 300px",
+                      maxWidth: { xs: "100%", md: "400px" },
+                    }}
+                  >
                     <Typography
                       variant="subtitle1"
                       sx={{
                         fontWeight: "bold",
                         display: "flex",
                         alignItems: "center",
-                        mb: 1,
+                        justifyContent: "center",
+                        mb: 2,
                       }}
                     >
                       <PolicyIcon sx={{ mr: 1, fontSize: "1.2rem" }} />{" "}
                       Franchise Structure
                     </Typography>
                     {fp.howIplChanged.franchiseChanges.map((c, i) => (
-                      <Typography key={i} variant="body2" sx={{ mb: 1 }}>
-                        ✓ {c}
-                      </Typography>
+                      <Box
+                        key={i}
+                        sx={{
+                          bgcolor: "rgba(255,255,255,0.05)",
+                          p: 2,
+                          borderRadius: 2,
+                          mb: 1.5,
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          align="center"
+                          sx={{ fontSize: "0.95rem" }}
+                        >
+                          {c}
+                        </Typography>
+                      </Box>
                     ))}
-                  </Grid>
+                  </Box>
                 )}
-              </Grid>
+              </Box>
             </Paper>
           )}
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Paper
+            sx={{
+              p: 4,
+              mb: 4,
+              bgcolor: "rgba(99, 102, 241, 0.05)",
+              border: "1px solid rgba(99, 102, 241, 0.2)",
+              borderRadius: 4,
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              sx={{ mb: 2, color: "text.secondary", fontWeight: "bold" }}
+            >
+              EVENT IMPORTANCE BREAKDOWN
+            </Typography>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+            >
+              <Typography variant="body2">Severity</Typography>
+              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                {fp.severity} / 10
+              </Typography>
+            </Box>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+            >
+              <Typography variant="body2">League Impact</Typography>
+              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                {fp.impactType}
+              </Typography>
+            </Box>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+            >
+              <Typography variant="body2">Media Attention</Typography>
+              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                {fp.mediaAttention} / 10
+              </Typography>
+            </Box>
+          </Paper>
+
           {fp.impactMetrics && Object.keys(fp.impactMetrics).length > 0 && (
             <Paper
               sx={{
@@ -422,6 +454,7 @@ const FlashpointDetail = () => {
             >
               <Typography
                 variant="h5"
+                align="center"
                 sx={{ fontWeight: 800, mb: 3, color: "#3b82f6" }}
               >
                 Impact Metrics
@@ -432,7 +465,7 @@ const FlashpointDetail = () => {
                     .replace(/([A-Z])/g, " $1")
                     .replace(/^./, (str) => str.toUpperCase());
                   return (
-                    <Grid size={{ xs: 6, sm: 4, md: 3 }} key={key}>
+                    <Grid size={{ xs: 6 }} key={key}>
                       <Box
                         sx={{
                           p: 2,
@@ -465,6 +498,7 @@ const FlashpointDetail = () => {
               </Grid>
             </Paper>
           )}
+
           {fp.entities && fp.entities.length > 0 && (
             <Paper
               sx={{
@@ -474,18 +508,24 @@ const FlashpointDetail = () => {
                 border: "1px solid rgba(255,255,255,0.1)",
               }}
             >
-              <Typography variant="h5" sx={{ fontWeight: 800, mb: 3 }}>
+              <Typography
+                variant="h5"
+                align="center"
+                sx={{ fontWeight: 800, mb: 3 }}
+              >
                 Involved Entities
               </Typography>
               <Grid container spacing={2}>
                 {fp.entities.map((relation) => (
-                  <Grid size={{ xs: 12, sm: 6 }} key={relation.id}>
+                  <Grid size={{ xs: 12 }} key={relation.id}>
                     <Box
                       component={Link}
                       to={`/entities/${relation.entity.id}`}
                       sx={{
                         display: "flex",
+                        flexDirection: "column",
                         alignItems: "center",
+                        textAlign: "center",
                         p: 2,
                         bgcolor: "rgba(255,255,255,0.03)",
                         borderRadius: 2,
@@ -495,7 +535,7 @@ const FlashpointDetail = () => {
                         "&:hover": { bgcolor: "rgba(255,255,255,0.08)" },
                       }}
                     >
-                      <Box sx={{ flexGrow: 1 }}>
+                      <Box sx={{ mb: 1 }}>
                         <Typography
                           variant="subtitle1"
                           sx={{ fontWeight: "bold" }}
@@ -520,181 +560,7 @@ const FlashpointDetail = () => {
                 ))}
               </Grid>
             </Paper>
-          )}{" "}
-          {fp.sourceIntelligence && fp.sourceIntelligence.length > 0 && (
-            <Box sx={{ mt: 6, mb: 4 }}>
-              <Typography
-                variant="h4"
-                sx={{
-                  fontWeight: 900,
-                  mb: 3,
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <span style={{ marginRight: "12px" }}>🔒</span> The Evidence
-                Locker
-              </Typography>
-
-              {Array.from(
-                new Set(fp.sourceIntelligence.map((s) => s.sourceType)),
-              ).map((type) => (
-                <Box key={type} sx={{ mb: 4 }}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: 800,
-                      mb: 2,
-                      color: "text.secondary",
-                      textTransform: "uppercase",
-                      letterSpacing: 1,
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    {type}
-                  </Typography>
-                  <Grid container spacing={2}>
-                    {fp.sourceIntelligence
-                      .filter((s) => s.sourceType === type)
-                      .map((source) => (
-                        <Grid size={{ xs: 12 }} key={source.id}>
-                          <Paper
-                            sx={{
-                              p: 3,
-                              bgcolor: "background.paper",
-                              border: "1px solid rgba(255,255,255,0.05)",
-                              borderRadius: 2,
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "flex-start",
-                                mb: 1,
-                              }}
-                            >
-                              <Typography
-                                variant="subtitle1"
-                                sx={{ fontWeight: "bold" }}
-                              >
-                                {source.title}
-                              </Typography>
-                              <Chip
-                                label={source.confidence}
-                                size="small"
-                                sx={{
-                                  ml: 2,
-                                  bgcolor: "rgba(255,255,255,0.1)",
-                                  fontWeight: "bold",
-                                  fontSize: "0.7rem",
-                                }}
-                              />
-                            </Box>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              sx={{ mb: 2 }}
-                            >
-                              {source.publisher} • {source.publishedDate}
-                            </Typography>
-                            <Typography
-                              variant="body1"
-                              sx={{ mb: 2, lineHeight: 1.6 }}
-                            >
-                              {source.description}
-                            </Typography>
-                            <Button
-                              variant="outlined"
-                              size="small"
-                              href={source.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              sx={{
-                                color: "text.secondary",
-                                borderColor: "rgba(255,255,255,0.2)",
-                              }}
-                            >
-                              View Source Document
-                            </Button>
-                          </Paper>
-                        </Grid>
-                      ))}
-                  </Grid>
-                </Box>
-              ))}
-            </Box>
           )}
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Paper
-            sx={{
-              p: 4,
-              mb: 4,
-              bgcolor: "rgba(99, 102, 241, 0.05)",
-              border: "1px solid rgba(99, 102, 241, 0.2)",
-              borderRadius: 4,
-            }}
-          >
-            <Typography
-              variant="overline"
-              color="primary"
-              sx={{ fontWeight: "bold" }}
-            >
-              Historical Rank: #{fp.historicalRank}
-            </Typography>
-            <Typography variant="h3" sx={{ fontWeight: 900, mt: 1, mb: 0 }}>
-              {fp.legacyScore.toFixed(1)}{" "}
-              <Typography component="span" variant="h5" color="text.secondary">
-                / 100
-              </Typography>
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Legacy Score
-            </Typography>
-
-            <Divider sx={{ mb: 3, borderColor: "rgba(255,255,255,0.1)" }} />
-
-            <Typography
-              variant="subtitle2"
-              sx={{ mb: 2, color: "text.secondary", fontWeight: "bold" }}
-            >
-              EVENT IMPORTANCE BREAKDOWN
-            </Typography>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
-            >
-              <Typography variant="body2">Severity</Typography>
-              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                {fp.severity} / 10
-              </Typography>
-            </Box>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
-            >
-              <Typography variant="body2">League Impact</Typography>
-              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                {fp.impactType}
-              </Typography>
-            </Box>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
-            >
-              <Typography variant="body2">Media Attention</Typography>
-              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                {fp.mediaAttention} / 10
-              </Typography>
-            </Box>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
-            >
-              <Typography variant="body2">Historical Significance</Typography>
-              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                {fp.significanceScore.toFixed(1)}
-              </Typography>
-            </Box>
-          </Paper>
 
           {graphData && graphData.nodes && graphData.nodes.length > 1 && (
             <Paper sx={{ p: 4, borderRadius: 4 }}>

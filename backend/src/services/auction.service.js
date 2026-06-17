@@ -1,4 +1,5 @@
-import { getPrisma } from '../config/index.js';
+import { getPrisma } from "../config/index.js";
+import { buildSearchCondition } from "../utils/searchHelpers.js";
 
 export async function getAuctionEntries({
   season,
@@ -9,10 +10,11 @@ export async function getAuctionEntries({
   minPrice,
   maxPrice,
   search,
+  quickFilter,
   page = 1,
   limit = 25,
-  sortBy = 'soldPrice',
-  sortOrder = 'desc',
+  sortBy = "soldPrice",
+  sortOrder = "desc",
 }) {
   const prisma = await getPrisma();
   const parsedLimit = parseInt(limit, 10) || 25;
@@ -27,18 +29,16 @@ export async function getAuctionEntries({
   }
   if (status) where.status = status;
 
-  if (role || search || reqNationality) {
+  if (role) {
+    where.role = role;
+  }
+
+  if (search || reqNationality) {
     where.player = {};
-    if (role) where.player.role = role;
     if (reqNationality) where.player.nationality = reqNationality;
-    
+
     if (search) {
-      const searchTerms = search.trim().split(/\s+/);
-      if (searchTerms.length > 0) {
-        where.player.AND = searchTerms.map(term => ({
-          name: { contains: term, mode: 'insensitive' }
-        }));
-      }
+      Object.assign(where.player, buildSearchCondition(search));
     }
   }
 
@@ -48,9 +48,33 @@ export async function getAuctionEntries({
     if (maxPrice) where.soldPrice.lte = parseFloat(maxPrice);
   }
 
-  const validSortFields = ['soldPrice', 'basePrice', 'season'];
-  const orderField = validSortFields.includes(sortBy) ? sortBy : 'soldPrice';
-  const orderDir = sortOrder === 'asc' ? 'asc' : 'desc';
+  if (quickFilter) {
+    if (quickFilter === "multiple_appearances") {
+      const grouped = await prisma.auctionEntry.groupBy({
+        by: ["playerId"],
+        having: { playerId: { _count: { gt: 1 } } },
+      });
+      where.playerId = { in: grouped.map((g) => g.playerId) };
+    } else if (quickFilter === "counts>2") {
+      const grouped = await prisma.auctionEntry.groupBy({
+        by: ["playerId"],
+        having: { playerId: { _count: { gt: 2 } } },
+      });
+      where.playerId = { in: grouped.map((g) => g.playerId) };
+    } else if (quickFilter === "counts>3") {
+      const grouped = await prisma.auctionEntry.groupBy({
+        by: ["playerId"],
+        having: { playerId: { _count: { gt: 3 } } },
+      });
+      where.playerId = { in: grouped.map((g) => g.playerId) };
+    } else if (quickFilter === "high_rollers") {
+      where.soldPrice = { ...where.soldPrice, gt: 1000 };
+    }
+  }
+
+  const validSortFields = ["soldPrice", "basePrice", "season"];
+  const orderField = validSortFields.includes(sortBy) ? sortBy : "soldPrice";
+  const orderDir = sortOrder === "asc" ? "asc" : "desc";
 
   const [entries, total] = await Promise.all([
     prisma.auctionEntry.findMany({
@@ -85,9 +109,27 @@ export async function getAuctionSeasons() {
   const prisma = await getPrisma();
   const seasons = await prisma.auctionEntry.findMany({
     select: { season: true },
-    distinct: ['season'],
-    orderBy: { season: 'desc' },
+    distinct: ["season"],
+    orderBy: { season: "desc" },
   });
 
   return seasons.map((s) => s.season);
+}
+
+export async function getSearchSuggestions(query) {
+  if (!query || query.length < 2) return [];
+  const prisma = await getPrisma();
+
+  const suggestions = await prisma.player.findMany({
+    where: {
+      name: { contains: query, mode: "insensitive" },
+      auctionEntries: { some: {} },
+    },
+    select: { name: true },
+    distinct: ["name"],
+    take: 10,
+    orderBy: { name: "asc" },
+  });
+
+  return suggestions.map((s) => s.name);
 }

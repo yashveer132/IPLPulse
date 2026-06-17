@@ -24,6 +24,7 @@ import {
   useBiggestDisasters,
 } from "../hooks/useRanking.js";
 import DataTable from "../components/common/DataTable.jsx";
+import PageHeader from "../components/common/PageHeader.jsx";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import StarIcon from "@mui/icons-material/Star";
@@ -58,11 +59,22 @@ function StatusChip({ status }) {
 export default function BestPurchases() {
   const navigate = useNavigate();
   const [tab, setTab] = useState(0);
-  const [params, setParams] = useState({ page: 1, limit: 25, season: '', team: '' });
+  const [params, setParams] = useState({
+    page: 1,
+    limit: 25,
+    season: "",
+    team: "",
+  });
 
   const greatestData = useGreatestPurchases(params, { enabled: tab === 0 });
-  const eliteBargainData = useBiggestBargains({ ...params, type: 'elite' }, { enabled: tab === 1 });
-  const breakoutBargainData = useBiggestBargains({ ...params, type: 'breakout' }, { enabled: tab === 2 });
+  const eliteBargainData = useBiggestBargains(
+    { ...params, type: "elite" },
+    { enabled: tab === 1 },
+  );
+  const breakoutBargainData = useBiggestBargains(
+    { ...params, type: "breakout" },
+    { enabled: tab === 2 },
+  );
   const disasterData = useBiggestDisasters(params, { enabled: tab === 3 });
 
   const commonColumns = [
@@ -95,17 +107,21 @@ export default function BestPurchases() {
       label: "Franchise",
       render: (_, row) => <Typography fontWeight={600}>{row.team}</Typography>,
     },
-    { 
-      id: "cost", 
-      label: "Cost", 
+    {
+      id: "cost",
+      label: "Cost",
       render: (_, row) => (
         <Box>
           <CostDisplay cost={row.cost} />
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: "block" }}
+          >
             {row.costPercentage} of Cap
           </Typography>
         </Box>
-      )
+      ),
     },
     {
       id: "matches",
@@ -116,34 +132,44 @@ export default function BestPurchases() {
       id: "confidence",
       label: "Confidence",
       render: (val) => (
-        <Chip 
-          label={val} 
-          size="small" 
-          color={val === 'High' ? 'success' : 'warning'} 
-          variant="outlined" 
-          sx={{ fontWeight: 600, fontSize: '0.7rem' }}
+        <Chip
+          label={val}
+          size="small"
+          color={val === "High" ? "success" : "warning"}
+          variant="outlined"
+          sx={{ fontWeight: 600, fontSize: "0.7rem" }}
         />
       ),
     },
-    { 
-      id: "performanceScore", 
+    {
+      id: "performanceScore",
       label: "Role-Adjusted Perf",
       render: (val, row) => (
         <Tooltip
           title={
             <Box>
-              <Typography variant="caption" display="block">Batting Impact: {row.battingImpact}</Typography>
-              <Typography variant="caption" display="block">Bowling Impact: {row.bowlingImpact}</Typography>
+              <Typography variant="caption" display="block">
+                Batting Impact: {row.battingImpact}
+              </Typography>
+              <Typography variant="caption" display="block">
+                Bowling Impact: {row.bowlingImpact}
+              </Typography>
             </Box>
           }
           arrow
           placement="top"
         >
-          <Typography sx={{ textDecoration: 'underline', textDecorationStyle: 'dotted', cursor: 'help' }}>
+          <Typography
+            sx={{
+              textDecoration: "underline",
+              textDecorationStyle: "dotted",
+              cursor: "help",
+            }}
+          >
             {val}
           </Typography>
         </Tooltip>
-      )
+      ),
     },
     {
       id: "valueScore",
@@ -262,19 +288,7 @@ export default function BestPurchases() {
   return (
     <Box>
       <Box mb={4}>
-        <Typography
-          variant="h3"
-          fontWeight={900}
-          gutterBottom
-          sx={{
-            background: "linear-gradient(45deg, #1e3c72 30%, #2a5298 90%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            textShadow: "0px 2px 10px rgba(0,0,0,0.1)",
-          }}
-        >
-          FranchiseIQ Auction Analytics
-        </Typography>
+        <PageHeader title="FranchiseIQ Auction Analytics" />
 
         <Alert
           severity="success"
@@ -323,15 +337,35 @@ export default function BestPurchases() {
             "& .Mui-selected": { color: "primary.main" },
           }}
         >
-          <Tab icon={<EmojiEventsIcon />} label="Greatest Purchases" iconPosition="start" />
-          <Tab icon={<TrendingUpIcon />} label="Elite Bargains" iconPosition="start" />
-          <Tab icon={<TrendingUpIcon />} label="Breakout Values" iconPosition="start" />
-          <Tab icon={<TrendingDownIcon />} label="Biggest Disasters" iconPosition="start" />
+          <Tab
+            icon={<EmojiEventsIcon />}
+            label="Greatest Purchases"
+            iconPosition="start"
+          />
+          <Tab
+            icon={<TrendingUpIcon />}
+            label="Elite Bargains"
+            iconPosition="start"
+          />
+          <Tab
+            icon={<TrendingUpIcon />}
+            label="Breakout Values"
+            iconPosition="start"
+          />
+          <Tab
+            icon={<TrendingDownIcon />}
+            label="Biggest Disasters"
+            iconPosition="start"
+          />
         </Tabs>
       </Paper>
 
       <Stack direction="row" spacing={2} sx={{ mb: 3 }} alignItems="center">
-        <Typography variant="subtitle2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        >
           <FilterListIcon fontSize="small" /> Filters:
         </Typography>
         <FormControl size="small" sx={{ minWidth: 120 }}>
@@ -339,12 +373,18 @@ export default function BestPurchases() {
           <Select
             value={params.season || ""}
             label="Season"
-            onChange={(e) => setParams({ ...params, season: e.target.value, page: 1 })}
+            onChange={(e) =>
+              setParams({ ...params, season: e.target.value, page: 1 })
+            }
           >
             <MenuItem value="">All Seasons</MenuItem>
-            {[2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022].map(y => (
-              <MenuItem key={y} value={y}>{y}</MenuItem>
-            ))}
+            {[2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022].map(
+              (y) => (
+                <MenuItem key={y} value={y}>
+                  {y}
+                </MenuItem>
+              ),
+            )}
           </Select>
         </FormControl>
         <FormControl size="small" sx={{ minWidth: 150 }}>
@@ -352,18 +392,37 @@ export default function BestPurchases() {
           <Select
             value={params.team || ""}
             label="Franchise"
-            onChange={(e) => setParams({ ...params, team: e.target.value, page: 1 })}
+            onChange={(e) =>
+              setParams({ ...params, team: e.target.value, page: 1 })
+            }
           >
             <MenuItem value="">All Franchises</MenuItem>
-            {['CSK', 'MI', 'RCB', 'KKR', 'DC', 'PBKS', 'RR', 'SRH', 'GT', 'LSG', 'RPSG', 'GL'].map(t => (
-              <MenuItem key={t} value={t}>{t}</MenuItem>
+            {[
+              "CSK",
+              "MI",
+              "RCB",
+              "KKR",
+              "DC",
+              "PBKS",
+              "RR",
+              "SRH",
+              "GT",
+              "LSG",
+              "RPSG",
+              "GL",
+            ].map((t) => (
+              <MenuItem key={t} value={t}>
+                {t}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
         {(params.season || params.team) && (
-          <IconButton 
-            size="small" 
-            onClick={() => setParams({ ...params, season: "", team: "", page: 1 })}
+          <IconButton
+            size="small"
+            onClick={() =>
+              setParams({ ...params, season: "", team: "", page: 1 })
+            }
             title="Clear Filters"
           >
             <ClearIcon fontSize="small" />

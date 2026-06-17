@@ -1,15 +1,15 @@
-import fs from 'fs';
-import path from 'path';
-import { getPrisma } from '../config/index.js';
+import fs from "fs";
+import path from "path";
+import { getPrisma } from "../config/index.js";
 
-const RAW_CRICSHEET_DIR = path.join(process.cwd(), 'data', 'raw', 'cricsheet');
+const RAW_CRICSHEET_DIR = path.join(process.cwd(), "data", "raw", "cricsheet");
 
 export async function computeEliteFeatures(
   year,
   matches,
   allPlayerMatchStats,
   playerSeasonStats,
-  seasonMilestones
+  seasonMilestones,
 ) {
   const prisma = await getPrisma();
 
@@ -19,7 +19,10 @@ export async function computeEliteFeatures(
       const fp = path.join(RAW_CRICSHEET_DIR, `${m.cricsheetId}.json`);
       if (fs.existsSync(fp)) {
         try {
-          matchFiles.push({ match: m, raw: JSON.parse(fs.readFileSync(fp, 'utf8')) });
+          matchFiles.push({
+            match: m,
+            raw: JSON.parse(fs.readFileSync(fp, "utf8")),
+          });
         } catch (e) {
           console.error(`Error parsing ${fp}: ${e.message}`);
         }
@@ -34,25 +37,33 @@ export async function computeEliteFeatures(
 
   const getBatterStat = (id, name, role) => {
     if (!batterClutchStats[id])
-      batterClutchStats[id] = { player: { id, name, role }, runs: 0, clutchPoints: 0 };
+      {batterClutchStats[id] = {
+        player: { id, name, role },
+        runs: 0,
+        clutchPoints: 0,
+      };}
     return batterClutchStats[id];
   };
 
   const getBowlerStat = (id, name, role) => {
     if (!bowlerClutchStats[id])
-      bowlerClutchStats[id] = {
+      {bowlerClutchStats[id] = {
         player: { id, name, role },
         wickets: 0,
         clutchPoints: 0,
         topOrderWickets: 0,
-      };
+      };}
     return bowlerClutchStats[id];
   };
 
   const finisherStats = {};
   const getFinisherStat = (id, name, role) => {
     if (!finisherStats[id])
-      finisherStats[id] = { player: { id, name, role }, deathRuns: 0, deathBalls: 0 };
+      {finisherStats[id] = {
+        player: { id, name, role },
+        deathRuns: 0,
+        deathBalls: 0,
+      };}
     return finisherStats[id];
   };
 
@@ -83,21 +94,21 @@ export async function computeEliteFeatures(
           const bowlerId = getCricsheetId(bowlerName);
 
           if (!batterRuns[batterName])
-            batterRuns[batterName] = {
+            {batterRuns[batterName] = {
               runs: 0,
               balls: 0,
               position: Object.keys(batterRuns).length + 1,
-            };
+            };}
 
           const h2hKey = `${batterName}|${bowlerName}`;
           if (!dynamicH2H[h2hKey])
-            dynamicH2H[h2hKey] = {
+            {dynamicH2H[h2hKey] = {
               batter: batterName,
               bowler: bowlerName,
               runs: 0,
               balls: 0,
               wkts: 0,
-            };
+            };}
 
           const runs = del.runs?.batter || 0;
           const extras = del.extras || {};
@@ -112,10 +123,14 @@ export async function computeEliteFeatures(
 
           if (batterId && isDeathOver) {
             const pms = allPlayerMatchStats.find(
-              (s) => s.matchId === match.id && s.playerId === batterId
+              (s) => s.matchId === match.id && s.playerId === batterId,
             );
             if (pms) {
-              const fStat = getFinisherStat(batterId, pms.player.name, pms.player.role);
+              const fStat = getFinisherStat(
+                batterId,
+                pms.player.name,
+                pms.player.role,
+              );
               fStat.deathRuns += runs;
               if (!isWide) fStat.deathBalls += 1;
             }
@@ -127,7 +142,7 @@ export async function computeEliteFeatures(
               bStats.reachedFifty = true;
               if (!fastestFifty || bStats.balls < fastestFifty.balls) {
                 const pms = allPlayerMatchStats.find(
-                  (s) => s.matchId === match.id && s.player.name === batterName
+                  (s) => s.matchId === match.id && s.player.name === batterName,
                 );
                 if (pms) {
                   fastestFifty = {
@@ -147,7 +162,7 @@ export async function computeEliteFeatures(
               bStats.reachedHundred = true;
               if (!fastestHundred || bStats.balls < fastestHundred.balls) {
                 const pms = allPlayerMatchStats.find(
-                  (s) => s.matchId === match.id && s.player.name === batterName
+                  (s) => s.matchId === match.id && s.player.name === batterName,
                 );
                 if (pms) {
                   fastestHundred = {
@@ -163,10 +178,14 @@ export async function computeEliteFeatures(
 
           if (batterId) {
             const pms = allPlayerMatchStats.find(
-              (s) => s.matchId === match.id && s.playerId === batterId
+              (s) => s.matchId === match.id && s.playerId === batterId,
             );
             if (pms && (isDeathOver || currentWickets >= 3)) {
-              const bStat = getBatterStat(batterId, pms.player.name, pms.player.role);
+              const bStat = getBatterStat(
+                batterId,
+                pms.player.name,
+                pms.player.role,
+              );
               bStat.runs += runs;
               bStat.clutchPoints += runs * (isDeathOver ? 1.5 : 1);
             }
@@ -177,21 +196,35 @@ export async function computeEliteFeatures(
             del.wickets.forEach((w) => {
               if (
                 bowlerId &&
-                ['bowled', 'caught', 'lbw', 'stumped', 'caught and bowled'].includes(w.kind)
+                [
+                  "bowled",
+                  "caught",
+                  "lbw",
+                  "stumped",
+                  "caught and bowled",
+                ].includes(w.kind)
               ) {
                 const h2hKey = `${batterName}|${bowlerName}`;
                 if (dynamicH2H[h2hKey]) dynamicH2H[h2hKey].wkts += 1;
 
                 const pms = allPlayerMatchStats.find(
-                  (s) => s.matchId === match.id && s.playerId === bowlerId
+                  (s) => s.matchId === match.id && s.playerId === bowlerId,
                 );
                 if (pms) {
-                  const bwStat = getBowlerStat(bowlerId, pms.player.name, pms.player.role);
+                  const bwStat = getBowlerStat(
+                    bowlerId,
+                    pms.player.name,
+                    pms.player.role,
+                  );
                   if (isDeathOver || isPlayoff) {
                     bwStat.wickets += 1;
-                    bwStat.clutchPoints += 10 * (isPlayoff ? 2 : 1) * (isDeathOver ? 1.5 : 1);
+                    bwStat.clutchPoints +=
+                      10 * (isPlayoff ? 2 : 1) * (isDeathOver ? 1.5 : 1);
                   }
-                  if (batterRuns[batterName] && batterRuns[batterName].position <= 3) {
+                  if (
+                    batterRuns[batterName] &&
+                    batterRuns[batterName].position <= 3
+                  ) {
                     bwStat.topOrderWickets += 1;
                   }
                 }
@@ -205,9 +238,13 @@ export async function computeEliteFeatures(
 
   const pressureIndex = {
     clutchBatter:
-      Object.values(batterClutchStats).sort((a, b) => b.clutchPoints - a.clutchPoints)[0] || null,
+      Object.values(batterClutchStats).sort(
+        (a, b) => b.clutchPoints - a.clutchPoints,
+      )[0] || null,
     clutchBowler:
-      Object.values(bowlerClutchStats).sort((a, b) => b.clutchPoints - a.clutchPoints)[0] || null,
+      Object.values(bowlerClutchStats).sort(
+        (a, b) => b.clutchPoints - a.clutchPoints,
+      )[0] || null,
   };
 
   const finishers = Object.values(finisherStats)
@@ -220,11 +257,14 @@ export async function computeEliteFeatures(
 
   const finisherOfTheSeason = finishers[0] || null;
   const enforcer =
-    Object.values(bowlerClutchStats).sort((a, b) => b.topOrderWickets - a.topOrderWickets)[0] ||
-    null;
+    Object.values(bowlerClutchStats).sort(
+      (a, b) => b.topOrderWickets - a.topOrderWickets,
+    )[0] || null;
   const economyKing =
     playerSeasonStats
-      .filter((s) => s.economyRate > 0 && s.totalWickets >= 10 && s.matches >= 5)
+      .filter(
+        (s) => s.economyRate > 0 && s.totalWickets >= 10 && s.matches >= 5,
+      )
       .sort((a, b) => a.economyRate - b.economyRate)[0] || null;
 
   const seasonAwards = {
@@ -241,27 +281,27 @@ export async function computeEliteFeatures(
   matches.forEach((m) => {
     if (!m.winner && !m.playerOfMatch) return;
     let score = 0;
-    let summary = [];
+    const summary = [];
 
     if (m.matchNumber === null) {
       score += 20;
-      summary.push('High-stakes Playoff/Final');
+      summary.push("High-stakes Playoff/Final");
     }
 
     if (m.winner === null && m.playerOfMatch) {
       score += 50;
-      summary.push('Super Over Thriller');
+      summary.push("Super Over Thriller");
     }
 
-    if (m.winType === 'runs' && m.winMargin <= 5) {
+    if (m.winType === "runs" && m.winMargin <= 5) {
       score += 30;
       summary.push(`Nail-biting ${m.winMargin}-run finish`);
-    } else if (m.winType === 'wickets' && m.winMargin <= 2) {
+    } else if (m.winType === "wickets" && m.winMargin <= 2) {
       score += 30;
       summary.push(`Tense ${m.winMargin}-wicket victory`);
-    } else if (m.winType === 'wickets' && m.winMargin <= 4) {
+    } else if (m.winType === "wickets" && m.winMargin <= 4) {
       score += 15;
-    } else if (m.winType === 'runs' && m.winMargin <= 10) {
+    } else if (m.winType === "runs" && m.winMargin <= 10) {
       score += 15;
     }
 
@@ -274,7 +314,7 @@ export async function computeEliteFeatures(
       score += 10;
     }
 
-    if (m.winType === 'wickets') {
+    if (m.winType === "wickets") {
       const batFirstRuns = matchStats
         .filter((s) => s.team !== m.winner)
         .reduce((sum, s) => sum + s.runsScored, 0);
@@ -285,15 +325,17 @@ export async function computeEliteFeatures(
     }
 
     const chaseStats = matchStats.filter((s) =>
-      m.winner ? s.team === m.winner && m.winType === 'wickets' : false
+      m.winner ? s.team === m.winner && m.winType === "wickets" : false,
     );
     const ballsChasing = chaseStats.reduce((sum, s) => sum + s.ballsFaced, 0);
-    if (m.winType === 'wickets' && ballsChasing >= 115) {
+    if (m.winType === "wickets" && ballsChasing >= 115) {
       score += 15;
-      if (!summary.includes('Super Over Thriller')) summary.push('Final over drama');
-    } else if (m.winType === 'runs' && m.winMargin <= 10) {
+      if (!summary.includes("Super Over Thriller"))
+        {summary.push("Final over drama");}
+    } else if (m.winType === "runs" && m.winMargin <= 10) {
       score += 15;
-      if (!summary.includes('Super Over Thriller')) summary.push('Final over drama');
+      if (!summary.includes("Super Over Thriller"))
+        {summary.push("Final over drama");}
     }
 
     matchStats.forEach((s) => {
@@ -312,13 +354,18 @@ export async function computeEliteFeatures(
     }
   });
 
-  const hallOfFameMatch = matchScores.sort((a, b) => b.score - a.score)[0] || null;
+  const hallOfFameMatch =
+    matchScores.sort((a, b) => b.score - a.score)[0] || null;
 
   let rivalries = [];
   try {
     Object.values(dynamicH2H).forEach((stats) => {
-      if (stats.wkts >= 2 || (stats.runs >= 30 && stats.runs / stats.balls >= 1.6)) {
-        let intensity = stats.wkts * 20 + stats.runs + (stats.runs / stats.balls) * 10;
+      if (
+        stats.wkts >= 2 ||
+        (stats.runs >= 30 && stats.runs / stats.balls >= 1.6)
+      ) {
+        const intensity =
+          stats.wkts * 20 + stats.runs + (stats.runs / stats.balls) * 10;
         rivalries.push({
           batter: stats.batter,
           bowler: stats.bowler,
@@ -331,7 +378,7 @@ export async function computeEliteFeatures(
       }
     });
   } catch (e) {
-    console.error('H2H Rivals Error:', e);
+    console.error("H2H Rivals Error:", e);
   }
   rivalries = rivalries.sort((a, b) => b.intensity - a.intensity).slice(0, 3);
 
@@ -360,7 +407,7 @@ export async function computeEliteFeatures(
         const perfDelta = s.performanceScore - prev.performanceScore;
 
         let improvementScore = 0;
-        if (s.player.role === 'Bowler') {
+        if (s.player.role === "Bowler") {
           improvementScore = wktDelta + perfDelta;
         } else {
           improvementScore = runDelta + perfDelta;
@@ -382,12 +429,14 @@ export async function computeEliteFeatures(
     });
 
     mostImprovedPlayer =
-      improvedPlayers.sort((a, b) => b.improvementScore - a.improvementScore)[0] || null;
+      improvedPlayers.sort(
+        (a, b) => b.improvementScore - a.improvementScore,
+      )[0] || null;
   } catch (e) {
-    console.error('MIP Error', e);
+    console.error("MIP Error", e);
   }
 
-  let recordsCheck = [];
+  const recordsCheck = [];
   try {
     const [
       hRuns,
@@ -408,110 +457,116 @@ export async function computeEliteFeatures(
     ] = await Promise.all([
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year } },
-        orderBy: { totalRuns: 'desc' },
+        orderBy: { totalRuns: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year } },
-        orderBy: { totalWickets: 'desc' },
+        orderBy: { totalWickets: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year } },
-        orderBy: { sixes: 'desc' },
+        orderBy: { sixes: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year } },
-        orderBy: { fours: 'desc' },
+        orderBy: { fours: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year } },
-        orderBy: { hundreds: 'desc' },
+        orderBy: { hundreds: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year } },
-        orderBy: { highestScore: 'desc' },
+        orderBy: { highestScore: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year } },
-        orderBy: { catches: 'desc' },
+        orderBy: { catches: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year } },
-        orderBy: { fifties: 'desc' },
+        orderBy: { fifties: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year } },
-        orderBy: { stumpings: 'desc' },
+        orderBy: { stumpings: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year }, totalRuns: { gte: 200 } },
-        orderBy: { strikeRate: 'desc' },
+        orderBy: { strikeRate: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year }, innings: { gte: 10 } },
-        orderBy: { average: 'desc' },
+        orderBy: { average: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year }, totalWickets: { gte: 15 } },
-        orderBy: { economyRate: 'asc' },
+        orderBy: { economyRate: "asc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year }, totalWickets: { gte: 15 } },
-        orderBy: { bowlingAvg: 'asc' },
+        orderBy: { bowlingAvg: "asc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerSeasonStats.findFirst({
         where: { season: { lt: year } },
-        orderBy: { playerOfMatch: 'desc' },
+        orderBy: { playerOfMatch: "desc" },
         include: { player: { select: { name: true } } },
       }),
       prisma.playerMatchStats.findFirst({
         where: { season: { lt: year } },
-        orderBy: [{ wickets: 'desc' }, { runsConceded: 'asc' }],
+        orderBy: [{ wickets: "desc" }, { runsConceded: "asc" }],
         include: { player: { select: { name: true } } },
       }),
     ]);
 
     const currMaxRuns = playerSeasonStats.reduce(
       (max, s) => (s.totalRuns > max ? s.totalRuns : max),
-      0
+      0,
     );
-    const currMaxSixes = playerSeasonStats.reduce((max, s) => (s.sixes > max ? s.sixes : max), 0);
+    const currMaxSixes = playerSeasonStats.reduce(
+      (max, s) => (s.sixes > max ? s.sixes : max),
+      0,
+    );
     const currMaxWkts = playerSeasonStats.reduce(
       (max, s) => (s.totalWickets > max ? s.totalWickets : max),
-      0
+      0,
     );
-    const currMaxFours = playerSeasonStats.reduce((max, s) => (s.fours > max ? s.fours : max), 0);
+    const currMaxFours = playerSeasonStats.reduce(
+      (max, s) => (s.fours > max ? s.fours : max),
+      0,
+    );
     const currMaxHundreds = playerSeasonStats.reduce(
       (max, s) => (s.hundreds > max ? s.hundreds : max),
-      0
+      0,
     );
     const currMaxScore = playerSeasonStats.reduce(
       (max, s) => (s.highestScore > max ? s.highestScore : max),
-      0
+      0,
     );
     const currMaxCatches = playerSeasonStats.reduce(
       (max, s) => (s.catches > max ? s.catches : max),
-      0
+      0,
     );
     const currMaxFifties = playerSeasonStats.reduce(
       (max, s) => (s.fifties > max ? s.fifties : max),
-      0
+      0,
     );
     const currMaxStumpings = playerSeasonStats.reduce(
       (max, s) => (s.stumpings > max ? s.stumpings : max),
-      0
+      0,
     );
 
     const currMaxSR = playerSeasonStats
@@ -522,32 +577,39 @@ export async function computeEliteFeatures(
       .reduce((max, s) => (s.average > max ? s.average : max), 0);
     const currMinEcon = playerSeasonStats
       .filter((s) => s.totalWickets >= 15)
-      .reduce((min, s) => (min === 0 || s.economyRate < min ? s.economyRate : min), 0);
+      .reduce(
+        (min, s) => (min === 0 || s.economyRate < min ? s.economyRate : min),
+        0,
+      );
     const currMinBowlAvg = playerSeasonStats
       .filter((s) => s.totalWickets >= 15)
-      .reduce((min, s) => (min === 0 || s.bowlingAvg < min ? s.bowlingAvg : min), 0);
+      .reduce(
+        (min, s) => (min === 0 || s.bowlingAvg < min ? s.bowlingAvg : min),
+        0,
+      );
     const currMaxPoM = playerSeasonStats.reduce(
       (max, s) => (s.playerOfMatch > max ? s.playerOfMatch : max),
-      0
+      0,
     );
     const currBestSpell =
       allPlayerMatchStats.sort(
-        (a, b) => b.wickets - a.wickets || a.runsConceded - b.runsConceded
+        (a, b) => b.wickets - a.wickets || a.runsConceded - b.runsConceded,
       )[0] || null;
 
     if (hRuns && hRuns.totalRuns > 0) {
       recordsCheck.push({
-        title: 'Most Runs in a Season',
+        title: "Most Runs in a Season",
         old: hRuns.totalRuns,
         oldPlayer: hRuns.player.name,
         new: currMaxRuns,
-        player: playerSeasonStats.find((s) => s.totalRuns === currMaxRuns)?.player,
+        player: playerSeasonStats.find((s) => s.totalRuns === currMaxRuns)
+          ?.player,
         isBroken: currMaxRuns > hRuns.totalRuns,
       });
     }
     if (hSixes && hSixes.sixes > 0) {
       recordsCheck.push({
-        title: 'Most Sixes in a Season',
+        title: "Most Sixes in a Season",
         old: hSixes.sixes,
         oldPlayer: hSixes.player.name,
         new: currMaxSixes,
@@ -557,17 +619,18 @@ export async function computeEliteFeatures(
     }
     if (hWkts && hWkts.totalWickets > 0) {
       recordsCheck.push({
-        title: 'Most Wickets in a Season',
+        title: "Most Wickets in a Season",
         old: hWkts.totalWickets,
         oldPlayer: hWkts.player.name,
         new: currMaxWkts,
-        player: playerSeasonStats.find((s) => s.totalWickets === currMaxWkts)?.player,
+        player: playerSeasonStats.find((s) => s.totalWickets === currMaxWkts)
+          ?.player,
         isBroken: currMaxWkts > hWkts.totalWickets,
       });
     }
     if (hFours && hFours.fours > 0) {
       recordsCheck.push({
-        title: 'Most Fours in a Season',
+        title: "Most Fours in a Season",
         old: hFours.fours,
         oldPlayer: hFours.player.name,
         new: currMaxFours,
@@ -577,95 +640,104 @@ export async function computeEliteFeatures(
     }
     if (hScore && hScore.highestScore > 0) {
       recordsCheck.push({
-        title: 'Highest Individual Score',
+        title: "Highest Individual Score",
         old: hScore.highestScore,
         oldPlayer: hScore.player.name,
         new: currMaxScore,
-        player: playerSeasonStats.find((s) => s.highestScore === currMaxScore)?.player,
+        player: playerSeasonStats.find((s) => s.highestScore === currMaxScore)
+          ?.player,
         isBroken: currMaxScore > hScore.highestScore,
       });
     }
     if (h100s && h100s.hundreds > 0) {
       recordsCheck.push({
-        title: 'Most Centuries in a Season',
+        title: "Most Centuries in a Season",
         old: h100s.hundreds,
         oldPlayer: h100s.player.name,
         new: currMaxHundreds,
-        player: playerSeasonStats.find((s) => s.hundreds === currMaxHundreds)?.player,
+        player: playerSeasonStats.find((s) => s.hundreds === currMaxHundreds)
+          ?.player,
         isBroken: currMaxHundreds > h100s.hundreds,
       });
     }
     if (hCatches && hCatches.catches > 0) {
       recordsCheck.push({
-        title: 'Most Catches in a Season',
+        title: "Most Catches in a Season",
         old: hCatches.catches,
         oldPlayer: hCatches.player.name,
         new: currMaxCatches,
-        player: playerSeasonStats.find((s) => s.catches === currMaxCatches)?.player,
+        player: playerSeasonStats.find((s) => s.catches === currMaxCatches)
+          ?.player,
         isBroken: currMaxCatches > hCatches.catches,
       });
     }
     if (h50s && h50s.fifties > 0) {
       recordsCheck.push({
-        title: 'Most Fifties in a Season',
+        title: "Most Fifties in a Season",
         old: h50s.fifties,
         oldPlayer: h50s.player.name,
         new: currMaxFifties,
-        player: playerSeasonStats.find((s) => s.fifties === currMaxFifties)?.player,
+        player: playerSeasonStats.find((s) => s.fifties === currMaxFifties)
+          ?.player,
         isBroken: currMaxFifties > h50s.fifties,
       });
     }
     if (hStumps && hStumps.stumpings > 0) {
       recordsCheck.push({
-        title: 'Most Stumpings in a Season',
+        title: "Most Stumpings in a Season",
         old: hStumps.stumpings,
         oldPlayer: hStumps.player.name,
         new: currMaxStumpings,
-        player: playerSeasonStats.find((s) => s.stumpings === currMaxStumpings)?.player,
+        player: playerSeasonStats.find((s) => s.stumpings === currMaxStumpings)
+          ?.player,
         isBroken: currMaxStumpings > hStumps.stumpings,
       });
     }
 
     if (histSR && histSR.strikeRate > 0) {
       recordsCheck.push({
-        title: 'Highest Strike Rate (min 200 runs)',
+        title: "Highest Strike Rate (min 200 runs)",
         old: histSR.strikeRate,
         oldPlayer: histSR.player.name,
         new: currMaxSR,
-        player: playerSeasonStats.find((s) => s.strikeRate === currMaxSR && s.totalRuns >= 200)
-          ?.player,
+        player: playerSeasonStats.find(
+          (s) => s.strikeRate === currMaxSR && s.totalRuns >= 200,
+        )?.player,
         isBroken: currMaxSR > histSR.strikeRate,
       });
     }
     if (histAvg && histAvg.average > 0) {
       recordsCheck.push({
-        title: 'Highest Average (min 10 innings)',
+        title: "Highest Average (min 10 innings)",
         old: histAvg.average,
         oldPlayer: histAvg.player.name,
         new: currMaxAvg,
-        player: playerSeasonStats.find((s) => s.average === currMaxAvg && s.innings >= 10)?.player,
+        player: playerSeasonStats.find(
+          (s) => s.average === currMaxAvg && s.innings >= 10,
+        )?.player,
         isBroken: currMaxAvg > histAvg.average,
       });
     }
     if (histEcon && histEcon.economyRate > 0 && currMinEcon > 0) {
       recordsCheck.push({
-        title: 'Best Economy Rate (min 15 wkts)',
+        title: "Best Economy Rate (min 15 wkts)",
         old: histEcon.economyRate,
         oldPlayer: histEcon.player.name,
         new: currMinEcon,
-        player: playerSeasonStats.find((s) => s.economyRate === currMinEcon && s.totalWickets >= 15)
-          ?.player,
+        player: playerSeasonStats.find(
+          (s) => s.economyRate === currMinEcon && s.totalWickets >= 15,
+        )?.player,
         isBroken: currMinEcon < histEcon.economyRate,
       });
     }
     if (histBowlAvg && histBowlAvg.bowlingAvg > 0 && currMinBowlAvg > 0) {
       recordsCheck.push({
-        title: 'Best Bowling Avg (min 15 wkts)',
+        title: "Best Bowling Avg (min 15 wkts)",
         old: histBowlAvg.bowlingAvg,
         oldPlayer: histBowlAvg.player.name,
         new: currMinBowlAvg,
         player: playerSeasonStats.find(
-          (s) => s.bowlingAvg === currMinBowlAvg && s.totalWickets >= 15
+          (s) => s.bowlingAvg === currMinBowlAvg && s.totalWickets >= 15,
         )?.player,
         isBroken: currMinBowlAvg < histBowlAvg.bowlingAvg,
       });
@@ -673,11 +745,12 @@ export async function computeEliteFeatures(
 
     if (hPoM && hPoM.playerOfMatch > 0) {
       recordsCheck.push({
-        title: 'Most PoM Awards',
+        title: "Most PoM Awards",
         old: hPoM.playerOfMatch,
         oldPlayer: hPoM.player.name,
         new: currMaxPoM,
-        player: playerSeasonStats.find((s) => s.playerOfMatch === currMaxPoM)?.player,
+        player: playerSeasonStats.find((s) => s.playerOfMatch === currMaxPoM)
+          ?.player,
         isBroken: currMaxPoM > hPoM.playerOfMatch,
       });
     }
@@ -690,7 +763,7 @@ export async function computeEliteFeatures(
         (currBestSpell.wickets === hBestSpell.wickets &&
           currBestSpell.runsConceded < hBestSpell.runsConceded);
       recordsCheck.push({
-        title: 'Best Bowling Spell',
+        title: "Best Bowling Spell",
         old: oldSpellStr,
         oldPlayer: hBestSpell.player.name,
         new: newSpellStr,
@@ -701,9 +774,9 @@ export async function computeEliteFeatures(
 
     if (fastestFifty) {
       recordsCheck.push({
-        title: 'Fastest Fifty',
+        title: "Fastest Fifty",
         old: 13,
-        oldPlayer: 'Yashasvi Jaiswal',
+        oldPlayer: "Yashasvi Jaiswal",
         new: fastestFifty.balls,
         player: fastestFifty.player,
         isBroken: fastestFifty.balls < 13,
@@ -711,9 +784,9 @@ export async function computeEliteFeatures(
     }
     if (fastestHundred) {
       recordsCheck.push({
-        title: 'Fastest Hundred',
+        title: "Fastest Hundred",
         old: 30,
-        oldPlayer: 'Chris Gayle',
+        oldPlayer: "Chris Gayle",
         new: fastestHundred.balls,
         player: fastestHundred.player,
         isBroken: fastestHundred.balls < 30,
@@ -723,9 +796,9 @@ export async function computeEliteFeatures(
 
   const recordsBroken = recordsCheck.filter((r) => r.isBroken);
 
-  let narrative = '';
+  let narrative = "";
   if (recordsBroken.length > 0) {
-    narrative = `The season was defined by record-breaking performances, headlined by ${recordsBroken[0].player?.name}'s unprecedented ${recordsBroken[0].new} ${recordsBroken[0].title.toLowerCase().replace(' in a season', '').replace('most ', '')}.`;
+    narrative = `The season was defined by record-breaking performances, headlined by ${recordsBroken[0].player?.name}'s unprecedented ${recordsBroken[0].new} ${recordsBroken[0].title.toLowerCase().replace(" in a season", "").replace("most ", "")}.`;
   } else if (playerSeasonStats.some((s) => s.totalRuns >= 700)) {
     const star = playerSeasonStats.find((s) => s.totalRuns >= 700);
     narrative = `Batting dominated the season, with ${star.player.name} producing an elite run-scoring campaign with ${star.totalRuns} runs.`;

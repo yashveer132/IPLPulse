@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export function usePlayerPhoto(playerName) {
   const [photoUrl, setPhotoUrl] = useState(null);
@@ -16,7 +16,7 @@ export function usePlayerPhoto(playerName) {
 
     async function fetchPhoto() {
       try {
-        const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(playerName + ' cricketer')}&utf8=&format=json&origin=*`;
+        const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(playerName + " cricketer")}&utf8=&format=json&origin=*`;
         const searchRes = await fetch(searchUrl);
         const searchData = await searchRes.json();
 
@@ -42,7 +42,7 @@ export function usePlayerPhoto(playerName) {
           if (isMounted) setLoading(false);
         }
       } catch (err) {
-        console.error('Failed to fetch player photo from Wikipedia', err);
+        console.error("Failed to fetch player photo from Wikipedia", err);
         if (isMounted) setLoading(false);
       }
     }

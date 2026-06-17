@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -21,8 +21,9 @@ import {
   TableCell,
   TableBody,
   Chip,
-} from '@mui/material';
-import { apiClient } from '../api/index.js';
+} from "@mui/material";
+import { apiClient } from "../api/index.js";
+import PageHeader from "../components/common/PageHeader.jsx";
 
 function VenueMastery() {
   const [players, setPlayers] = useState([]);
@@ -30,11 +31,11 @@ function VenueMastery() {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedLogs, setSelectedLogs] = useState(null);
-  const [selectedVenue, setSelectedVenue] = useState('');
+  const [selectedVenue, setSelectedVenue] = useState("");
 
   useEffect(() => {
     apiClient
-      .get('/players?limit=3000')
+      .get("/players?limit=3000")
       .then((res) => setPlayers(res.players || []))
       .catch((err) => console.error(err));
   }, []);
@@ -55,16 +56,24 @@ function VenueMastery() {
     }
   };
 
-  const renderStatCard = (label, value, color = 'white', subtitle = '') => (
-    <Box sx={{ textAlign: 'center', mb: 2 }}>
+  const renderStatCard = (label, value, color = "white", subtitle = "") => (
+    <Box sx={{ textAlign: "center", mb: 2 }}>
       <Typography variant="h4" fontWeight={800} color={color}>
         {value}
       </Typography>
-      <Typography variant="overline" color="rgba(255,255,255,0.7)" sx={{ lineHeight: 1 }}>
+      <Typography
+        variant="overline"
+        color="rgba(255,255,255,0.7)"
+        sx={{ lineHeight: 1 }}
+      >
         {label}
       </Typography>
       {subtitle && (
-        <Typography variant="caption" display="block" color="rgba(255,255,255,0.5)">
+        <Typography
+          variant="caption"
+          display="block"
+          color="rgba(255,255,255,0.5)"
+        >
           {subtitle}
         </Typography>
       )}
@@ -72,15 +81,13 @@ function VenueMastery() {
   );
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
-      <Typography variant="h4" fontWeight={800} color="primary.main" gutterBottom>
-        The Ultimate Venue Mastery
-      </Typography>
-      <Typography variant="subtitle1" color="text.secondary" mb={4}>
-        Discover which players have turned specific stadiums into their fortresses.
-      </Typography>
+    <Box sx={{ maxWidth: 1200, mx: "auto", p: 3 }}>
+      <PageHeader
+        title="The Ultimate Venue Mastery"
+        subtitle="Discover which players have turned specific stadiums into their fortresses."
+      />
 
-      <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
+      <Box sx={{ display: "flex", gap: 3, mb: 4 }}>
         <Autocomplete
           fullWidth
           options={players}
@@ -98,7 +105,7 @@ function VenueMastery() {
           disabled={!player || loading}
           sx={{ px: 4, borderRadius: 2 }}
         >
-          {loading ? 'Searching...' : 'Analyze Venue Data'}
+          {loading ? "Searching..." : "Analyze Venue Data"}
         </Button>
       </Box>
 
@@ -114,17 +121,21 @@ function VenueMastery() {
             const hasBatting = venueStat.inningsBat > 0;
             const hasBowling = venueStat.inningsBowl > 0;
             const hasFielding =
-              venueStat.catches > 0 || venueStat.runOuts > 0 || venueStat.stumpings > 0;
+              venueStat.catches > 0 ||
+              venueStat.runOuts > 0 ||
+              venueStat.stumpings > 0;
             const hasMilestones =
-              venueStat.centuries > 0 || venueStat.fifties > 0 || venueStat.runsScored >= 3000;
+              venueStat.centuries > 0 ||
+              venueStat.fifties > 0 ||
+              venueStat.runsScored >= 3000;
 
             const dismissals = venueStat.inningsBat - venueStat.notOuts;
             const trueAverage =
               dismissals > 0
                 ? (venueStat.runsScored / dismissals).toFixed(1)
                 : venueStat.runsScored > 0
-                  ? '-'
-                  : '0.0';
+                  ? "-"
+                  : "0.0";
             const boundaryRuns = venueStat.fours * 4 + venueStat.sixes * 6;
             const boundaryReliance =
               venueStat.runsScored > 0
@@ -132,18 +143,25 @@ function VenueMastery() {
                 : 0;
             const sr =
               venueStat.ballsFaced > 0
-                ? ((venueStat.runsScored / venueStat.ballsFaced) * 100).toFixed(1)
+                ? ((venueStat.runsScored / venueStat.ballsFaced) * 100).toFixed(
+                    1,
+                  )
                 : 0;
             const economy =
               venueStat.ballsBowled > 0
-                ? ((venueStat.runsConceded / venueStat.ballsBowled) * 6).toFixed(2)
+                ? (
+                    (venueStat.runsConceded / venueStat.ballsBowled) *
+                    6
+                  ).toFixed(2)
                 : 0;
             const bowlingAvg =
-              venueStat.wickets > 0 ? (venueStat.runsConceded / venueStat.wickets).toFixed(1) : '-';
+              venueStat.wickets > 0
+                ? (venueStat.runsConceded / venueStat.wickets).toFixed(1)
+                : "-";
             const bestBowlingStr =
               venueStat.bestBowlingWickets > 0
                 ? `${venueStat.bestBowlingWickets}/${venueStat.bestBowlingRuns}`
-                : '-';
+                : "-";
 
             return (
               <Grid item xs={12} md={6} lg={4} key={venueStat.id}>
@@ -154,21 +172,21 @@ function VenueMastery() {
                   }}
                   sx={{
                     borderRadius: 4,
-                    overflow: 'hidden',
+                    overflow: "hidden",
                     boxShadow: 6,
-                    background: 'linear-gradient(145deg, #1e293b, #0f172a)',
-                    color: 'white',
-                    cursor: 'pointer',
-                    transition: 'transform 0.2s',
-                    '&:hover': { transform: 'scale(1.02)', boxShadow: 10 },
+                    background: "linear-gradient(145deg, #1e293b, #0f172a)",
+                    color: "white",
+                    cursor: "pointer",
+                    transition: "transform 0.2s",
+                    "&:hover": { transform: "scale(1.02)", boxShadow: 10 },
                   }}
                 >
                   <Box
                     sx={{
-                      bgcolor: 'rgba(255,255,255,0.05)',
+                      bgcolor: "rgba(255,255,255,0.05)",
                       p: 2,
-                      borderBottom: '1px solid rgba(255,255,255,0.1)',
-                      textAlign: 'center',
+                      borderBottom: "1px solid rgba(255,255,255,0.1)",
+                      textAlign: "center",
                     }}
                   >
                     <Typography variant="h6" fontWeight={800} noWrap>
@@ -183,19 +201,23 @@ function VenueMastery() {
                     <Box
                       sx={{
                         p: 1.5,
-                        bgcolor: 'rgba(245, 158, 11, 0.1)',
-                        borderBottom: '1px solid rgba(255,255,255,0.1)',
-                        display: 'flex',
+                        bgcolor: "rgba(245, 158, 11, 0.1)",
+                        borderBottom: "1px solid rgba(255,255,255,0.1)",
+                        display: "flex",
                         gap: 1,
-                        flexWrap: 'wrap',
-                        justifyContent: 'center',
+                        flexWrap: "wrap",
+                        justifyContent: "center",
                       }}
                     >
                       {venueStat.centuries > 0 && (
                         <Chip
                           size="small"
                           label={`${venueStat.centuries} Centuries`}
-                          sx={{ bgcolor: '#f59e0b', color: '#000', fontWeight: 800 }}
+                          sx={{
+                            bgcolor: "#f59e0b",
+                            color: "#000",
+                            fontWeight: 800,
+                          }}
                         />
                       )}
                       {venueStat.fifties > 0 && (
@@ -203,8 +225,8 @@ function VenueMastery() {
                           size="small"
                           label={`${venueStat.fifties} Fifties`}
                           sx={{
-                            bgcolor: 'rgba(245, 158, 11, 0.8)',
-                            color: '#000',
+                            bgcolor: "rgba(245, 158, 11, 0.8)",
+                            color: "#000",
                             fontWeight: 800,
                           }}
                         />
@@ -213,50 +235,64 @@ function VenueMastery() {
                         <Chip
                           size="small"
                           label="🏆 3,000 Run Club"
-                          sx={{ bgcolor: '#ffd700', color: '#000', fontWeight: 800 }}
+                          sx={{
+                            bgcolor: "#ffd700",
+                            color: "#000",
+                            fontWeight: 800,
+                          }}
                         />
                       )}
-                      {venueStat.runsScored >= 1000 && venueStat.runsScored < 3000 && (
-                        <Chip
-                          size="small"
-                          label="🏆 1,000 Run Club"
-                          sx={{ bgcolor: 'rgba(255,215,0,0.8)', color: '#000', fontWeight: 800 }}
-                        />
-                      )}
+                      {venueStat.runsScored >= 1000 &&
+                        venueStat.runsScored < 3000 && (
+                          <Chip
+                            size="small"
+                            label="🏆 1,000 Run Club"
+                            sx={{
+                              bgcolor: "rgba(255,215,0,0.8)",
+                              color: "#000",
+                              fontWeight: 800,
+                            }}
+                          />
+                        )}
                     </Box>
                   )}
 
                   <CardContent>
                     {hasBatting && (
                       <Box mb={3}>
-                        <Typography variant="subtitle2" color="#4dabf5" fontWeight={700} mb={2}>
+                        <Typography
+                          variant="subtitle2"
+                          color="#4dabf5"
+                          fontWeight={700}
+                          mb={2}
+                        >
                           🏏 BATTING
                         </Typography>
                         <Grid container spacing={2}>
                           <Grid item xs={6}>
                             {renderStatCard(
-                              'Runs',
+                              "Runs",
                               venueStat.runsScored,
-                              'white',
-                              `${venueStat.inningsBat} Innings`
+                              "white",
+                              `${venueStat.inningsBat} Innings`,
                             )}
                           </Grid>
                           <Grid item xs={6}>
                             {renderStatCard(
-                              'High Score',
+                              "High Score",
                               venueStat.highestScore > 0
                                 ? venueStat.notOuts > 0
                                   ? `${venueStat.highestScore}*`
                                   : venueStat.highestScore
-                                : '-',
-                              '#f59e0b'
+                                : "-",
+                              "#f59e0b",
                             )}
                           </Grid>
                           <Grid item xs={6}>
-                            {renderStatCard('True Average', trueAverage)}
+                            {renderStatCard("True Average", trueAverage)}
                           </Grid>
                           <Grid item xs={6}>
-                            {renderStatCard('Strike Rate', sr)}
+                            {renderStatCard("Strike Rate", sr)}
                           </Grid>
                         </Grid>
                         {venueStat.runsScored > 0 && (
@@ -276,11 +312,16 @@ function VenueMastery() {
                               sx={{
                                 height: 6,
                                 borderRadius: 3,
-                                bgcolor: 'rgba(255,255,255,0.1)',
-                                '& .MuiLinearProgress-bar': { bgcolor: '#f59e0b' },
+                                bgcolor: "rgba(255,255,255,0.1)",
+                                "& .MuiLinearProgress-bar": {
+                                  bgcolor: "#f59e0b",
+                                },
                               }}
                             />
-                            <Typography variant="caption" color="rgba(255,255,255,0.5)">
+                            <Typography
+                              variant="caption"
+                              color="rgba(255,255,255,0.5)"
+                            >
                               {venueStat.fours} Fours | {venueStat.sixes} Sixes
                             </Typography>
                           </Box>
@@ -292,30 +333,41 @@ function VenueMastery() {
                       <Box
                         sx={{
                           pt: hasBatting ? 3 : 0,
-                          borderTop: hasBatting ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                          borderTop: hasBatting
+                            ? "1px solid rgba(255,255,255,0.1)"
+                            : "none",
                           mb: hasFielding ? 3 : 0,
                         }}
                       >
-                        <Typography variant="subtitle2" color="#ff4757" fontWeight={700} mb={2}>
+                        <Typography
+                          variant="subtitle2"
+                          color="#ff4757"
+                          fontWeight={700}
+                          mb={2}
+                        >
                           ⚾ BOWLING
                         </Typography>
                         <Grid container spacing={2}>
                           <Grid item xs={6}>
                             {renderStatCard(
-                              'Wickets',
+                              "Wickets",
                               venueStat.wickets,
-                              'white',
-                              `${venueStat.inningsBowl} Innings`
+                              "white",
+                              `${venueStat.inningsBowl} Innings`,
                             )}
                           </Grid>
                           <Grid item xs={6}>
-                            {renderStatCard('Best Figures', bestBowlingStr, '#ff4757')}
+                            {renderStatCard(
+                              "Best Figures",
+                              bestBowlingStr,
+                              "#ff4757",
+                            )}
                           </Grid>
                           <Grid item xs={6}>
-                            {renderStatCard('Average', bowlingAvg)}
+                            {renderStatCard("Average", bowlingAvg)}
                           </Grid>
                           <Grid item xs={6}>
-                            {renderStatCard('Economy', economy)}
+                            {renderStatCard("Economy", economy)}
                           </Grid>
                         </Grid>
                       </Box>
@@ -326,26 +378,33 @@ function VenueMastery() {
                         sx={{
                           pt: hasBatting || hasBowling ? 3 : 0,
                           borderTop:
-                            hasBatting || hasBowling ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                            hasBatting || hasBowling
+                              ? "1px solid rgba(255,255,255,0.1)"
+                              : "none",
                         }}
                       >
-                        <Typography variant="subtitle2" color="#2ed573" fontWeight={700} mb={2}>
+                        <Typography
+                          variant="subtitle2"
+                          color="#2ed573"
+                          fontWeight={700}
+                          mb={2}
+                        >
                           🧤 FIELDING
                         </Typography>
                         <Grid container spacing={2}>
                           {venueStat.catches > 0 && (
                             <Grid item xs={4}>
-                              {renderStatCard('Catches', venueStat.catches)}
+                              {renderStatCard("Catches", venueStat.catches)}
                             </Grid>
                           )}
                           {venueStat.stumpings > 0 && (
                             <Grid item xs={4}>
-                              {renderStatCard('Stumpings', venueStat.stumpings)}
+                              {renderStatCard("Stumpings", venueStat.stumpings)}
                             </Grid>
                           )}
                           {venueStat.runOuts > 0 && (
                             <Grid item xs={4}>
-                              {renderStatCard('Run Outs', venueStat.runOuts)}
+                              {renderStatCard("Run Outs", venueStat.runOuts)}
                             </Grid>
                           )}
                         </Grid>
@@ -365,13 +424,15 @@ function VenueMastery() {
         maxWidth="lg"
         fullWidth
       >
-        <DialogTitle sx={{ fontWeight: 800, bgcolor: 'primary.main', color: 'white' }}>
+        <DialogTitle
+          sx={{ fontWeight: 800, bgcolor: "primary.main", color: "white" }}
+        >
           Historical Match Log: {selectedVenue}
         </DialogTitle>
         <DialogContent sx={{ p: 0 }}>
-          <TableContainer sx={{ overflowX: 'auto' }}>
+          <TableContainer sx={{ overflowX: "auto" }}>
             <Table size="small">
-              <TableHead sx={{ bgcolor: 'rgba(0,0,0,0.05)' }}>
+              <TableHead sx={{ bgcolor: "rgba(0,0,0,0.05)" }}>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 700 }}>Date</TableCell>
                   <TableCell sx={{ fontWeight: 700 }}>Runs</TableCell>
@@ -387,62 +448,81 @@ function VenueMastery() {
               <TableBody>
                 {selectedLogs &&
                   selectedLogs.map((log, i) => {
-                    const sr = log.balls > 0 ? ((log.runs / log.balls) * 100).toFixed(1) : '-';
+                    const sr =
+                      log.balls > 0
+                        ? ((log.runs / log.balls) * 100).toFixed(1)
+                        : "-";
                     const overs = (log.ballsBowled / 6).toFixed(1);
                     const econ =
                       log.ballsBowled > 0
                         ? ((log.runsConceded / log.ballsBowled) * 6).toFixed(2)
-                        : '-';
+                        : "-";
                     const field = [
                       log.catches > 0 ? `${log.catches}c` : null,
                       log.stumpings > 0 ? `${log.stumpings}st` : null,
                       log.runOuts > 0 ? `${log.runOuts}ro` : null,
                     ]
                       .filter(Boolean)
-                      .join(', ');
+                      .join(", ");
 
-                    const [y, m, d] = (log.date || '').split('-');
-                    const formattedDate = y && m && d ? `${d}-${m}-${y}` : log.date;
+                    const [y, m, d] = (log.date || "").split("-");
+                    const formattedDate =
+                      y && m && d ? `${d}-${m}-${y}` : log.date;
 
                     return (
-                      <TableRow key={i} sx={{ '&:hover': { bgcolor: 'rgba(0,0,0,0.02)' } }}>
-                        <TableCell sx={{ whiteSpace: 'nowrap' }}>{formattedDate}</TableCell>
+                      <TableRow
+                        key={i}
+                        sx={{ "&:hover": { bgcolor: "rgba(0,0,0,0.02)" } }}
+                      >
+                        <TableCell sx={{ whiteSpace: "nowrap" }}>
+                          {formattedDate}
+                        </TableCell>
                         <TableCell
                           sx={{
                             fontWeight: log.runs >= 50 ? 800 : 400,
                             color:
-                              log.runs >= 100 ? '#e65100' : log.runs >= 50 ? '#f59e0b' : 'inherit',
+                              log.runs >= 100
+                                ? "#e65100"
+                                : log.runs >= 50
+                                  ? "#f59e0b"
+                                  : "inherit",
                           }}
                         >
-                          {log.runs > 0 || log.balls > 0 ? log.runs : '-'}
+                          {log.runs > 0 || log.balls > 0 ? log.runs : "-"}
                         </TableCell>
-                        <TableCell>{log.balls > 0 ? log.balls : '-'}</TableCell>
+                        <TableCell>{log.balls > 0 ? log.balls : "-"}</TableCell>
                         <TableCell>{sr}</TableCell>
                         <TableCell
                           sx={{
                             color: log.isOut
-                              ? '#ff4757'
+                              ? "#ff4757"
                               : log.runs > 0 || log.balls > 0
-                                ? '#2ed573'
-                                : 'inherit',
+                                ? "#2ed573"
+                                : "inherit",
                             fontWeight: log.isOut ? 400 : 700,
                           }}
                         >
-                          {log.runs > 0 || log.balls > 0 ? (log.isOut ? 'Out' : 'Not Out') : '-'}
+                          {log.runs > 0 || log.balls > 0
+                            ? log.isOut
+                              ? "Out"
+                              : "Not Out"
+                            : "-"}
                         </TableCell>
                         <TableCell
                           sx={{
                             fontWeight: log.wickets >= 3 ? 800 : 400,
-                            color: log.wickets >= 3 ? '#ff4757' : 'inherit',
+                            color: log.wickets >= 3 ? "#ff4757" : "inherit",
                           }}
                         >
-                          {log.ballsBowled > 0 ? log.wickets : '-'}
+                          {log.ballsBowled > 0 ? log.wickets : "-"}
                         </TableCell>
                         <TableCell>
-                          {log.ballsBowled > 0 ? `${overs} (${log.runsConceded})` : '-'}
+                          {log.ballsBowled > 0
+                            ? `${overs} (${log.runsConceded})`
+                            : "-"}
                         </TableCell>
                         <TableCell>{econ}</TableCell>
-                        <TableCell>{field || '-'}</TableCell>
+                        <TableCell>{field || "-"}</TableCell>
                       </TableRow>
                     );
                   })}

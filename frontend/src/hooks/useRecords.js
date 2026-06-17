@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { recordsApi } from '../api/recordsApi.js';
+import { useQuery } from "@tanstack/react-query";
+import { recordsApi } from "../api/recordsApi.js";
 
 export function useSeasonLeaderboards() {
   return useQuery({
-    queryKey: ['seasonLeaderboards'],
+    queryKey: ["seasonLeaderboards"],
     queryFn: async () => {
       const response = await recordsApi.getSeasonLeaderboards();
       return response;
@@ -14,7 +14,7 @@ export function useSeasonLeaderboards() {
 
 export function useDynamicRecord(categoryId, recordId) {
   return useQuery({
-    queryKey: ['dynamicRecord', categoryId, recordId],
+    queryKey: ["dynamicRecord", categoryId, recordId],
     queryFn: async () => {
       if (!categoryId || !recordId) return null;
       return await recordsApi.getDynamicRecord(categoryId, recordId);

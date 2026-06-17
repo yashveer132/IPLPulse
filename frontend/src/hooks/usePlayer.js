@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { playerApi } from '../api/index.js';
+import { useQuery } from "@tanstack/react-query";
+import { playerApi } from "../api/index.js";
 
 export const usePlayers = (params, options = {}) => {
   return useQuery({
-    queryKey: ['players', params],
+    queryKey: ["players", params],
     queryFn: () => playerApi.getPlayers(params),
     keepPreviousData: true,
     ...options,
@@ -12,7 +12,7 @@ export const usePlayers = (params, options = {}) => {
 
 export const usePlayerById = (id, options = {}) => {
   return useQuery({
-    queryKey: ['player', id],
+    queryKey: ["player", id],
     queryFn: () => playerApi.getPlayerById(id),
     enabled: !!id,
     ...options,
@@ -21,7 +21,7 @@ export const usePlayerById = (id, options = {}) => {
 
 export const usePlayerStats = (id, options = {}) => {
   return useQuery({
-    queryKey: ['player', id, 'stats'],
+    queryKey: ["player", id, "stats"],
     queryFn: () => playerApi.getPlayerStats(id),
     enabled: !!id,
     ...options,
@@ -30,7 +30,7 @@ export const usePlayerStats = (id, options = {}) => {
 
 export const usePlayerAuctionHistory = (id, options = {}) => {
   return useQuery({
-    queryKey: ['player', id, 'auctionHistory'],
+    queryKey: ["player", id, "auctionHistory"],
     queryFn: () => playerApi.getPlayerAuctionHistory(id),
     enabled: !!id,
     ...options,

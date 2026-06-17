@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { franchiseApi } from '../api/index.js';
+import { useQuery } from "@tanstack/react-query";
+import { franchiseApi } from "../api/index.js";
 
 export const useFranchises = (options = {}) => {
   return useQuery({
-    queryKey: ['franchises'],
+    queryKey: ["franchises"],
     queryFn: () => franchiseApi.getFranchises(),
     ...options,
   });
@@ -11,7 +11,7 @@ export const useFranchises = (options = {}) => {
 
 export const useFranchiseById = (id, options = {}) => {
   return useQuery({
-    queryKey: ['franchise', id],
+    queryKey: ["franchise", id],
     queryFn: () => franchiseApi.getFranchiseById(id),
     enabled: !!id,
     ...options,
@@ -20,7 +20,7 @@ export const useFranchiseById = (id, options = {}) => {
 
 export const useFranchiseSeasons = (id, options = {}) => {
   return useQuery({
-    queryKey: ['franchise', id, 'seasons'],
+    queryKey: ["franchise", id, "seasons"],
     queryFn: () => franchiseApi.getFranchiseSeasons(id),
     enabled: !!id,
     ...options,
@@ -29,7 +29,7 @@ export const useFranchiseSeasons = (id, options = {}) => {
 
 export const useFranchiseSquad = (id, season, options = {}) => {
   return useQuery({
-    queryKey: ['franchise', id, 'squad', season],
+    queryKey: ["franchise", id, "squad", season],
     queryFn: () => franchiseApi.getFranchiseSquad(id, season),
     enabled: !!id && !!season,
     ...options,
@@ -38,7 +38,7 @@ export const useFranchiseSquad = (id, season, options = {}) => {
 
 export const useCompareFranchises = (ids, options = {}) => {
   return useQuery({
-    queryKey: ['compareFranchises', ids],
+    queryKey: ["compareFranchises", ids],
     queryFn: () => franchiseApi.compareFranchises(ids),
     enabled: Array.isArray(ids) && ids.length > 1,
     ...options,
@@ -47,7 +47,7 @@ export const useCompareFranchises = (ids, options = {}) => {
 
 export const useFranchiseIntelligence = (id, options = {}) => {
   return useQuery({
-    queryKey: ['franchise', id, 'intelligence'],
+    queryKey: ["franchise", id, "intelligence"],
     queryFn: () => franchiseApi.getFranchiseIntelligence(id),
     enabled: !!id,
     ...options,
@@ -56,7 +56,7 @@ export const useFranchiseIntelligence = (id, options = {}) => {
 
 export const useFranchiseLegends = (id, options = {}) => {
   return useQuery({
-    queryKey: ['franchise', id, 'legends'],
+    queryKey: ["franchise", id, "legends"],
     queryFn: () => franchiseApi.getFranchiseLegends(id),
     enabled: !!id,
     ...options,
@@ -65,7 +65,7 @@ export const useFranchiseLegends = (id, options = {}) => {
 
 export const useFranchiseRivalries = (id, options = {}) => {
   return useQuery({
-    queryKey: ['franchise', id, 'rivalries'],
+    queryKey: ["franchise", id, "rivalries"],
     queryFn: () => franchiseApi.getFranchiseRivalries(id),
     enabled: !!id,
     ...options,
@@ -74,7 +74,7 @@ export const useFranchiseRivalries = (id, options = {}) => {
 
 export const useHomeFortress = (id, options = {}) => {
   return useQuery({
-    queryKey: ['franchise', id, 'fortress'],
+    queryKey: ["franchise", id, "fortress"],
     queryFn: () => franchiseApi.getHomeFortress(id),
     enabled: !!id,
     ...options,
@@ -83,7 +83,7 @@ export const useHomeFortress = (id, options = {}) => {
 
 export const useAuctionIntelligence = (id, options = {}) => {
   return useQuery({
-    queryKey: ['franchise', id, 'auctionIntelligence'],
+    queryKey: ["franchise", id, "auctionIntelligence"],
     queryFn: () => franchiseApi.getAuctionIntelligence(id),
     enabled: !!id,
     ...options,

@@ -50,9 +50,9 @@ async function getSeasonRoleMedians(prisma) {
     }
 
     if (s.battingContribution > 0)
-      roleMap[s.season].Batting.push(s.battingContribution);
+      {roleMap[s.season].Batting.push(s.battingContribution);}
     if (s.bowlingContribution > 0)
-      roleMap[s.season].Bowling.push(s.bowlingContribution);
+      {roleMap[s.season].Bowling.push(s.bowlingContribution);}
   }
 
   const medians = {};
@@ -132,7 +132,7 @@ function calculateAuctionImpactScore(
 function getRoleImpactValue(stat) {
   const role = stat.player?.role || "Batter";
   if (role.includes("All"))
-    return stat.battingContribution + stat.bowlingContribution;
+    {return stat.battingContribution + stat.bowlingContribution;}
   if (role.includes("Bowl")) return stat.bowlingContribution;
   return stat.battingContribution;
 }
@@ -167,24 +167,24 @@ function generateWhy(stat, cost, type) {
       stat.battingContribution > 30 &&
       stat.bowlingContribution > 30
     )
-      return `Elite dual-phase impact for ₹${crores}${statsStr}`;
+      {return `Elite dual-phase impact for ₹${crores}${statsStr}`;}
     if (role.includes("Bowl") && stat.bowlingContribution > 100)
-      return `Elite wicket-taking impact for ₹${crores}${statsStr}`;
+      {return `Elite wicket-taking impact for ₹${crores}${statsStr}`;}
     if (stat.battingContribution > 100)
-      return `Elite batting value for ₹${crores}${statsStr}`;
+      {return `Elite batting value for ₹${crores}${statsStr}`;}
     return `Championship-tier contributor for ₹${crores}${statsStr}`;
   }
 
   if (type === "bargain") {
     if (matches < 10)
-      return `Massive breakout ROI over ${matches} matches (₹${crores})${statsStr}`;
+      {return `Massive breakout ROI over ${matches} matches (₹${crores})${statsStr}`;}
     return `Elite full-season value buy for just ₹${crores}${statsStr}`;
   }
 
   if (type === "disaster") {
     if (matches === 0) return `₹${crores} purchase never played a match`;
     if (getRoleImpactValue(stat) < 20)
-      return `₹${crores} purchase failed to justify cost${statsStr}`;
+      {return `₹${crores} purchase failed to justify cost${statsStr}`;}
     return `₹${crores} purchase delivered only ${matches} matches${statsStr}`;
   }
 

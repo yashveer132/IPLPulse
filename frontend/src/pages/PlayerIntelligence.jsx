@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -10,11 +10,11 @@ import {
   CircularProgress,
   Chip,
   LinearProgress,
-} from '@mui/material';
-import { motion } from 'framer-motion';
-import { useParams, useNavigate } from 'react-router-dom';
-import { apiClient } from '../api/index.js';
-import { usePlayerPhoto } from '../hooks/usePlayerPhoto.js';
+} from "@mui/material";
+import { motion } from "framer-motion";
+import { useParams, useNavigate } from "react-router-dom";
+import { apiClient } from "../api/index.js";
+import { usePlayerPhoto } from "../hooks/usePlayerPhoto.js";
 import {
   LineChart,
   Line,
@@ -23,7 +23,8 @@ import {
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
   ReferenceArea,
-} from 'recharts';
+} from "recharts";
+import PageHeader from "../components/common/PageHeader.jsx";
 
 export default function PlayerIntelligence() {
   const { id } = useParams();
@@ -46,7 +47,7 @@ export default function PlayerIntelligence() {
 
   useEffect(() => {
     apiClient
-      .get('/players?limit=3000')
+      .get("/players?limit=3000")
       .then((res) => setPlayers(res.players || []))
       .catch(console.error);
   }, []);
@@ -67,7 +68,18 @@ export default function PlayerIntelligence() {
         apiClient.get(`/analytics/career-trajectory/${id}`),
       ])
         .then(
-          ([infoRes, simRes, hofRes, legRes, mileRes, impRes, rivRes, recRes, dnaRes, trajRes]) => {
+          ([
+            infoRes,
+            simRes,
+            hofRes,
+            legRes,
+            mileRes,
+            impRes,
+            rivRes,
+            recRes,
+            dnaRes,
+            trajRes,
+          ]) => {
             setPlayerInfo(infoRes);
             setSimilarPlayers(simRes);
             setHof(hofRes);
@@ -79,7 +91,7 @@ export default function PlayerIntelligence() {
             setPlayerDna(dnaRes);
             setTrajectory(trajRes);
             setLoading(false);
-          }
+          },
         )
         .catch((err) => {
           console.error(err);
@@ -90,18 +102,17 @@ export default function PlayerIntelligence() {
 
   if (!id) {
     return (
-      <Container maxWidth="md" sx={{ mt: 10, textAlign: 'center' }}>
-        <Typography variant="h3" fontWeight={900} mb={3}>
-          Player Intelligence Hub
-        </Typography>
-        <Typography variant="h6" color="text.secondary" mb={6}>
-          Search for any IPL player to generate a deep-dive analytics dossier.
-        </Typography>
+      <Container maxWidth="md" sx={{ mt: 10, textAlign: "center" }}>
+        <PageHeader
+          title="Player Intelligence Hub"
+          subtitle="Search for any IPL player to generate a deep-dive analytics dossier."
+        />
         <Autocomplete
           options={players}
           getOptionLabel={(option) => option.name}
           onChange={(event, newValue) => {
-            if (newValue) navigate(`/analytics/player-intelligence/${newValue.id}`);
+            if (newValue)
+              navigate(`/analytics/player-intelligence/${newValue.id}`);
           }}
           renderInput={(params) => (
             <TextField
@@ -118,7 +129,12 @@ export default function PlayerIntelligence() {
 
   if (loading || !playerInfo || !hof || !trajectory) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="60vh"
+      >
         <CircularProgress size={60} thickness={4} />
       </Box>
     );
@@ -127,13 +143,16 @@ export default function PlayerIntelligence() {
   const derivedRole =
     trajectory.seasons.reduce((sum, s) => sum + s.runs, 0) >
     trajectory.seasons.reduce((sum, s) => sum + s.wickets, 0) * 20
-      ? 'Batter'
-      : 'Bowler';
+      ? "Batter"
+      : "Bowler";
 
   const generateNarrative = () => {
-    const debut = trajectory.seasons.length > 0 ? trajectory.seasons[0].season : 2008;
+    const debut =
+      trajectory.seasons.length > 0 ? trajectory.seasons[0].season : 2008;
     const rankStr =
-      hof.hallOfFame.rank === 1 ? 'the most prolific player' : `one of the elite ${derivedRole}s`;
+      hof.hallOfFame.rank === 1
+        ? "the most prolific player"
+        : `one of the elite ${derivedRole}s`;
 
     let text = `${playerInfo.name} debuted in ${debut} and evolved into ${rankStr} in IPL history. `;
     if (trajectory.primeEra) {
@@ -148,47 +167,70 @@ export default function PlayerIntelligence() {
   };
 
   const badges = [];
-  if (hof.hallOfFame.rank <= 10) badges.push(`👑 Hall of Fame #${hof.hallOfFame.rank}`);
-  if (playerDna?.playstyle === 'Pure Aggressor') badges.push('💀 Powerplay Destroyer');
-  if (playerDna?.playstyle === 'Anchor + Aggressor') badges.push('🏃 Chase Master');
-  if (hof.contextRankings?.strikeRatePercentile > 90) badges.push('🔥 Strike Rate Elite');
-  if (hof.contextRankings?.averagePercentile > 90) badges.push('🎯 Consistency King');
-  if (derivedRole === 'Bowler' && playerDna?.phaseImpacts?.deathOvers > 8)
-    badges.push('🎯 Death Specialist');
+  if (hof.hallOfFame.rank <= 10)
+    badges.push(`👑 Hall of Fame #${hof.hallOfFame.rank}`);
+  if (playerDna?.playstyle === "Pure Aggressor")
+    badges.push("💀 Powerplay Destroyer");
+  if (playerDna?.playstyle === "Anchor + Aggressor")
+    badges.push("🏃 Chase Master");
+  if (hof.contextRankings?.strikeRatePercentile > 90)
+    badges.push("🔥 Strike Rate Elite");
+  if (hof.contextRankings?.averagePercentile > 90)
+    badges.push("🎯 Consistency King");
+  if (derivedRole === "Bowler" && playerDna?.phaseImpacts?.deathOvers > 8)
+    badges.push("🎯 Death Specialist");
 
-  const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
 
   let primeDetails = null;
   if (trajectory.primeEra) {
-    const [start, end] = trajectory.primeEra.split('-');
+    const [start, end] = trajectory.primeEra.split("-");
     const primeSeasons = trajectory.seasons.filter(
-      (s) => s.season >= parseInt(start) && s.season <= parseInt(end)
+      (s) => s.season >= parseInt(start) && s.season <= parseInt(end),
     );
-    const isBatter = derivedRole === 'Batter';
+    const isBatter = derivedRole === "Batter";
     primeDetails = {
       start,
       end,
       metric1: isBatter
         ? primeSeasons.reduce((sum, s) => sum + s.runs, 0)
         : primeSeasons.reduce((sum, s) => sum + s.wickets, 0),
-      label1: isBatter ? 'Runs' : 'Wickets',
+      label1: isBatter ? "Runs" : "Wickets",
       metric2: isBatter
-        ? (primeSeasons.reduce((sum, s) => sum + s.average, 0) / primeSeasons.length).toFixed(1)
-        : (primeSeasons.reduce((sum, s) => sum + s.economy, 0) / primeSeasons.length).toFixed(1),
-      label2: isBatter ? 'Average' : 'Economy',
+        ? (
+            primeSeasons.reduce((sum, s) => sum + s.average, 0) /
+            primeSeasons.length
+          ).toFixed(1)
+        : (
+            primeSeasons.reduce((sum, s) => sum + s.economy, 0) /
+            primeSeasons.length
+          ).toFixed(1),
+      label2: isBatter ? "Average" : "Economy",
       metric3: isBatter
-        ? (primeSeasons.reduce((sum, s) => sum + s.strikeRate, 0) / primeSeasons.length).toFixed(1)
-        : (primeSeasons.reduce((sum, s) => sum + s.bowlingAvg, 0) / primeSeasons.length).toFixed(1),
-      label3: isBatter ? 'Strike Rate' : 'Bowling Avg',
+        ? (
+            primeSeasons.reduce((sum, s) => sum + s.strikeRate, 0) /
+            primeSeasons.length
+          ).toFixed(1)
+        : (
+            primeSeasons.reduce((sum, s) => sum + s.bowlingAvg, 0) /
+            primeSeasons.length
+          ).toFixed(1),
+      label3: isBatter ? "Strike Rate" : "Bowling Avg",
     };
   }
 
   const recordsHeld = [];
-  if (hof.allTimeRunRank === 1) recordsHeld.push('Most Runs in IPL History');
-  if (hof.allTimeWktRank === 1) recordsHeld.push('Most Wickets in IPL History');
-  if (hof.contextRankings?.centuriesRank === 1) recordsHeld.push('Most Centuries in IPL History');
-  if (hof.contextRankings?.fiftiesRank === 1) recordsHeld.push('Most 50+ Scores');
-  if (legacy?.valueScore > 200) recordsHeld.push('Most Valuable Player (All-Time)');
+  if (hof.allTimeRunRank === 1) recordsHeld.push("Most Runs in IPL History");
+  if (hof.allTimeWktRank === 1) recordsHeld.push("Most Wickets in IPL History");
+  if (hof.contextRankings?.centuriesRank === 1)
+    recordsHeld.push("Most Centuries in IPL History");
+  if (hof.contextRankings?.fiftiesRank === 1)
+    recordsHeld.push("Most 50+ Scores");
+  if (legacy?.valueScore > 200)
+    recordsHeld.push("Most Valuable Player (All-Time)");
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
@@ -197,7 +239,8 @@ export default function PlayerIntelligence() {
           options={players}
           getOptionLabel={(option) => option.name}
           onChange={(event, newValue) => {
-            if (newValue) navigate(`/analytics/player-intelligence/${newValue.id}`);
+            if (newValue)
+              navigate(`/analytics/player-intelligence/${newValue.id}`);
           }}
           renderInput={(params) => (
             <TextField
@@ -219,48 +262,48 @@ export default function PlayerIntelligence() {
             p: 0,
             mb: 6,
             borderRadius: 6,
-            overflow: 'hidden',
-            position: 'relative',
-            bgcolor: '#121212',
-            color: 'white',
+            overflow: "hidden",
+            position: "relative",
+            bgcolor: "#121212",
+            color: "white",
           }}
         >
           <Box
             sx={{
-              position: 'absolute',
+              position: "absolute",
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
               backgroundImage: `url(${photoUrl})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center 20%',
-              filter: 'blur(20px) brightness(0.3)',
+              backgroundSize: "cover",
+              backgroundPosition: "center 20%",
+              filter: "blur(20px) brightness(0.3)",
               zIndex: 0,
             }}
           />
 
-          <Grid container sx={{ position: 'relative', zIndex: 1 }}>
+          <Grid container sx={{ position: "relative", zIndex: 1 }}>
             <Grid
               item
               xs={12}
               md={4}
               sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'flex-end',
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-end",
                 pt: 4,
-                bgcolor: 'rgba(0,0,0,0.4)',
+                bgcolor: "rgba(0,0,0,0.4)",
               }}
             >
               <Box
                 component="img"
                 src={photoUrl}
                 sx={{
-                  width: '80%',
-                  objectFit: 'contain',
+                  width: "80%",
+                  objectFit: "contain",
                   maxHeight: 350,
-                  filter: 'drop-shadow(0px 10px 20px rgba(0,0,0,0.5))',
+                  filter: "drop-shadow(0px 10px 20px rgba(0,0,0,0.5))",
                 }}
               />
             </Grid>
@@ -268,27 +311,41 @@ export default function PlayerIntelligence() {
               item
               xs={12}
               md={8}
-              sx={{ p: 6, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+              sx={{
+                p: 6,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
             >
               <Box display="flex" gap={2} mb={2} flexWrap="wrap">
                 <Chip
                   label={derivedRole}
                   color="primary"
-                  sx={{ fontWeight: 800, fontSize: '0.9rem' }}
+                  sx={{ fontWeight: 800, fontSize: "0.9rem" }}
                 />
                 <Chip
                   label={`All-Time Rank: #${hof.hallOfFame.rank}`}
-                  sx={{ bgcolor: 'white', color: 'black', fontWeight: 900 }}
+                  sx={{ bgcolor: "white", color: "black", fontWeight: 900 }}
                 />
                 {legacy && (
                   <Chip
                     label={`Legacy Points: ${Math.round(legacy.valueScore)}`}
-                    sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', fontWeight: 600 }}
+                    sx={{
+                      bgcolor: "rgba(255,255,255,0.1)",
+                      color: "white",
+                      fontWeight: 600,
+                    }}
                   />
                 )}
               </Box>
 
-              <Typography variant="h2" fontWeight={900} mb={1} sx={{ letterSpacing: '-0.02em' }}>
+              <Typography
+                variant="h2"
+                fontWeight={900}
+                mb={1}
+                sx={{ letterSpacing: "-0.02em" }}
+              >
                 {playerInfo.name}
               </Typography>
 
@@ -299,10 +356,10 @@ export default function PlayerIntelligence() {
                     label={b}
                     size="small"
                     sx={{
-                      bgcolor: 'rgba(255,255,255,0.15)',
-                      color: '#fff',
+                      bgcolor: "rgba(255,255,255,0.15)",
+                      color: "#fff",
                       fontWeight: 600,
-                      backdropFilter: 'blur(10px)',
+                      backdropFilter: "blur(10px)",
                     }}
                   />
                 ))}
@@ -311,10 +368,10 @@ export default function PlayerIntelligence() {
               <Typography
                 variant="body1"
                 sx={{
-                  fontSize: '1.1rem',
+                  fontSize: "1.1rem",
                   lineHeight: 1.6,
-                  color: 'rgba(255,255,255,0.85)',
-                  maxWidth: '90%',
+                  color: "rgba(255,255,255,0.85)",
+                  maxWidth: "90%",
                 }}
               >
                 {generateNarrative()}
@@ -337,12 +394,13 @@ export default function PlayerIntelligence() {
                 sx={{
                   p: 4,
                   borderRadius: 4,
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  background: 'linear-gradient(135deg, #1A2980 0%, #26D0CE 100%)',
-                  color: 'white',
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  background:
+                    "linear-gradient(135deg, #1A2980 0%, #26D0CE 100%)",
+                  color: "white",
                 }}
               >
                 <Box>
@@ -398,13 +456,18 @@ export default function PlayerIntelligence() {
               variants={itemVariants}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Paper sx={{ p: 4, borderRadius: 4, height: '100%' }}>
+              <Paper sx={{ p: 4, borderRadius: 4, height: "100%" }}>
                 <Typography variant="h5" fontWeight={800} mb={3}>
                   🧬 Player DNA
                 </Typography>
                 <Grid container spacing={4}>
                   <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary" fontWeight={700} mb={1}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      fontWeight={700}
+                      mb={1}
+                    >
                       RUN DISTRIBUTION
                     </Typography>
                     <Box display="flex" alignItems="center" mb={1}>
@@ -418,8 +481,8 @@ export default function PlayerIntelligence() {
                           sx={{
                             height: 8,
                             borderRadius: 4,
-                            bgcolor: 'grey.200',
-                            '& .MuiLinearProgress-bar': { bgcolor: '#FF416C' },
+                            bgcolor: "grey.200",
+                            "& .MuiLinearProgress-bar": { bgcolor: "#FF416C" },
                           }}
                         />
                       </Box>
@@ -438,8 +501,8 @@ export default function PlayerIntelligence() {
                           sx={{
                             height: 8,
                             borderRadius: 4,
-                            bgcolor: 'grey.200',
-                            '& .MuiLinearProgress-bar': { bgcolor: '#4A00E0' },
+                            bgcolor: "grey.200",
+                            "& .MuiLinearProgress-bar": { bgcolor: "#4A00E0" },
                           }}
                         />
                       </Box>
@@ -447,17 +510,36 @@ export default function PlayerIntelligence() {
                         {Math.round(playerDna.distribution.runningPct)}%
                       </Typography>
                     </Box>
-                    <Box sx={{ p: 2, bgcolor: 'rgba(0,0,0,0.03)', borderRadius: 2 }}>
-                      <Typography variant="caption" color="text.secondary" display="block">
+                    <Box
+                      sx={{
+                        p: 2,
+                        bgcolor: "rgba(0,0,0,0.03)",
+                        borderRadius: 2,
+                      }}
+                    >
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        display="block"
+                      >
                         IDENTIFIED PLAYSTYLE
                       </Typography>
-                      <Typography variant="h6" fontWeight={800} color="primary.main">
+                      <Typography
+                        variant="h6"
+                        fontWeight={800}
+                        color="primary.main"
+                      >
                         {playerDna.playstyle}
                       </Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary" fontWeight={700} mb={2}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      fontWeight={700}
+                      mb={2}
+                    >
                       PHASE IMPACT SCORE (OUT OF 10)
                     </Typography>
                     <Box display="flex" justifyContent="space-between" mb={1.5}>
@@ -496,7 +578,7 @@ export default function PlayerIntelligence() {
               <Typography variant="h5" fontWeight={800} mb={3}>
                 📈 Career Trajectory
               </Typography>
-              <Box sx={{ width: '100%', height: 300 }}>
+              <Box sx={{ width: "100%", height: 300 }}>
                 <ResponsiveContainer>
                   <LineChart
                     data={trajectory.seasons}
@@ -506,19 +588,19 @@ export default function PlayerIntelligence() {
                       dataKey="season"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fontSize: 12, fill: '#888' }}
+                      tick={{ fontSize: 12, fill: "#888" }}
                     />
                     <YAxis
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fontSize: 12, fill: '#888' }}
+                      tick={{ fontSize: 12, fill: "#888" }}
                     />
                     <RechartsTooltip
-                      cursor={{ strokeDasharray: '3 3' }}
+                      cursor={{ strokeDasharray: "3 3" }}
                       contentStyle={{
                         borderRadius: 8,
-                        border: 'none',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        border: "none",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                       }}
                     />
                     {primeDetails && (
@@ -536,7 +618,12 @@ export default function PlayerIntelligence() {
                       name="Performance Score"
                       stroke="#FF416C"
                       strokeWidth={4}
-                      dot={{ r: 4, fill: '#FF416C', strokeWidth: 2, stroke: '#fff' }}
+                      dot={{
+                        r: 4,
+                        fill: "#FF416C",
+                        strokeWidth: 2,
+                        stroke: "#fff",
+                      }}
                       activeDot={{ r: 6 }}
                     />
                   </LineChart>
@@ -553,16 +640,25 @@ export default function PlayerIntelligence() {
             variants={itemVariants}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Paper sx={{ p: 4, borderRadius: 4, height: '100%' }}>
+            <Paper sx={{ p: 4, borderRadius: 4, height: "100%" }}>
               <Typography variant="h5" fontWeight={800} mb={3}>
                 🏛️ Hall of Fame Breakdown
               </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
                   <Box
-                    sx={{ textAlign: 'center', p: 2, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 3 }}
+                    sx={{
+                      textAlign: "center",
+                      p: 2,
+                      bgcolor: "rgba(0,0,0,0.02)",
+                      borderRadius: 3,
+                    }}
                   >
-                    <Typography variant="body2" color="text.secondary" fontWeight={700}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      fontWeight={700}
+                    >
                       Peak Component
                     </Typography>
                     <Typography variant="h4" fontWeight={900} mt={1}>
@@ -572,9 +668,18 @@ export default function PlayerIntelligence() {
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <Box
-                    sx={{ textAlign: 'center', p: 2, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 3 }}
+                    sx={{
+                      textAlign: "center",
+                      p: 2,
+                      bgcolor: "rgba(0,0,0,0.02)",
+                      borderRadius: 3,
+                    }}
                   >
-                    <Typography variant="body2" color="text.secondary" fontWeight={700}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      fontWeight={700}
+                    >
                       Longevity Component
                     </Typography>
                     <Typography variant="h4" fontWeight={900} mt={1}>
@@ -584,9 +689,18 @@ export default function PlayerIntelligence() {
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <Box
-                    sx={{ textAlign: 'center', p: 2, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 3 }}
+                    sx={{
+                      textAlign: "center",
+                      p: 2,
+                      bgcolor: "rgba(0,0,0,0.02)",
+                      borderRadius: 3,
+                    }}
                   >
-                    <Typography variant="body2" color="text.secondary" fontWeight={700}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      fontWeight={700}
+                    >
                       Consistency Component
                     </Typography>
                     <Typography variant="h4" fontWeight={900} mt={1}>
@@ -596,9 +710,18 @@ export default function PlayerIntelligence() {
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <Box
-                    sx={{ textAlign: 'center', p: 2, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 3 }}
+                    sx={{
+                      textAlign: "center",
+                      p: 2,
+                      bgcolor: "rgba(0,0,0,0.02)",
+                      borderRadius: 3,
+                    }}
                   >
-                    <Typography variant="body2" color="text.secondary" fontWeight={700}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      fontWeight={700}
+                    >
                       Playoff Component
                     </Typography>
                     <Typography variant="h4" fontWeight={900} mt={1}>
@@ -619,7 +742,13 @@ export default function PlayerIntelligence() {
             transition={{ duration: 0.5, delay: 0.45 }}
           >
             <Paper
-              sx={{ p: 4, borderRadius: 4, height: '100%', bgcolor: '#121212', color: 'white' }}
+              sx={{
+                p: 4,
+                borderRadius: 4,
+                height: "100%",
+                bgcolor: "#121212",
+                color: "white",
+              }}
             >
               <Typography variant="h5" fontWeight={800} mb={3}>
                 📊 Historical Context
@@ -632,7 +761,10 @@ export default function PlayerIntelligence() {
                   <Typography variant="h4" fontWeight={900}>
                     {hof.contextRankings?.careerAverage}
                   </Typography>
-                  <Typography variant="body1" sx={{ color: '#4CAF50', fontWeight: 600 }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ color: "#4CAF50", fontWeight: 600 }}
+                  >
                     {hof.contextRankings?.averagePercentile}th PCTL
                   </Typography>
                 </Box>
@@ -645,7 +777,10 @@ export default function PlayerIntelligence() {
                   <Typography variant="h4" fontWeight={900}>
                     {hof.contextRankings?.careerStrikeRate}
                   </Typography>
-                  <Typography variant="body1" sx={{ color: '#4CAF50', fontWeight: 600 }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ color: "#4CAF50", fontWeight: 600 }}
+                  >
                     {hof.contextRankings?.strikeRatePercentile}th PCTL
                   </Typography>
                 </Box>
@@ -674,18 +809,20 @@ export default function PlayerIntelligence() {
                       sx={{
                         p: 3,
                         borderRadius: 4,
-                        transition: 'transform 0.2s',
-                        '&:hover': { transform: 'translateY(-4px)' },
+                        transition: "transform 0.2s",
+                        "&:hover": { transform: "translateY(-4px)" },
                       }}
                     >
                       <Box display="flex" alignItems="center" gap={2} mb={2}>
-                        <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                        <Box
+                          sx={{ position: "relative", display: "inline-flex" }}
+                        >
                           <CircularProgress
                             variant="determinate"
                             value={sim.matchPercentage}
                             size={60}
                             thickness={4}
-                            sx={{ color: 'primary.main' }}
+                            sx={{ color: "primary.main" }}
                           />
                           <Box
                             sx={{
@@ -693,10 +830,10 @@ export default function PlayerIntelligence() {
                               left: 0,
                               bottom: 0,
                               right: 0,
-                              position: 'absolute',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
+                              position: "absolute",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
                             }}
                           >
                             <Typography variant="caption" fontWeight={800}>
@@ -719,14 +856,14 @@ export default function PlayerIntelligence() {
                             key={i}
                             variant="caption"
                             sx={{
-                              display: 'flex',
-                              alignItems: 'center',
+                              display: "flex",
+                              alignItems: "center",
                               gap: 1,
-                              color: 'text.secondary',
+                              color: "text.secondary",
                               fontWeight: 600,
                             }}
                           >
-                            <span style={{ color: '#4CAF50' }}>✓</span> {reason}
+                            <span style={{ color: "#4CAF50" }}>✓</span> {reason}
                           </Typography>
                         ))}
                       </Box>
@@ -752,8 +889,18 @@ export default function PlayerIntelligence() {
               <Grid container spacing={3}>
                 {rivalries.nemesis && (
                   <Grid item xs={12} md={6}>
-                    <Paper sx={{ p: 4, borderRadius: 4, borderLeft: '6px solid #f44336' }}>
-                      <Typography variant="overline" color="error" fontWeight={800}>
+                    <Paper
+                      sx={{
+                        p: 4,
+                        borderRadius: 4,
+                        borderLeft: "6px solid #f44336",
+                      }}
+                    >
+                      <Typography
+                        variant="overline"
+                        color="error"
+                        fontWeight={800}
+                      >
                         STRUGGLES AGAINST
                       </Typography>
                       <Typography variant="h4" fontWeight={900} mb={2}>
@@ -788,17 +935,27 @@ export default function PlayerIntelligence() {
                       <Typography
                         variant="body2"
                         mt={2}
-                        sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                        sx={{ fontStyle: "italic", color: "text.secondary" }}
                       >
-                        Dismissed every {rivalries.nemesis.ballsPerDismissal} balls
+                        Dismissed every {rivalries.nemesis.ballsPerDismissal}{" "}
+                        balls
                       </Typography>
                     </Paper>
                   </Grid>
                 )}
                 {rivalries.favorite && (
                   <Grid item xs={12} md={6}>
-                    <Paper sx={{ p: 4, borderRadius: 4, borderLeft: '6px solid #4CAF50' }}>
-                      <Typography variant="overline" sx={{ color: '#4CAF50', fontWeight: 800 }}>
+                    <Paper
+                      sx={{
+                        p: 4,
+                        borderRadius: 4,
+                        borderLeft: "6px solid #4CAF50",
+                      }}
+                    >
+                      <Typography
+                        variant="overline"
+                        sx={{ color: "#4CAF50", fontWeight: 800 }}
+                      >
                         DOMINATES
                       </Typography>
                       <Typography variant="h4" fontWeight={900} mb={2}>
@@ -833,9 +990,10 @@ export default function PlayerIntelligence() {
                       <Typography
                         variant="body2"
                         mt={2}
-                        sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                        sx={{ fontStyle: "italic", color: "text.secondary" }}
                       >
-                        Dismissed every {rivalries.favorite.ballsPerDismissal} balls
+                        Dismissed every {rivalries.favorite.ballsPerDismissal}{" "}
+                        balls
                       </Typography>
                     </Paper>
                   </Grid>
@@ -854,7 +1012,7 @@ export default function PlayerIntelligence() {
             variants={itemVariants}
             transition={{ duration: 0.5, delay: 0.7 }}
           >
-            <Paper sx={{ p: 4, borderRadius: 4, height: '100%' }}>
+            <Paper sx={{ p: 4, borderRadius: 4, height: "100%" }}>
               <Typography variant="h5" fontWeight={800} mb={3}>
                 🏆 Records Held
               </Typography>
@@ -867,23 +1025,31 @@ export default function PlayerIntelligence() {
                       alignItems="center"
                       gap={2}
                       p={2}
-                      sx={{ bgcolor: 'background.paper', borderRadius: 2, boxShadow: 2 }}
+                      sx={{
+                        bgcolor: "background.paper",
+                        borderRadius: 2,
+                        boxShadow: 2,
+                      }}
                     >
                       <Box
                         sx={{
                           width: 40,
                           height: 40,
-                          borderRadius: '50%',
-                          bgcolor: 'primary.dark',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'white',
+                          borderRadius: "50%",
+                          bgcolor: "primary.dark",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "white",
                         }}
                       >
                         🏅
                       </Box>
-                      <Typography variant="h6" fontWeight={700} color="text.primary">
+                      <Typography
+                        variant="h6"
+                        fontWeight={700}
+                        color="text.primary"
+                      >
                         {rec}
                       </Typography>
                     </Box>
@@ -905,48 +1071,63 @@ export default function PlayerIntelligence() {
             variants={itemVariants}
             transition={{ duration: 0.5, delay: 0.8 }}
           >
-            <Paper sx={{ p: 4, borderRadius: 4, height: '100%' }}>
+            <Paper sx={{ p: 4, borderRadius: 4, height: "100%" }}>
               <Typography variant="h5" fontWeight={800} mb={3}>
                 ⏳ Career Eras
               </Typography>
               <Box
                 sx={{
-                  position: 'relative',
+                  position: "relative",
                   pl: 3,
-                  '&::before': {
+                  "&::before": {
                     content: '""',
-                    position: 'absolute',
+                    position: "absolute",
                     left: 8,
                     top: 10,
                     bottom: 10,
                     width: 2,
-                    bgcolor: 'divider',
+                    bgcolor: "divider",
                   },
                 }}
               >
                 {trajectory.eras?.map((era, idx) => (
-                  <Box key={idx} sx={{ position: 'relative', mb: 3, '&:last-child': { mb: 0 } }}>
+                  <Box
+                    key={idx}
+                    sx={{
+                      position: "relative",
+                      mb: 3,
+                      "&:last-child": { mb: 0 },
+                    }}
+                  >
                     <Box
                       sx={{
-                        position: 'absolute',
+                        position: "absolute",
                         left: -29,
                         top: 4,
                         width: 10,
                         height: 10,
-                        borderRadius: '50%',
-                        bgcolor: era.name === 'Prime' ? 'primary.main' : 'grey.400',
-                        border: '2px solid white',
-                        boxShadow: era.name === 'Prime' ? '0 0 0 2px #4A00E0' : 'none',
+                        borderRadius: "50%",
+                        bgcolor:
+                          era.name === "Prime" ? "primary.main" : "grey.400",
+                        border: "2px solid white",
+                        boxShadow:
+                          era.name === "Prime" ? "0 0 0 2px #4A00E0" : "none",
                       }}
                     />
                     <Typography
                       variant="h6"
                       fontWeight={800}
-                      color={era.name === 'Prime' ? 'primary.main' : 'text.primary'}
+                      color={
+                        era.name === "Prime" ? "primary.main" : "text.primary"
+                      }
                     >
                       {era.name}
                     </Typography>
-                    <Typography variant="body2" fontWeight={600} color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      fontWeight={600}
+                      color="text.secondary"
+                    >
                       {era.start} – {era.end}
                     </Typography>
                   </Box>

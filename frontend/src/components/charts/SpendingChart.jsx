@@ -1,7 +1,15 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { useTheme } from '@mui/material/styles';
-import { Box, Typography } from '@mui/material';
-import { ChartSkeleton } from '../common/LoadingSkeleton.jsx';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { useTheme } from "@mui/material/styles";
+import { Box, Typography } from "@mui/material";
+import { ChartSkeleton } from "../common/LoadingSkeleton.jsx";
 
 function SpendingChart({ data, isLoading }) {
   const theme = useTheme();
@@ -10,8 +18,17 @@ function SpendingChart({ data, isLoading }) {
 
   if (!data || data.length === 0) {
     return (
-      <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography color="text.secondary">No spending data available</Typography>
+      <Box
+        sx={{
+          height: 300,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography color="text.secondary">
+          No spending data available
+        </Typography>
       </Box>
     );
   }
@@ -24,10 +41,17 @@ function SpendingChart({ data, isLoading }) {
   }));
 
   return (
-    <Box sx={{ height: 300, width: '100%' }}>
+    <Box sx={{ height: 300, width: "100%" }}>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} vertical={false} />
+        <BarChart
+          data={chartData}
+          margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+        >
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={theme.palette.divider}
+            vertical={false}
+          />
           <XAxis
             dataKey="season"
             stroke={theme.palette.text.secondary}
@@ -45,9 +69,13 @@ function SpendingChart({ data, isLoading }) {
               borderColor: theme.palette.divider,
               borderRadius: 8,
             }}
-            formatter={(value) => [`₹${value} Crores`, 'Total Spent']}
+            formatter={(value) => [`₹${value} Crores`, "Total Spent"]}
           />
-          <Bar dataKey="spent" fill={theme.palette.primary.main} radius={[4, 4, 0, 0]} />
+          <Bar
+            dataKey="spent"
+            fill={theme.palette.primary.main}
+            radius={[4, 4, 0, 0]}
+          />
         </BarChart>
       </ResponsiveContainer>
     </Box>

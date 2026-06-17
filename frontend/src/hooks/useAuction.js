@@ -1,18 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
-import { auctionApi } from '../api/index.js';
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { auctionApi } from "../api/index.js";
 
 export const useAuctionEntries = (params, options = {}) => {
   return useQuery({
-    queryKey: ['auctionEntries', params],
+    queryKey: ["auctionEntries", params],
     queryFn: () => auctionApi.getAuctionEntries(params),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     ...options,
   });
 };
 
 export const useAuctionSeasons = (options = {}) => {
   return useQuery({
-    queryKey: ['auctionSeasons'],
+    queryKey: ["auctionSeasons"],
     queryFn: () => auctionApi.getAuctionSeasons(),
     ...options,
   });

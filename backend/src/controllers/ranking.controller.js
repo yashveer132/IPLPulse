@@ -1,5 +1,5 @@
-import { asyncHandler, ApiResponse } from '../utils/index.js';
-import * as rankingService from '../services/ranking.service.js';
+import { asyncHandler, ApiResponse } from "../utils/index.js";
+import * as rankingService from "../services/ranking.service.js";
 
 export const getGreatestPurchases = asyncHandler(async (req, res) => {
   const result = await rankingService.getGreatestPurchases(req.query);

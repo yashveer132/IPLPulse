@@ -1,10 +1,12 @@
-import { asyncHandler, ApiResponse, ApiError } from '../utils/index.js';
-import * as playerService from '../services/player.service.js';
+import { asyncHandler, ApiResponse, ApiError } from "../utils/index.js";
+import * as playerService from "../services/player.service.js";
 
 export const getPlayers = asyncHandler(async (req, res) => {
   const { search, role, nationality, page, limit } = req.query;
   const result = await playerService.getPlayers({
-    search, role, nationality,
+    search,
+    role,
+    nationality,
     page: parseInt(page, 10) || 1,
     limit: parseInt(limit, 10) || 20,
   });
@@ -13,7 +15,7 @@ export const getPlayers = asyncHandler(async (req, res) => {
 
 export const getPlayerById = asyncHandler(async (req, res) => {
   const player = await playerService.getPlayerById(req.params.id);
-  if (!player) throw ApiError.notFound('Player not found');
+  if (!player) throw ApiError.notFound("Player not found");
   ApiResponse(res, { data: player });
 });
 

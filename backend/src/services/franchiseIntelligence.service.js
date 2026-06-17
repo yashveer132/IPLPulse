@@ -500,7 +500,7 @@ export async function getFranchiseIntelligence(id) {
   const seasonsMap = new Map();
   matches.forEach((m) => {
     if (!seasonsMap.has(m.season))
-      seasonsMap.set(m.season, { matches: 0, wins: 0 });
+      {seasonsMap.set(m.season, { matches: 0, wins: 0 });}
     const s = seasonsMap.get(m.season);
     s.matches += 1;
     if (m.winner === franchise.shortName) s.wins += 1;
@@ -742,7 +742,7 @@ export async function getFranchiseLegends(id) {
     p.fifties += stat.fifties || 0;
     p.hundreds += stat.hundreds || 0;
     if (stat.strikeRate > 0)
-      p._estimatedBalls += stat.totalRuns / (stat.strikeRate / 100);
+      {p._estimatedBalls += stat.totalRuns / (stat.strikeRate / 100);}
   });
 
   let aggregated = Array.from(playerMap.values());
@@ -822,13 +822,13 @@ export async function getFranchiseLegends(id) {
 
     whySelected.push("Peak-adjusted franchise value");
     if (p.totalRuns >= 2000)
-      whySelected.push(
+      {whySelected.push(
         `${Math.floor(p.totalRuns / 1000) * 1000}+ franchise runs`,
-      );
+      );}
     else if (p.totalWickets >= 50)
-      whySelected.push(
+      {whySelected.push(
         `${Math.floor(p.totalWickets / 50) * 50}+ franchise wickets`,
-      );
+      );}
     else whySelected.push("Exceptional conversion stability");
 
     return {
@@ -853,9 +853,9 @@ export async function getFranchiseLegends(id) {
     if (i === 0) achievement = `Architect of the ${franchise.shortName} Legacy`;
     else if (i === 1) achievement = "Highest Franchise Impact Score";
     else if (p.playstyle === "All-Rounder")
-      achievement = "Greatest All-Round Franchise Asset";
+      {achievement = "Greatest All-Round Franchise Asset";}
     else if (p.playstyle === "Bowler")
-      achievement = "Apex Franchise Strike Bowler";
+      {achievement = "Apex Franchise Strike Bowler";}
     else achievement = "Elite Championship Match Winner";
 
     const titleText =
@@ -1069,7 +1069,7 @@ export async function getAuctionIntelligence(id) {
   const statsMap = new Map();
   playerStats.forEach((s) => {
     if (!statsMap.has(s.playerId))
-      statsMap.set(s.playerId, { matches: 0, runs: 0, wickets: 0, perf: 0 });
+      {statsMap.set(s.playerId, { matches: 0, runs: 0, wickets: 0, perf: 0 });}
     const p = statsMap.get(s.playerId);
     p.matches += s.matches;
     p.runs += s.totalRuns;
@@ -1109,7 +1109,7 @@ export async function getAuctionIntelligence(id) {
     }
   });
 
-  let purchases = Array.from(uniquePurchases.values());
+  const purchases = Array.from(uniquePurchases.values());
   purchases.sort((a, b) => b.valueScore - a.valueScore);
 
   const bestPurchases = purchases

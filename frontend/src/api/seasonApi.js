@@ -1,6 +1,7 @@
-import apiClient from './apiClient.js';
+import apiClient from "./apiClient.js";
 
 export const seasonApi = {
-  getSeasons: () => apiClient.get('/seasons'),
-  getSeasonIntelligence: (year) => apiClient.get(`/seasons/${year}/intelligence`),
+  getSeasons: () => apiClient.get("/seasons"),
+  getSeasonIntelligence: (year) =>
+    apiClient.get(`/seasons/${year}/intelligence`),
 };

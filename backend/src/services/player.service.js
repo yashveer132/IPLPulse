@@ -1,12 +1,19 @@
-import { getPrisma } from '../config/index.js';
+import { getPrisma } from "../config/index.js";
+import { buildSearchCondition } from "../utils/searchHelpers.js";
 
-export async function getPlayers({ search, role, nationality, page = 1, limit = 20 }) {
+export async function getPlayers({
+  search,
+  role,
+  nationality,
+  page = 1,
+  limit = 20,
+}) {
   const prisma = await getPrisma();
   const skip = (page - 1) * limit;
 
   const where = {};
   if (search) {
-    where.name = { contains: search, mode: 'insensitive' };
+    Object.assign(where, buildSearchCondition(search));
   }
   if (role) {
     where.role = role;
@@ -20,7 +27,7 @@ export async function getPlayers({ search, role, nationality, page = 1, limit = 
       where,
       skip,
       take: limit,
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
       include: {
         _count: {
           select: { auctionEntries: true, matchStats: true },
@@ -48,10 +55,10 @@ export async function getPlayerById(id) {
     where: { id },
     include: {
       seasonStats: {
-        orderBy: { season: 'asc' },
+        orderBy: { season: "asc" },
       },
       auctionEntries: {
-        orderBy: { season: 'asc' },
+        orderBy: { season: "asc" },
         include: {
           franchise: {
             select: { name: true, shortName: true, color: true },
@@ -82,8 +89,8 @@ export async function getPlayerById(id) {
         .map((s) => s.bestBowling)
         .filter(Boolean)
         .sort((a, b) => {
-          const [wA] = a.split('/').map(Number);
-          const [wB] = b.split('/').map(Number);
+          const [wA] = a.split("/").map(Number);
+          const [wB] = b.split("/").map(Number);
           return wB - wA;
         })[0] || null,
   };
@@ -95,7 +102,7 @@ export async function getPlayerStats(playerId) {
   const prisma = await getPrisma();
   return prisma.playerSeasonStats.findMany({
     where: { playerId },
-    orderBy: { season: 'desc' },
+    orderBy: { season: "desc" },
   });
 }
 
@@ -103,7 +110,7 @@ export async function getPlayerAuctionHistory(playerId) {
   const prisma = await getPrisma();
   return prisma.auctionEntry.findMany({
     where: { playerId },
-    orderBy: { season: 'asc' },
+    orderBy: { season: "asc" },
     include: {
       franchise: {
         select: { name: true, shortName: true, color: true },

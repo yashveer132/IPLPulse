@@ -1,15 +1,15 @@
-import { PrismaClient } from '@prisma/client';
-import Logger from './utils/logger.js';
+import { PrismaClient } from "@prisma/client";
+import Logger from "./utils/logger.js";
 
 const prisma = new PrismaClient();
-const log = new Logger('04-player-stats');
+const log = new Logger("04-player-stats");
 
 async function main() {
-  log.info('Computing player season stats...');
+  log.info("Computing player season stats...");
 
   const combos = await prisma.playerMatchStats.findMany({
     select: { playerId: true, season: true, team: true },
-    distinct: ['playerId', 'season', 'team'],
+    distinct: ["playerId", "season", "team"],
   });
 
   log.info(`Found ${combos.length} player-season-team combinations`);
@@ -25,7 +25,9 @@ async function main() {
     pomLookup[key] = (pomLookup[key] || 0) + 1;
   }
 
-  const players = await prisma.player.findMany({ select: { id: true, name: true } });
+  const players = await prisma.player.findMany({
+    select: { id: true, name: true },
+  });
   const playerNameMap = {};
   for (const p of players) {
     playerNameMap[p.id] = p.name;
@@ -41,18 +43,23 @@ async function main() {
     if (stats.length === 0) continue;
 
     const matchesCount = stats.length;
-    const battingInnings = stats.filter((s) => s.ballsFaced > 0 || s.runsScored > 0).length;
+    const battingInnings = stats.filter(
+      (s) => s.ballsFaced > 0 || s.runsScored > 0,
+    ).length;
     const totalRuns = stats.reduce((sum, s) => sum + s.runsScored, 0);
     const totalBallsFaced = stats.reduce((sum, s) => sum + s.ballsFaced, 0);
     const totalFours = stats.reduce((sum, s) => sum + s.fours, 0);
     const totalSixes = stats.reduce((sum, s) => sum + s.sixes, 0);
     const dismissals = stats.filter((s) => s.isOut).length;
     const highestScore = Math.max(...stats.map((s) => s.runsScored), 0);
-    const fifties = stats.filter((s) => s.runsScored >= 50 && s.runsScored < 100).length;
+    const fifties = stats.filter(
+      (s) => s.runsScored >= 50 && s.runsScored < 100,
+    ).length;
     const hundreds = stats.filter((s) => s.runsScored >= 100).length;
 
     const battingAvg = dismissals > 0 ? totalRuns / dismissals : totalRuns;
-    const strikeRate = totalBallsFaced > 0 ? (totalRuns / totalBallsFaced) * 100 : 0;
+    const strikeRate =
+      totalBallsFaced > 0 ? (totalRuns / totalBallsFaced) * 100 : 0;
 
     const totalWickets = stats.reduce((sum, s) => sum + s.wickets, 0);
     const totalRunsConceded = stats.reduce((sum, s) => sum + s.runsConceded, 0);
@@ -66,14 +73,16 @@ async function main() {
     }, 0);
 
     const bowlingAvg = totalWickets > 0 ? totalRunsConceded / totalWickets : 0;
-    const economyRate = totalBallsBowled > 0 ? (totalRunsConceded / totalBallsBowled) * 6 : 0;
-    const dotBallPct = totalBallsBowled > 0 ? (totalDotBalls / totalBallsBowled) * 100 : 0;
+    const economyRate =
+      totalBallsBowled > 0 ? (totalRunsConceded / totalBallsBowled) * 6 : 0;
+    const dotBallPct =
+      totalBallsBowled > 0 ? (totalDotBalls / totalBallsBowled) * 100 : 0;
 
     const bowlingMatches = stats.filter((s) => s.wickets > 0);
     let bestBowling = null;
     if (bowlingMatches.length > 0) {
       const best = bowlingMatches.sort(
-        (a, b) => b.wickets - a.wickets || a.runsConceded - b.runsConceded
+        (a, b) => b.wickets - a.wickets || a.runsConceded - b.runsConceded,
       )[0];
       bestBowling = `${best.wickets}/${best.runsConceded}`;
     }
@@ -136,7 +145,7 @@ async function main() {
     });
 
     if ((i + 1) % 100 === 0 || i === combos.length - 1) {
-      log.progress(i + 1, combos.length, 'player-seasons');
+      log.progress(i + 1, combos.length, "player-seasons");
     }
   }
 
@@ -146,7 +155,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    log.error('Failed', e);
+    log.error("Failed", e);
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());

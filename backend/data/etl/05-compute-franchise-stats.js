@@ -1,21 +1,21 @@
-import { PrismaClient } from '@prisma/client';
-import Logger from './utils/logger.js';
+import { PrismaClient } from "@prisma/client";
+import Logger from "./utils/logger.js";
 
 const prisma = new PrismaClient();
-const log = new Logger('05-franchise-stats');
+const log = new Logger("05-franchise-stats");
 
 async function main() {
-  log.info('Computing franchise season stats...');
+  log.info("Computing franchise season stats...");
 
   const franchises = await prisma.franchise.findMany();
   const seasons = await prisma.match.findMany({
     select: { season: true },
-    distinct: ['season'],
-    orderBy: { season: 'asc' },
+    distinct: ["season"],
+    orderBy: { season: "asc" },
   });
 
   const seasonList = seasons.map((s) => s.season);
-  log.info(`Seasons: ${seasonList.join(', ')}`);
+  log.info(`Seasons: ${seasonList.join(", ")}`);
 
   let count = 0;
   const total = franchises.length * seasonList.length;
@@ -37,16 +37,21 @@ async function main() {
         continue;
       }
 
-      const matchesWon = allMatches.filter((m) => m.winner === franchise.shortName).length;
+      const matchesWon = allMatches.filter(
+        (m) => m.winner === franchise.shortName,
+      ).length;
       const matchesLost = matchesPlayed - matchesWon;
 
       const auctionEntries = await prisma.auctionEntry.findMany({
         where: { franchiseId: franchise.id, season },
       });
 
-      const totalSpent = auctionEntries.reduce((sum, e) => sum + (e.soldPrice || 0), 0);
+      const totalSpent = auctionEntries.reduce(
+        (sum, e) => sum + (e.soldPrice || 0),
+        0,
+      );
       const playersBought = auctionEntries.filter(
-        (e) => e.status === 'Sold' || e.status === 'RTM'
+        (e) => e.status === "Sold" || e.status === "RTM",
       ).length;
       const playersRetained = auctionEntries.filter((e) => e.isRetained).length;
 
@@ -85,7 +90,7 @@ async function main() {
 
       count++;
       if (count % 20 === 0 || count === total) {
-        log.progress(count, total, 'franchise-seasons');
+        log.progress(count, total, "franchise-seasons");
       }
     }
   }
@@ -96,7 +101,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    log.error('Failed', e);
+    log.error("Failed", e);
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());

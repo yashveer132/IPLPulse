@@ -1,5 +1,5 @@
-import { asyncHandler, ApiResponse } from '../utils/index.js';
-import * as recordsService from '../services/records.service.js';
+import { asyncHandler, ApiResponse } from "../utils/index.js";
+import * as recordsService from "../services/records.service.js";
 
 export const getSeasonLeaderboards = asyncHandler(async (req, res) => {
   const result = await recordsService.getSeasonLeaderboards();

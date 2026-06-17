@@ -1,7 +1,7 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Grid, Paper, Chip, IconButton } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { usePlayerValueBreakdown } from '../hooks/useAnalytics.js';
+import { useParams, useNavigate } from "react-router-dom";
+import { Box, Typography, Grid, Paper, Chip, IconButton } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { usePlayerValueBreakdown } from "../hooks/useAnalytics.js";
 import {
   LineChart,
   Line,
@@ -10,10 +10,10 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from 'recharts';
-import { useTheme } from '@mui/material/styles';
-import { PageSkeleton } from '../components/common/LoadingSkeleton.jsx';
-import DataTable from '../components/common/DataTable.jsx';
+} from "recharts";
+import { useTheme } from "@mui/material/styles";
+import { PageSkeleton } from "../components/common/LoadingSkeleton.jsx";
+import DataTable from "../components/common/DataTable.jsx";
 
 function PlayerValueDetail() {
   const { id } = useParams();
@@ -33,14 +33,34 @@ function PlayerValueDetail() {
   }));
 
   const columns = [
-    { id: 'season', label: 'Season', render: (val, row) => `${val} (${row.team})` },
-    { id: 'battingContribution', label: 'Batting Value', render: (val) => Math.round(val) },
-    { id: 'bowlingContribution', label: 'Bowling Value', render: (val) => Math.round(val) },
-    { id: 'consistencyContribution', label: 'Consistency', render: (val) => Math.round(val) },
-    { id: 'awardContribution', label: 'Awards', render: (val) => Math.round(val) },
     {
-      id: 'valueScore',
-      label: 'Total Value',
+      id: "season",
+      label: "Season",
+      render: (val, row) => `${val} (${row.team})`,
+    },
+    {
+      id: "battingContribution",
+      label: "Batting Value",
+      render: (val) => Math.round(val),
+    },
+    {
+      id: "bowlingContribution",
+      label: "Bowling Value",
+      render: (val) => Math.round(val),
+    },
+    {
+      id: "consistencyContribution",
+      label: "Consistency",
+      render: (val) => Math.round(val),
+    },
+    {
+      id: "awardContribution",
+      label: "Awards",
+      render: (val) => Math.round(val),
+    },
+    {
+      id: "valueScore",
+      label: "Total Value",
       render: (val) => (
         <Typography fontWeight={700} color="primary">
           {Math.round(val)}
@@ -51,7 +71,7 @@ function PlayerValueDetail() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
         <IconButton onClick={() => navigate(-1)} sx={{ mr: 2 }}>
           <ArrowBackIcon />
         </IconButton>
@@ -63,7 +83,7 @@ function PlayerValueDetail() {
             {player.role} • {player.nationality}
           </Typography>
         </Box>
-        <Box sx={{ ml: 'auto', textAlign: 'right' }}>
+        <Box sx={{ ml: "auto", textAlign: "right" }}>
           <Typography variant="overline" color="text.secondary">
             Lifetime Value
           </Typography>
@@ -81,20 +101,29 @@ function PlayerValueDetail() {
             </Typography>
             <Box sx={{ height: 300 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                <LineChart
+                  data={chartData}
+                  margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+                >
                   <CartesianGrid
                     strokeDasharray="3 3"
                     stroke={theme.palette.divider}
                     vertical={false}
                   />
-                  <XAxis dataKey="season" stroke={theme.palette.text.secondary} />
-                  <YAxis stroke={theme.palette.text.secondary} domain={[0, 100]} />
+                  <XAxis
+                    dataKey="season"
+                    stroke={theme.palette.text.secondary}
+                  />
+                  <YAxis
+                    stroke={theme.palette.text.secondary}
+                    domain={[0, 100]}
+                  />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: theme.palette.background.paper,
                       borderRadius: 8,
                     }}
-                    formatter={(value) => [`${value} IQ`, 'Value Score']}
+                    formatter={(value) => [`${value} IQ`, "Value Score"]}
                   />
                   <Line
                     type="monotone"
@@ -113,11 +142,7 @@ function PlayerValueDetail() {
       <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
         Season Breakdown
       </Typography>
-      <DataTable
-        columns={columns}
-        data={seasons}
-        onRowClick={(row) => {}}
-      />
+      <DataTable columns={columns} data={seasons} onRowClick={(row) => {}} />
     </Box>
   );
 }

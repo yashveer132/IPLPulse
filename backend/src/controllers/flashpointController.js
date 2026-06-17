@@ -51,7 +51,7 @@ export const getFlashpointById = async (req, res) => {
       },
     });
     if (!flashpoint)
-      return res.status(404).json({ success: false, message: "Not Found" });
+      {return res.status(404).json({ success: false, message: "Not Found" });}
     res.json({ success: true, data: flashpoint });
   } catch (error) {
     console.error("Error fetching flashpoint:", error);
@@ -107,9 +107,9 @@ export const getFlashpointGraph = async (req, res) => {
           });
         }
         if (!visited.has(rel.sourceId))
-          queue.push({ id: rel.sourceId, depth: current.depth + 1 });
+          {queue.push({ id: rel.sourceId, depth: current.depth + 1 });}
         if (!visited.has(rel.targetId))
-          queue.push({ id: rel.targetId, depth: current.depth + 1 });
+          {queue.push({ id: rel.targetId, depth: current.depth + 1 });}
       });
     }
 
@@ -174,8 +174,14 @@ export const getFlashpointAnalytics = async (req, res) => {
     const yearStats = {};
 
     if (flashpoints.length > 0) {
-      const minYear = Math.min(...flashpoints.map((fp) => fp.year));
-      const maxYear = Math.max(...flashpoints.map((fp) => fp.year));
+      const minYear = Math.min(
+        2008,
+        Math.min(...flashpoints.map((fp) => fp.year)),
+      );
+      const maxYear = Math.max(
+        2026,
+        Math.max(...flashpoints.map((fp) => fp.year)),
+      );
       for (let y = minYear; y <= maxYear; y++) {
         yearStats[y] = { year: y, totalShock: 0, categories: {} };
       }
@@ -215,7 +221,7 @@ export const getFlashpointAnalytics = async (req, res) => {
     flashpoints.forEach((fp) => {
       fp.affectedTeams.forEach((team) => {
         if (!teamCounts[team])
-          teamCounts[team] = { count: 0, legacyScore: 0, peakYear: fp.year };
+          {teamCounts[team] = { count: 0, legacyScore: 0, peakYear: fp.year };}
         teamCounts[team].count += 1;
         teamCounts[team].legacyScore += fp.legacyScore;
       });
@@ -228,7 +234,7 @@ export const getFlashpointAnalytics = async (req, res) => {
     flashpoints.forEach((fp) => {
       fp.affectedPlayers.forEach((player) => {
         if (!playerCounts[player])
-          playerCounts[player] = { count: 0, legacyScore: 0 };
+          {playerCounts[player] = { count: 0, legacyScore: 0 };}
         playerCounts[player].count += 1;
         playerCounts[player].legacyScore += fp.legacyScore;
       });

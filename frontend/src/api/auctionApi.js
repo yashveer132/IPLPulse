@@ -1,6 +1,8 @@
-import apiClient from './apiClient.js';
+import apiClient from "./apiClient.js";
 
 export const auctionApi = {
-  getAuctionEntries: (params) => apiClient.get('/auctions', { params }),
-  getAuctionSeasons: () => apiClient.get('/auctions/seasons'),
+  getAuctionEntries: (params) => apiClient.get("/auctions", { params }),
+  getSearchSuggestions: (q) =>
+    apiClient.get("/auctions/search-suggestions", { params: { q } }),
+  getAuctionSeasons: () => apiClient.get("/auctions/seasons"),
 };

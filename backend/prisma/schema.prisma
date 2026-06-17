@@ -80,6 +80,7 @@ model AuctionEntry {
   season             Int
   playerId           String
   franchiseId        String?
+  role               String?
   basePrice          Float
   soldPrice          Float?
   status             String

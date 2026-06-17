@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -13,9 +13,9 @@ function chunkArray(array, size) {
 }
 
 async function computeRetentionAnalytics() {
-  console.log('Calculating Retention Analytics...');
+  console.log("Calculating Retention Analytics...");
 
-  console.log('Skipping retention analysis (Phase 2 requirement).');
+  console.log("Skipping retention analysis (Phase 2 requirement).");
   return;
 
   const retentions = await prisma.auctionEntry.findMany({
@@ -45,12 +45,14 @@ async function computeRetentionAnalytics() {
 
     const preScore =
       preStats.length > 0
-        ? preStats.reduce((sum, s) => sum + s.performanceScore, 0) / preStats.length
+        ? preStats.reduce((sum, s) => sum + s.performanceScore, 0) /
+          preStats.length
         : 0;
 
     const postScore =
       postStats.length > 0
-        ? postStats.reduce((sum, s) => sum + s.performanceScore, 0) / postStats.length
+        ? postStats.reduce((sum, s) => sum + s.performanceScore, 0) /
+          postStats.length
         : 0;
 
     await prisma.auctionEntry.update({
@@ -63,14 +65,18 @@ async function computeRetentionAnalytics() {
 
     processed++;
     if (processed % 10 === 0) {
-      process.stdout.write(`\rProcessed ${processed}/${retentions.length} retentions`);
+      process.stdout.write(
+        `\rProcessed ${processed}/${retentions.length} retentions`,
+      );
     }
   }
-  console.log(`\rProcessed ${retentions.length}/${retentions.length} retentions ✅`);
+  console.log(
+    `\rProcessed ${retentions.length}/${retentions.length} retentions ✅`,
+  );
 }
 
 async function computeFranchiseAnalytics() {
-  console.log('\nCalculating Franchise Intelligence Scores...');
+  console.log("\nCalculating Franchise Intelligence Scores...");
 
   const franchises = await prisma.franchise.findMany({
     include: { seasonStats: true },
@@ -90,8 +96,11 @@ async function computeFranchiseAnalytics() {
       const franchisePlayers = [
         ...new Set(
           allPlayerStats
-            .filter((s) => s.team === franchise.shortName && s.season <= currentSeason)
-            .map((s) => s.playerId)
+            .filter(
+              (s) =>
+                s.team === franchise.shortName && s.season <= currentSeason,
+            )
+            .map((s) => s.playerId),
         ),
       ];
 
@@ -101,7 +110,10 @@ async function computeFranchiseAnalytics() {
       for (const pId of franchisePlayers) {
         const pStats = allPlayerStats
           .filter(
-            (s) => s.playerId === pId && s.team === franchise.shortName && s.season <= currentSeason
+            (s) =>
+              s.playerId === pId &&
+              s.team === franchise.shortName &&
+              s.season <= currentSeason,
           )
           .sort((a, b) => a.season - b.season);
 
@@ -110,29 +122,40 @@ async function computeFranchiseAnalytics() {
           const last = pStats[pStats.length - 1];
 
           let imp = 0;
-          if (first.player.role.includes('Bat') || first.player.role.includes('All')) {
+          if (
+            first.player.role.includes("Bat") ||
+            first.player.role.includes("All")
+          ) {
             const runImp =
               first.totalRuns > 0
                 ? ((last.totalRuns - first.totalRuns) / first.totalRuns) * 100
                 : 0;
             const srImp =
               first.strikeRate > 0
-                ? ((last.strikeRate - first.strikeRate) / first.strikeRate) * 100
+                ? ((last.strikeRate - first.strikeRate) / first.strikeRate) *
+                  100
                 : 0;
             const matImp =
-              first.matches > 0 ? ((last.matches - first.matches) / first.matches) * 100 : 0;
+              first.matches > 0
+                ? ((last.matches - first.matches) / first.matches) * 100
+                : 0;
             imp = (runImp + srImp + matImp) / 3;
           } else {
             const wktImp =
               first.totalWickets > 0
-                ? ((last.totalWickets - first.totalWickets) / first.totalWickets) * 100
+                ? ((last.totalWickets - first.totalWickets) /
+                    first.totalWickets) *
+                  100
                 : 0;
             const econImp =
               first.economyRate > 0
-                ? ((first.economyRate - last.economyRate) / first.economyRate) * 100
-                : 0; 
+                ? ((first.economyRate - last.economyRate) / first.economyRate) *
+                  100
+                : 0;
             const matImp =
-              first.matches > 0 ? ((last.matches - first.matches) / first.matches) * 100 : 0;
+              first.matches > 0
+                ? ((last.matches - first.matches) / first.matches) * 100
+                : 0;
             imp = (wktImp + econImp + matImp) / 3;
           }
 
@@ -149,14 +172,19 @@ async function computeFranchiseAnalytics() {
 
       let retScore = 50;
       const seasonRetentions = await prisma.auctionEntry.findMany({
-        where: { franchiseId: franchise.id, season: currentSeason, isRetained: true },
+        where: {
+          franchiseId: franchise.id,
+          season: currentSeason,
+          isRetained: true,
+        },
       });
 
       if (seasonRetentions.length > 0) {
         const avgDelta =
           seasonRetentions.reduce(
-            (sum, r) => sum + ((r.postRetentionScore || 0) - (r.preRetentionScore || 0)),
-            0
+            (sum, r) =>
+              sum + ((r.postRetentionScore || 0) - (r.preRetentionScore || 0)),
+            0,
           ) / seasonRetentions.length;
         retScore = Math.min(100, Math.max(0, 50 + avgDelta * 2));
       }
@@ -164,11 +192,13 @@ async function computeFranchiseAnalytics() {
       const aucScore = Math.min(100, Math.max(0, fStat.roiScore * 20));
 
       let trophScore = 40;
-      const winPct = fStat.matchesPlayed > 0 ? fStat.matchesWon / fStat.matchesPlayed : 0;
+      const winPct =
+        fStat.matchesPlayed > 0 ? fStat.matchesWon / fStat.matchesPlayed : 0;
       trophScore += winPct * 40;
       if (fStat.isChampion) trophScore = 100;
 
-      const intelScore = aucScore * 0.5 + devScore * 0.3125 + trophScore * 0.1875;
+      const intelScore =
+        aucScore * 0.5 + devScore * 0.3125 + trophScore * 0.1875;
 
       await prisma.franchiseAnalytics.upsert({
         where: {
@@ -196,21 +226,25 @@ async function computeFranchiseAnalytics() {
       });
 
       totalProcessed++;
-      process.stdout.write(`\rProcessed analytics for ${totalProcessed} franchise seasons...`);
+      process.stdout.write(
+        `\rProcessed analytics for ${totalProcessed} franchise seasons...`,
+      );
     }
   }
 
-  console.log(`\nProcessed analytics for ${totalProcessed} franchise seasons ✅`);
+  console.log(
+    `\nProcessed analytics for ${totalProcessed} franchise seasons ✅`,
+  );
 }
 
 async function computePlayerValueScores() {
-  console.log('\nCalculating Player Value Scores...');
+  console.log("\nCalculating Player Value Scores...");
 
   const allPlayerStats = await prisma.playerSeasonStats.findMany({
     include: { player: { select: { role: true } } },
   });
 
-  const playersMap = {}; 
+  const playersMap = {};
 
   let processed = 0;
   const BATCH_SIZE = 500;
@@ -223,7 +257,8 @@ async function computePlayerValueScores() {
       let consistencyContribution = 0;
       let awardContribution = 0;
 
-      const participationBonus = stat.matches > 0 ? Math.min(10, stat.matches) * 2 : 0;
+      const participationBonus =
+        stat.matches > 0 ? Math.min(10, stat.matches) * 2 : 0;
 
       if (stat.totalRuns > 0) {
         const srMultiplier =
@@ -234,7 +269,8 @@ async function computePlayerValueScores() {
               : stat.strikeRate < 100
                 ? 0.8
                 : 1.0;
-        battingContribution = stat.totalRuns * 0.5 * srMultiplier + participationBonus;
+        battingContribution =
+          stat.totalRuns * 0.5 * srMultiplier + participationBonus;
       }
 
       if (stat.totalWickets > 0) {
@@ -246,20 +282,30 @@ async function computePlayerValueScores() {
               : stat.economyRate > 10.0
                 ? 0.8
                 : 1.0;
-        bowlingContribution = stat.totalWickets * 15 * econBonus + participationBonus;
+        bowlingContribution =
+          stat.totalWickets * 15 * econBonus + participationBonus;
       }
 
       if (stat.matches > 0) {
-        if (stat.player.role.includes('Bat') && stat.totalRuns < stat.matches * 10)
+        if (
+          stat.player.role.includes("Bat") &&
+          stat.totalRuns < stat.matches * 10
+        )
           consistencyContribution -= 20;
-        if (stat.player.role.includes('Bowl') && stat.totalWickets < stat.matches * 0.5)
+        if (
+          stat.player.role.includes("Bowl") &&
+          stat.totalWickets < stat.matches * 0.5
+        )
           consistencyContribution -= 20;
       }
 
       awardContribution = stat.playerOfMatch * 25;
 
       let rawValueScore =
-        battingContribution + bowlingContribution + consistencyContribution + awardContribution;
+        battingContribution +
+        bowlingContribution +
+        consistencyContribution +
+        awardContribution;
       let valueScore = Math.min(100, Math.max(0, rawValueScore / 4));
 
       if (!playersMap[stat.playerId]) {
@@ -287,36 +333,51 @@ async function computePlayerValueScores() {
     await prisma.$transaction(updatePromises);
     processed += batch.length;
     if (processed % 500 === 0 || processed === allPlayerStats.length) {
-      process.stdout.write(`\rProcessed ${processed}/${allPlayerStats.length} season stats`);
+      process.stdout.write(
+        `\rProcessed ${processed}/${allPlayerStats.length} season stats`,
+      );
     }
   }
 
-  console.log(`\rProcessed ${allPlayerStats.length}/${allPlayerStats.length} season stats ✅`);
-  console.log('\nAggregating Lifetime Player Analytics...');
+  console.log(
+    `\rProcessed ${allPlayerStats.length}/${allPlayerStats.length} season stats ✅`,
+  );
+  console.log("\nAggregating Lifetime Player Analytics...");
 
   const playerIds = Object.keys(playersMap);
   let aggregated = 0;
-  
+
   const ops = [];
 
   for (const pId of playerIds) {
     const seasons = playersMap[pId];
 
-    const sortedValue = [...seasons].sort((a, b) => b.valueScore - a.valueScore).slice(0, 3);
+    const sortedValue = [...seasons]
+      .sort((a, b) => b.valueScore - a.valueScore)
+      .slice(0, 3);
     const lifetimeValueScore =
-      sortedValue.reduce((sum, s) => sum + s.valueScore, 0) / sortedValue.length;
+      sortedValue.reduce((sum, s) => sum + s.valueScore, 0) /
+      sortedValue.length;
 
     const battingValueScore =
-      seasons.reduce((sum, s) => sum + s.battingContribution, 0) / seasons.length;
+      seasons.reduce((sum, s) => sum + s.battingContribution, 0) /
+      seasons.length;
     const bowlingValueScore =
-      seasons.reduce((sum, s) => sum + s.bowlingContribution, 0) / seasons.length;
+      seasons.reduce((sum, s) => sum + s.bowlingContribution, 0) /
+      seasons.length;
     const consistencyScore =
-      seasons.reduce((sum, s) => sum + s.consistencyContribution, 0) / seasons.length;
+      seasons.reduce((sum, s) => sum + s.consistencyContribution, 0) /
+      seasons.length;
 
     ops.push(
       prisma.playerAnalytics.upsert({
         where: { playerId: pId },
-        update: { lifetimeValueScore, battingValueScore, bowlingValueScore, consistencyScore },
+        update: {
+          lifetimeValueScore,
+          battingValueScore,
+          bowlingValueScore,
+          consistencyScore,
+        },
         create: {
           playerId: pId,
           lifetimeValueScore,
@@ -324,32 +385,34 @@ async function computePlayerValueScores() {
           bowlingValueScore,
           consistencyScore,
         },
-      })
+      }),
     );
   }
-  
+
   const chunkedOps = chunkArray(ops, 500);
   for (const batch of chunkedOps) {
     await prisma.$transaction(batch);
     aggregated += batch.length;
-    process.stdout.write(`\rAggregated ${aggregated}/${playerIds.length} lifetime analytics...`);
+    process.stdout.write(
+      `\rAggregated ${aggregated}/${playerIds.length} lifetime analytics...`,
+    );
   }
 
   console.log(`Aggregated lifetime analytics for ${aggregated} players ✅`);
 }
 
 async function main() {
-  console.log('=============================================');
-  console.log('🚀 Phase 7: Compute Advanced Analytics');
-  console.log('=============================================\n');
+  console.log("=============================================");
+  console.log("🚀 Phase 7: Compute Advanced Analytics");
+  console.log("=============================================\n");
 
   try {
     await computeRetentionAnalytics();
     await computeFranchiseAnalytics();
     await computePlayerValueScores();
-    console.log('\n✨ Advanced Analytics computation complete!\n');
+    console.log("\n✨ Advanced Analytics computation complete!\n");
   } catch (error) {
-    console.error('Error computing advanced analytics:', error);
+    console.error("Error computing advanced analytics:", error);
     process.exit(1);
   } finally {
     await prisma.$disconnect();

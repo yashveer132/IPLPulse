@@ -42,9 +42,9 @@ export const getEntityById = async (req, res) => {
       },
     });
     if (!entity)
-      return res
+      {return res
         .status(404)
-        .json({ success: false, message: "Entity not found" });
+        .json({ success: false, message: "Entity not found" });}
 
     entity.flashpoints.sort((a, b) => a.flashpoint.year - b.flashpoint.year);
 

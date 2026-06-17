@@ -1,132 +1,544 @@
-import { useState } from 'react';
-import { 
-  Box, Typography, Chip, Grid, Card, CardContent, Accordion, 
-  AccordionSummary, AccordionDetails, Button, Collapse, CircularProgress,
-  Table, TableBody, TableCell, TableHead, TableRow, Alert, Paper, Divider 
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import InsightsIcon from '@mui/icons-material/Insights';
-import { useTeamDevelopmentIndex, useTeamDevelopmentBreakdown } from '../hooks/useAnalytics.js';
-import { LineChart, Line, ResponsiveContainer, YAxis } from 'recharts';
+import { useState } from "react";
+import {
+  Box,
+  Typography,
+  Chip,
+  Grid,
+  Card,
+  CardContent,
+  Button,
+  Collapse,
+  CircularProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+  Divider,
+  Stack,
+} from "@mui/material";
+import InsightsIcon from "@mui/icons-material/Insights";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import {
+  useTeamDevelopmentIndex,
+  useTeamDevelopmentBreakdown,
+} from "../hooks/useAnalytics.js";
+import PageHeader from "../components/common/PageHeader.jsx";
+
+function MetricBadge({ value }) {
+  const isPositive = value > 0;
+  return (
+    <Box
+      sx={{
+        display: "inline-flex",
+        alignItems: "center",
+        px: 1,
+        py: 0.5,
+        borderRadius: 1,
+        bgcolor: isPositive
+          ? "success.main"
+          : value < 0
+            ? "error.main"
+            : "grey.500",
+        color: "white",
+        fontWeight: 800,
+        fontSize: "0.75rem",
+      }}
+    >
+      {isPositive ? "+" : ""}
+      {value} pts
+    </Box>
+  );
+}
 
 function FranchiseCard({ data }) {
   const [expanded, setExpanded] = useState(false);
-  const { data: breakdown, isLoading } = useTeamDevelopmentBreakdown(data.franchise.id, {
-    enabled: expanded,
-  });
+  const { data: breakdown, isLoading } = useTeamDevelopmentBreakdown(
+    data.franchise.id,
+    {
+      enabled: expanded,
+    },
+  );
+
+  const cardBg = "rgba(255, 255, 255, 0.05)";
+  const brandColor = data.franchise.color || "primary.main";
 
   return (
-    <Card sx={{ mb: 3, borderRadius: 2, overflow: 'hidden', border: '1px solid', borderColor: 'divider' }}>
-      <Box sx={{ height: 6, bgcolor: data.franchise.color || 'primary.main' }} />
-      <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+    <Card
+      sx={{
+        height: "100%",
+        borderRadius: 4,
+        overflow: "hidden",
+        bgcolor: "background.paper",
+        backgroundImage: `linear-gradient(to bottom, rgba(255,255,255,0.02), ${cardBg})`,
+        border: "1px solid",
+        borderColor: "divider",
+        transition: "transform 0.2s, box-shadow 0.2s",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: `0 8px 24px -4px ${brandColor}40`,
+          borderColor: brandColor,
+        },
+      }}
+    >
+      <Box
+        sx={{
+          height: 6,
+          background: `linear-gradient(90deg, ${brandColor}, ${brandColor}80)`,
+        }}
+      />
+
+      <CardContent sx={{ flexGrow: 1, p: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            mb: 3,
+          }}
+        >
           <Box>
-            <Typography variant="h5" fontWeight={800}>
-              #{data.rank} {data.franchise.name}
+            <Typography
+              variant="overline"
+              color="text.secondary"
+              fontWeight={700}
+              sx={{ letterSpacing: 1.5 }}
+            >
+              Rank #{data.rank}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Analyzed {data.validTrajectories} valid trajectories from {data.totalPlayersAnalyzed} total players
+            <Typography variant="h5" fontWeight={900} sx={{ mt: -0.5 }}>
+              {data.franchise.name}
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: "block", mt: 0.5 }}
+            >
+              {data.validTrajectories} players analyzed
             </Typography>
           </Box>
-          <Box sx={{ textAlign: 'right' }}>
-            <Typography variant="h3" fontWeight={800} color={data.developmentScore > 60 ? 'success.main' : data.developmentScore > 45 ? 'primary.main' : 'text.secondary'}>
+          <Box sx={{ textAlign: "right" }}>
+            <Typography
+              variant="h3"
+              fontWeight={900}
+              sx={{
+                background: `linear-gradient(135deg, ${brandColor}, #ffffff)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                lineHeight: 1,
+              }}
+            >
               {data.developmentScore.toFixed(1)}
             </Typography>
-            <Chip 
-              label={`${data.confidenceLevel} Confidence`} 
-              size="small" 
-              color={data.confidenceLevel === 'High' ? 'success' : data.confidenceLevel === 'Medium' ? 'warning' : 'error'}
-              sx={{ mt: 1, fontWeight: 700 }}
-            />
           </Box>
         </Box>
 
-        <Box sx={{ height: 40, width: '100%', mb: 2 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data.history}>
-              <YAxis domain={['dataMin - 10', 'dataMax + 10']} hide />
-              <Line type="monotone" dataKey="score" stroke={data.franchise.color || '#8884d8'} strokeWidth={2} dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
-        </Box>
+        <Grid container spacing={1} sx={{ mb: 3 }}>
+          <Grid item xs={3}>
+            <Box
+              sx={{
+                textAlign: "center",
+                bgcolor: "background.default",
+                p: 1,
+                borderRadius: 2,
+              }}
+            >
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+                sx={{ fontSize: "0.65rem", lineHeight: 1, mb: 0.5 }}
+              >
+                EFFICIENCY
+              </Typography>
+              <Typography variant="body2" fontWeight={800}>
+                {data.efficiencyScore.toFixed(1)}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={3}>
+            <Box
+              sx={{
+                textAlign: "center",
+                bgcolor: "background.default",
+                p: 1,
+                borderRadius: 2,
+              }}
+            >
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+                sx={{ fontSize: "0.65rem", lineHeight: 1, mb: 0.5 }}
+              >
+                YIELD
+              </Typography>
+              <Typography variant="body2" fontWeight={800}>
+                {data.yieldScore.toFixed(1)}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={3}>
+            <Box
+              sx={{
+                textAlign: "center",
+                bgcolor: "background.default",
+                p: 1,
+                borderRadius: 2,
+              }}
+            >
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+                sx={{ fontSize: "0.65rem", lineHeight: 1, mb: 0.5 }}
+              >
+                STARS
+              </Typography>
+              <Typography variant="body2" fontWeight={800}>
+                {data.breakthroughScore.toFixed(1)}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={3}>
+            <Box
+              sx={{
+                textAlign: "center",
+                bgcolor: "background.default",
+                p: 1,
+                borderRadius: 2,
+              }}
+            >
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+                sx={{ fontSize: "0.65rem", lineHeight: 1, mb: 0.5 }}
+              >
+                CONSISTENCY
+              </Typography>
+              <Typography variant="body2" fontWeight={800}>
+                {data.consistencyScore.toFixed(1)}
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
 
-        <Button 
-          variant={expanded ? "contained" : "outlined"} 
-          fullWidth 
+        <Button
+          variant={expanded ? "contained" : "outlined"}
+          fullWidth
           onClick={() => setExpanded(!expanded)}
-          startIcon={<InsightsIcon />}
-          sx={{ fontWeight: 700, borderRadius: 2 }}
+          endIcon={
+            expanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />
+          }
+          startIcon={!expanded && <InsightsIcon />}
+          sx={{
+            fontWeight: 700,
+            borderRadius: 3,
+            textTransform: "none",
+            py: 1,
+            bgcolor: expanded ? brandColor : "transparent",
+            color: expanded ? "#fff" : "text.primary",
+            borderColor: expanded ? brandColor : "divider",
+            "&:hover": {
+              bgcolor: expanded ? `${brandColor}dd` : "action.hover",
+            },
+          }}
         >
-          {expanded ? "Hide Explanation" : "Explain this score"}
+          {expanded ? "Hide Details" : "View Player Progression"}
         </Button>
 
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <Box sx={{ mt: 3 }}>
             {isLoading || !breakdown ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}><CircularProgress /></Box>
+              <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+                <CircularProgress size={30} />
+              </Box>
             ) : (
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="subtitle2" fontWeight={800} color="success.main" gutterBottom>
-                    Top 5 Contributors (Progression)
+              <Stack spacing={3}>
+                <Box
+                  sx={{
+                    p: 2,
+                    bgcolor: "background.default",
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight={800}
+                    gutterBottom
+                    sx={{ color: brandColor, mb: 2 }}
+                  >
+                    Development Profile
                   </Typography>
-                  <Paper variant="outlined" sx={{ overflow: 'hidden', borderRadius: 2 }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" color="text.secondary">
+                        Improvement Rate
+                      </Typography>
+                      <Typography variant="h6" fontWeight={800}>
+                        {breakdown.developmentProfile.improvementRate}%
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" color="text.secondary">
+                        Players Evaluated
+                      </Typography>
+                      <Typography variant="h6" fontWeight={800}>
+                        {breakdown.totalPlayersAnalyzed}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" color="text.secondary">
+                        Average Value Added
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        fontWeight={800}
+                        color={
+                          breakdown.developmentProfile.averageValueAdded > 0
+                            ? "success.main"
+                            : "error.main"
+                        }
+                      >
+                        {breakdown.developmentProfile.averageValueAdded > 0
+                          ? "+"
+                          : ""}
+                        {breakdown.developmentProfile.averageValueAdded} pts/yr
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" color="text.secondary">
+                        Cumulative Yield
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        fontWeight={800}
+                        color={
+                          breakdown.developmentProfile.cumulativeYield > 0
+                            ? "success.main"
+                            : "error.main"
+                        }
+                      >
+                        {breakdown.developmentProfile.cumulativeYield > 0
+                          ? "+"
+                          : ""}
+                        {breakdown.developmentProfile.cumulativeYield} pts
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" color="text.secondary">
+                        Median Value Added
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        fontWeight={800}
+                        color={
+                          breakdown.developmentProfile.medianValueAdded > 0
+                            ? "success.main"
+                            : "error.main"
+                        }
+                      >
+                        {breakdown.developmentProfile.medianValueAdded > 0
+                          ? "+"
+                          : ""}
+                        {breakdown.developmentProfile.medianValueAdded} pts
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+                  <Divider sx={{ my: 2 }} />
+
+                  <Typography
+                    variant="caption"
+                    fontWeight={700}
+                    color="text.secondary"
+                    gutterBottom
+                    display="block"
+                  >
+                    Value Added Distribution
+                  </Typography>
+                  <Stack spacing={1}>
+                    <Box
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        Elite Breakthrough {">"} +20 pts
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        fontWeight={700}
+                        color="success.main"
+                      >
+                        {breakdown.developmentProfile.distribution.major}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        Positive Value +5 to +20 pts
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        fontWeight={700}
+                        color="success.light"
+                      >
+                        {breakdown.developmentProfile.distribution.moderate}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        Expected Value -5 to +5 pts
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        fontWeight={700}
+                        color="text.secondary"
+                      >
+                        {breakdown.developmentProfile.distribution.stable}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        Major Regression {"<"} -5 pts
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        fontWeight={700}
+                        color="error.main"
+                      >
+                        {breakdown.developmentProfile.distribution.regression}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </Box>
+
+                <Box>
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight={800}
+                    color="success.main"
+                    gutterBottom
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
+                    <Box
+                      component="span"
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        bgcolor: "success.main",
+                      }}
+                    />
+                    Top Contributors
+                  </Typography>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      overflow: "hidden",
+                      borderRadius: 3,
+                      bgcolor: "background.default",
+                    }}
+                  >
                     <Table size="small">
-                      <TableHead sx={{ bgcolor: 'action.hover' }}>
-                        <TableRow>
-                          <TableCell>Player</TableCell>
-                          <TableCell align="right">Delta %</TableCell>
-                          <TableCell align="right">Impact</TableCell>
-                        </TableRow>
-                      </TableHead>
                       <TableBody>
-                        {breakdown.topContributors.map(t => (
-                          <TableRow key={t.player.id}>
-                            <TableCell>
-                              <Typography variant="body2" fontWeight={600}>{t.player.name}</Typography>
-                              <Typography variant="caption" color="text.secondary">{t.player.role}</Typography>
+                        {breakdown.topContributors.map((t) => (
+                          <TableRow
+                            key={t.player.id}
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <TableCell sx={{ py: 1.5 }}>
+                              <Typography variant="body2" fontWeight={700}>
+                                {t.player.name}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {t.player.role}
+                              </Typography>
                             </TableCell>
-                            <TableCell align="right" sx={{ color: 'success.main', fontWeight: 700 }}>+{t.deltaScore}%</TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 700 }}>+{t.contribution}</TableCell>
+                            <TableCell align="right" sx={{ py: 1.5 }}>
+                              <MetricBadge value={t.deltaScore} />
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
                   </Paper>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="subtitle2" fontWeight={800} color="error.main" gutterBottom>
-                    Bottom 5 Contributors (Regression)
+                </Box>
+
+                <Box>
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight={800}
+                    color="error.main"
+                    gutterBottom
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
+                    <Box
+                      component="span"
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        bgcolor: "error.main",
+                      }}
+                    />
+                    Needs Improvement
                   </Typography>
-                  <Paper variant="outlined" sx={{ overflow: 'hidden', borderRadius: 2 }}>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      overflow: "hidden",
+                      borderRadius: 3,
+                      bgcolor: "background.default",
+                    }}
+                  >
                     <Table size="small">
-                      <TableHead sx={{ bgcolor: 'action.hover' }}>
-                        <TableRow>
-                          <TableCell>Player</TableCell>
-                          <TableCell align="right">Delta %</TableCell>
-                          <TableCell align="right">Impact</TableCell>
-                        </TableRow>
-                      </TableHead>
                       <TableBody>
-                        {breakdown.bottomContributors.map(t => (
-                          <TableRow key={t.player.id}>
-                            <TableCell>
-                              <Typography variant="body2" fontWeight={600}>{t.player.name}</Typography>
-                              <Typography variant="caption" color="text.secondary">{t.player.role}</Typography>
+                        {breakdown.bottomContributors.map((t) => (
+                          <TableRow
+                            key={t.player.id}
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <TableCell sx={{ py: 1.5 }}>
+                              <Typography variant="body2" fontWeight={700}>
+                                {t.player.name}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {t.player.role}
+                              </Typography>
                             </TableCell>
-                            <TableCell align="right" sx={{ color: t.deltaScore < 0 ? 'error.main' : 'text.primary', fontWeight: 700 }}>
-                              {t.deltaScore > 0 ? '+' : ''}{t.deltaScore}%
-                            </TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 700 }}>
-                              {t.contribution > 0 ? '+' : ''}{t.contribution}
+                            <TableCell align="right" sx={{ py: 1.5 }}>
+                              <MetricBadge value={t.deltaScore} />
                             </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
                   </Paper>
-                </Grid>
-              </Grid>
+                </Box>
+              </Stack>
             )}
           </Box>
         </Collapse>
@@ -139,78 +551,30 @@ function TeamDevelopment() {
   const { data, isLoading } = useTeamDevelopmentIndex();
 
   return (
-    <Box>
-      <Typography variant="h4" fontWeight={800} gutterBottom>Team Progression & Opportunity Index</Typography>
-      <Typography variant="body1" color="text.secondary" mb={4}>
-        An aggregative analytical model estimating in-franchise player progression. This index calculates the delta in normalized performance metrics (volume and efficiency) between a player's induction and their most recent season. By aggregating squad-wide progression for retained players, this model serves as a proxy for a franchise's ability to successfully integrate, nurture, and increase the utilization of acquired talent over time.
-      </Typography>
-
-      <Accordion sx={{ mb: 4, borderRadius: 2, '&:before': { display: 'none' }, border: '1px solid', borderColor: 'divider' }}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h6" fontWeight={700}>📊 How this Index is calculated</Typography>
-        </AccordionSummary>
-        <AccordionDetails sx={{ bgcolor: 'action.hover', borderTop: '1px solid', borderColor: 'divider' }}>
-          <Box sx={{ pl: 2 }}>
-            <Typography variant="subtitle2" fontWeight={700} gutterBottom>Step 1: Player Selection Criteria</Typography>
-            <Typography variant="body2" mb={2}>Minimum 2 seasons with the franchise. Incomplete or single-season trajectories are excluded to prevent small-sample distortion.</Typography>
-
-            <Typography variant="subtitle2" fontWeight={700} gutterBottom>Step 2: Baseline vs Latest Comparison</Typography>
-            <Typography variant="body2" mb={2}>Compares the player's first season stats with the franchise against their most recent season stats.</Typography>
-
-            <Typography variant="subtitle2" fontWeight={700} gutterBottom>Step 3: Metric Breakdown</Typography>
-            <Typography variant="body2" mb={2}>
-              <strong>Batters:</strong> Runs, Strike Rate, Matches Played<br/>
-              <strong>Bowlers:</strong> Wickets, Economy, Matches Played<br/>
-              <em>Matches Played acts as a Selection Frequency Change (Opportunity Proxy)</em>
-            </Typography>
-
-            <Typography variant="subtitle2" fontWeight={700} gutterBottom>Step 4: Percentage Delta Formula</Typography>
-            <Typography variant="body2" mb={2} component="div">
-              <Box sx={{ p: 1, bgcolor: 'background.paper', borderRadius: 1, display: 'inline-block', border: '1px solid', borderColor: 'divider' }}>
-                <code style={{ fontFamily: 'monospace' }}>(Latest - First) / First</code>
-              </Box>
-            </Typography>
-
-            <Typography variant="subtitle2" fontWeight={700} gutterBottom>Step 5: Role-based Averaging & Clamping</Typography>
-            <Typography variant="body2" mb={2}>The three metric deltas are averaged. To prevent extreme outliers from breaking the squad score, individual player improvements are strictly clamped between <strong>-100%</strong> and <strong>+200%</strong>.</Typography>
-
-            <Typography variant="subtitle2" fontWeight={700} gutterBottom>Step 6: Final Aggregation</Typography>
-            <Typography variant="body2" component="div">
-              <Box sx={{ p: 1, bgcolor: 'background.paper', borderRadius: 1, display: 'inline-block', border: '1px solid', borderColor: 'divider' }}>
-                <code style={{ fontFamily: 'monospace' }}>50 + (Avg Squad Improvement / 4)</code>
-              </Box>
-            </Typography>
-          </Box>
-        </AccordionDetails>
-      </Accordion>
+    <Box sx={{ pb: 6 }}>
+      <PageHeader
+        title="Progression Index"
+        subtitle="Evaluating organizational impact on player development. (Score 50 = League Average, 60 = Top 15%, 70 = Elite)"
+      />
 
       {isLoading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 8 }}><CircularProgress /></Box>
+        <Box sx={{ display: "flex", justifyContent: "center", p: 8 }}>
+          <CircularProgress />
+        </Box>
       ) : (
-        <Grid container spacing={0}>
-          <Grid item xs={12}>
-            {data?.map(row => (
-              <FranchiseCard key={row.franchise.id} data={row} />
-            ))}
-          </Grid>
-        </Grid>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
+            gap: 3,
+            alignItems: "start",
+          }}
+        >
+          {data?.map((row) => (
+            <FranchiseCard key={row.franchise.id} data={row} />
+          ))}
+        </Box>
       )}
-
-      <Box sx={{ mt: 6, pt: 4, borderTop: '1px solid', borderColor: 'divider' }}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>Limitations of this Model</Typography>
-        <Typography variant="body2" color="text.secondary" paragraph>
-          • <strong>Model-derived index:</strong> This is a statistical estimation, not an official front-office evaluation.
-        </Typography>
-        <Typography variant="body2" color="text.secondary" paragraph>
-          • <strong>Conflation of effects:</strong> The model does not isolate coaching interventions vs. raw scouting vs. retention bias.
-        </Typography>
-        <Typography variant="body2" color="text.secondary" paragraph>
-          • <strong>Role changes:</strong> Players transitioning from part-time roles to different core roles can distort historical deltas.
-        </Typography>
-        <Typography variant="body2" color="text.secondary" paragraph>
-          • <strong>Survivorship bias:</strong> By excluding players with {"<"}2 seasons, the model inherently filters out rapid failures, which can artificially inflate a franchise's baseline.
-        </Typography>
-      </Box>
     </Box>
   );
 }

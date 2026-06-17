@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import stringSimilarity from 'string-similarity';
+import { PrismaClient } from "@prisma/client";
+import stringSimilarity from "string-similarity";
 
 const prisma = new PrismaClient();
 
@@ -9,13 +9,13 @@ function getLastName(name) {
 }
 
 function getFirstInitial(name) {
-  return name.trim()[0]?.toLowerCase() || '';
+  return name.trim()[0]?.toLowerCase() || "";
 }
 
 async function mapPlayerAliases() {
-  console.log('=============================================');
-  console.log('🚀 Phase 8: Automated Player Name Mapping');
-  console.log('=============================================\n');
+  console.log("=============================================");
+  console.log("🚀 Phase 8: Automated Player Name Mapping");
+  console.log("=============================================\n");
 
   const auctionPlayers = await prisma.player.findMany({
     where: { auctionEntries: { some: {} } },
@@ -28,7 +28,7 @@ async function mapPlayerAliases() {
   });
 
   console.log(
-    `Found ${auctionPlayers.length} Auction Players and ${cricsheetPlayers.length} Cricsheet Players.\n`
+    `Found ${auctionPlayers.length} Auction Players and ${cricsheetPlayers.length} Cricsheet Players.\n`,
   );
 
   const aliasesToCreate = [];
@@ -57,7 +57,7 @@ async function mapPlayerAliases() {
         } else {
           const similarity = stringSimilarity.compareTwoStrings(
             aucPlayer.name.toLowerCase(),
-            cricPlayer.name.toLowerCase()
+            cricPlayer.name.toLowerCase(),
           );
           confidence = Math.round(similarity * 100);
         }
@@ -87,7 +87,9 @@ async function mapPlayerAliases() {
   }
 
   console.log(`Generated ${aliasesToCreate.length} potential aliases.`);
-  console.log(`Found ${entriesToUpdate.length} highly confident matches to merge.\n`);
+  console.log(
+    `Found ${entriesToUpdate.length} highly confident matches to merge.\n`,
+  );
 
   let aliasInserted = 0;
   for (const alias of aliasesToCreate) {
@@ -122,15 +124,18 @@ async function mapPlayerAliases() {
         });
         updatedEntries++;
       } catch (e) {
-        console.error(`Could not update auction entry for ${entry.id}:`, e.message);
+        console.error(
+          `Could not update auction entry for ${entry.id}:`,
+          e.message,
+        );
       }
     }
   }
 
   console.log(
-    `\nUpdated ${updatedEntries} AuctionEntry rows to point to matched Cricsheet players.`
+    `\nUpdated ${updatedEntries} AuctionEntry rows to point to matched Cricsheet players.`,
   );
-  console.log('✅ Automated Player Name Mapping Complete!\n');
+  console.log("✅ Automated Player Name Mapping Complete!\n");
 }
 
 mapPlayerAliases()

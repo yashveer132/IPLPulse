@@ -28,6 +28,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { apiClient } from "../api/index.js";
+import PageHeader from "../components/common/PageHeader.jsx";
 
 function HeadToHeadMatchups() {
   const [players, setPlayers] = useState([]);
@@ -92,7 +93,7 @@ function HeadToHeadMatchups() {
 
   const buildTimelineData = (seasonDetails) => {
     if (!seasonDetails) return [];
-    let timeline = [];
+    const timeline = [];
     let cumulativeRuns = 0;
     const years = Object.keys(seasonDetails).sort(
       (a, b) => parseInt(a) - parseInt(b),
@@ -504,17 +505,10 @@ function HeadToHeadMatchups() {
 
   return (
     <Box sx={{ maxWidth: 1200, mx: "auto", p: 3 }}>
-      <Typography
-        variant="h4"
-        fontWeight={800}
-        color="primary.main"
-        gutterBottom
-      >
-        Head-to-Head Matchups
-      </Typography>
-      <Typography variant="subtitle1" color="text.secondary" mb={4}>
-        Analyze every delivery between any two players in IPL history.
-      </Typography>
+      <PageHeader
+        title="Head-to-Head Matchups"
+        subtitle="Analyze every delivery between any two players in IPL history."
+      />
 
       <Box
         sx={{

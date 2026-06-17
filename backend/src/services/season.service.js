@@ -1,19 +1,19 @@
-import { getPrisma } from '../config/index.js';
-import { computeEliteFeatures } from './seasonAdvanced.service.js';
+import { getPrisma } from "../config/index.js";
+import { computeEliteFeatures } from "./seasonAdvanced.service.js";
 
 const seasonCache = new Map();
 const intelligenceCache = new Map();
 
 export async function getSeasons() {
-  if (seasonCache.has('all')) return seasonCache.get('all');
+  if (seasonCache.has("all")) return seasonCache.get("all");
   const prisma = await getPrisma();
   const seasons = await prisma.match.findMany({
     select: { season: true },
-    distinct: ['season'],
-    orderBy: { season: 'desc' },
+    distinct: ["season"],
+    orderBy: { season: "desc" },
   });
   const res = seasons.map((s) => s.season);
-  seasonCache.set('all', res);
+  seasonCache.set("all", res);
   return res;
 }
 
@@ -37,7 +37,7 @@ export async function getSeasonIntelligence(year) {
           select: { id: true, name: true, role: true, nationality: true },
         },
       },
-      orderBy: { totalRuns: 'desc' },
+      orderBy: { totalRuns: "desc" },
     }),
 
     prisma.franchiseSeasonStats.findMany({
@@ -54,7 +54,7 @@ export async function getSeasonIntelligence(year) {
           },
         },
       },
-      orderBy: { finalPosition: 'asc' },
+      orderBy: { finalPosition: "asc" },
     }),
 
     prisma.match.findMany({
@@ -74,7 +74,7 @@ export async function getSeasonIntelligence(year) {
         tossDecision: true,
         playerOfMatch: true,
       },
-      orderBy: { date: 'asc' },
+      orderBy: { date: "asc" },
     }),
 
     prisma.playerMatchStats.findMany({
@@ -88,19 +88,25 @@ export async function getSeasonIntelligence(year) {
         isOut: true,
         team: true,
         player: { select: { id: true, name: true, role: true } },
-        match: { select: { date: true, venue: true, team1: true, team2: true } },
+        match: {
+          select: { date: true, venue: true, team1: true, team2: true },
+        },
       },
-      orderBy: { runsScored: 'desc' },
+      orderBy: { runsScored: "desc" },
       take: 10,
     }),
 
     prisma.auctionEntry.findMany({
       where: { season: year },
       include: {
-        player: { select: { id: true, name: true, role: true, nationality: true } },
-        franchise: { select: { id: true, name: true, shortName: true, color: true } },
+        player: {
+          select: { id: true, name: true, role: true, nationality: true },
+        },
+        franchise: {
+          select: { id: true, name: true, shortName: true, color: true },
+        },
       },
-      orderBy: { soldPrice: 'desc' },
+      orderBy: { soldPrice: "desc" },
     }),
 
     prisma.auctionEntry.count({ where: { season: year } }),
@@ -125,20 +131,33 @@ export async function getSeasonIntelligence(year) {
 
   const totalMatches = matches.length;
   const totalRuns = playerSeasonStats.reduce((sum, s) => sum + s.totalRuns, 0);
-  const totalWickets = playerSeasonStats.reduce((sum, s) => sum + s.totalWickets, 0);
+  const totalWickets = playerSeasonStats.reduce(
+    (sum, s) => sum + s.totalWickets,
+    0,
+  );
   const totalSixes = playerSeasonStats.reduce((sum, s) => sum + s.sixes, 0);
   const totalFours = playerSeasonStats.reduce((sum, s) => sum + s.fours, 0);
   const totalFifties = playerSeasonStats.reduce((sum, s) => sum + s.fifties, 0);
-  const totalHundreds = playerSeasonStats.reduce((sum, s) => sum + s.hundreds, 0);
-  const totalPOM = playerSeasonStats.reduce((sum, s) => sum + s.playerOfMatch, 0);
-  const avgScorePerMatch = totalMatches > 0 ? Math.round(totalRuns / (totalMatches * 2)) : 0;
+  const totalHundreds = playerSeasonStats.reduce(
+    (sum, s) => sum + s.hundreds,
+    0,
+  );
+  const totalPOM = playerSeasonStats.reduce(
+    (sum, s) => sum + s.playerOfMatch,
+    0,
+  );
+  const avgScorePerMatch =
+    totalMatches > 0 ? Math.round(totalRuns / (totalMatches * 2)) : 0;
 
   const champion = franchiseSeasonStats.find((f) => f.isChampion);
   const runnerUp = franchiseSeasonStats.find((f) => f.finalPosition === 2);
 
-  const orangeCapStat = playerSeasonStats.length > 0 ? playerSeasonStats[0] : null;
+  const orangeCapStat =
+    playerSeasonStats.length > 0 ? playerSeasonStats[0] : null;
 
-  const purpleCapList = [...playerSeasonStats].sort((a, b) => b.totalWickets - a.totalWickets);
+  const purpleCapList = [...playerSeasonStats].sort(
+    (a, b) => b.totalWickets - a.totalWickets,
+  );
   const purpleCapStat = purpleCapList.length > 0 ? purpleCapList[0] : null;
 
   const topBatters = playerSeasonStats
@@ -183,7 +202,10 @@ export async function getSeasonIntelligence(year) {
     matchesPlayed: f.matchesPlayed,
     matchesWon: f.matchesWon,
     matchesLost: f.matchesLost,
-    winPercentage: f.matchesPlayed > 0 ? Math.round((f.matchesWon / f.matchesPlayed) * 100) : 0,
+    winPercentage:
+      f.matchesPlayed > 0
+        ? Math.round((f.matchesWon / f.matchesPlayed) * 100)
+        : 0,
     totalSpent: f.totalSpent,
     playersBought: f.playersBought,
     playersRetained: f.playersRetained,
@@ -199,7 +221,10 @@ export async function getSeasonIntelligence(year) {
     ballsFaced: t.ballsFaced,
     fours: t.fours,
     sixes: t.sixes,
-    strikeRate: t.ballsFaced > 0 ? Math.round((t.runsScored / t.ballsFaced) * 100 * 100) / 100 : 0,
+    strikeRate:
+      t.ballsFaced > 0
+        ? Math.round((t.runsScored / t.ballsFaced) * 100 * 100) / 100
+        : 0,
     isNotOut: !t.isOut,
     opponent: t.match.team1 === t.team ? t.match.team2 : t.match.team1,
     venue: t.match.venue,
@@ -209,7 +234,8 @@ export async function getSeasonIntelligence(year) {
   const matchTeamTotals = {};
   allPlayerMatchStats.forEach((s) => {
     if (!matchTeamTotals[s.matchId]) matchTeamTotals[s.matchId] = {};
-    if (!matchTeamTotals[s.matchId][s.team]) matchTeamTotals[s.matchId][s.team] = 0;
+    if (!matchTeamTotals[s.matchId][s.team])
+      {matchTeamTotals[s.matchId][s.team] = 0;}
     matchTeamTotals[s.matchId][s.team] += s.runsScored;
   });
 
@@ -230,22 +256,33 @@ export async function getSeasonIntelligence(year) {
   let closestMatch = null;
 
   matches.forEach((m) => {
-    if (m.winType === 'runs') {
+    if (m.winType === "runs") {
       batFirstWins++;
       matchesWithResult++;
     }
-    if (m.winType === 'wickets') {
+    if (m.winType === "wickets") {
       chaseWins++;
       matchesWithResult++;
     }
 
     if (m.winner === null && m.playerOfMatch !== null) {
-      closestMatch = { match: m, margin: 0, winner: 'Tie (Super Over)', isSuperOver: true };
+      closestMatch = {
+        match: m,
+        margin: 0,
+        winner: "Tie (Super Over)",
+        isSuperOver: true,
+      };
     } else if (
-      m.winType === 'runs' &&
-      (!closestMatch || (!closestMatch.isSuperOver && m.winMargin < closestMatch.margin))
+      m.winType === "runs" &&
+      (!closestMatch ||
+        (!closestMatch.isSuperOver && m.winMargin < closestMatch.margin))
     ) {
-      closestMatch = { match: m, margin: m.winMargin, winner: m.winner, isSuperOver: false };
+      closestMatch = {
+        match: m,
+        margin: m.winMargin,
+        winner: m.winner,
+        isSuperOver: false,
+      };
     }
 
     const totals = matchTeamTotals[m.id];
@@ -254,7 +291,7 @@ export async function getSeasonIntelligence(year) {
     let batFirstTeam = null;
     let batSecondTeam = null;
     if (m.tossWinner && m.tossDecision) {
-      if (m.tossDecision === 'bat') {
+      if (m.tossDecision === "bat") {
         batFirstTeam = m.tossWinner;
         batSecondTeam = m.team1 === m.tossWinner ? m.team2 : m.team1;
       } else {
@@ -271,7 +308,10 @@ export async function getSeasonIntelligence(year) {
     if (batFirstScore > 0 && isValidMatch) {
       sumFirstInnings += batFirstScore;
       firstInningsCount++;
-      if (!lowestTeamTotalBatFirst || batFirstScore < lowestTeamTotalBatFirst.score) {
+      if (
+        !lowestTeamTotalBatFirst ||
+        batFirstScore < lowestTeamTotalBatFirst.score
+      ) {
         lowestTeamTotalBatFirst = {
           team: batFirstTeam,
           score: batFirstScore,
@@ -285,7 +325,10 @@ export async function getSeasonIntelligence(year) {
       sumWinningScore += totals[m.winner];
       winningScoreCount++;
 
-      if (m.winType === 'wickets' && (!biggestChase || totals[m.winner] > biggestChase.score)) {
+      if (
+        m.winType === "wickets" &&
+        (!biggestChase || totals[m.winner] > biggestChase.score)
+      ) {
         biggestChase = {
           team: m.winner,
           score: totals[m.winner],
@@ -308,7 +351,8 @@ export async function getSeasonIntelligence(year) {
     });
 
     if (m.venue) {
-      if (!venueStats[m.venue]) venueStats[m.venue] = { totalRuns: 0, matches: 0 };
+      if (!venueStats[m.venue])
+        {venueStats[m.venue] = { totalRuns: 0, matches: 0 };}
       venueStats[m.venue].totalRuns += matchAggregate;
       venueStats[m.venue].matches += 1;
     }
@@ -319,8 +363,13 @@ export async function getSeasonIntelligence(year) {
   const avgWinningScore =
     winningScoreCount > 0 ? Math.round(sumWinningScore / winningScoreCount) : 0;
   const batFirstWinPct =
-    matchesWithResult > 0 ? Math.round((batFirstWins / matchesWithResult) * 100) : 0;
-  const chaseWinPct = matchesWithResult > 0 ? Math.round((chaseWins / matchesWithResult) * 100) : 0;
+    matchesWithResult > 0
+      ? Math.round((batFirstWins / matchesWithResult) * 100)
+      : 0;
+  const chaseWinPct =
+    matchesWithResult > 0
+      ? Math.round((chaseWins / matchesWithResult) * 100)
+      : 0;
 
   let highestScoringVenue = null;
   let lowestScoringVenue = null;
@@ -328,9 +377,9 @@ export async function getSeasonIntelligence(year) {
     if (stats.matches >= 3) {
       const avg = stats.totalRuns / stats.matches;
       if (!highestScoringVenue || avg > highestScoringVenue.avg)
-        highestScoringVenue = { venue, avg: Math.round(avg) };
+        {highestScoringVenue = { venue, avg: Math.round(avg) };}
       if (!lowestScoringVenue || avg < lowestScoringVenue.avg)
-        lowestScoringVenue = { venue, avg: Math.round(avg) };
+        {lowestScoringVenue = { venue, avg: Math.round(avg) };}
     }
   });
 
@@ -340,7 +389,8 @@ export async function getSeasonIntelligence(year) {
       if (
         !topSpell ||
         stat.wickets > topSpell.wickets ||
-        (stat.wickets === topSpell.wickets && stat.runsConceded < topSpell.runsConceded)
+        (stat.wickets === topSpell.wickets &&
+          stat.runsConceded < topSpell.runsConceded)
       ) {
         topSpell = stat;
       }
@@ -380,31 +430,46 @@ export async function getSeasonIntelligence(year) {
   };
 
   let eligibleWKs = playerSeasonStats
-    .filter((s) => s.player.role === 'Wicket-Keeper' && s.totalRuns >= 100)
-    .sort((a, b) => b.totalRuns - a.totalRuns || b.performanceScore - a.performanceScore);
+    .filter((s) => s.player.role === "Wicket-Keeper" && s.totalRuns >= 100)
+    .sort(
+      (a, b) =>
+        b.totalRuns - a.totalRuns || b.performanceScore - a.performanceScore,
+    );
   if (eligibleWKs.length === 0)
-    eligibleWKs = playerSeasonStats
-      .filter((s) => s.player.role === 'Wicket-Keeper')
-      .sort((a, b) => b.totalRuns - a.totalRuns);
+    {eligibleWKs = playerSeasonStats
+      .filter((s) => s.player.role === "Wicket-Keeper")
+      .sort((a, b) => b.totalRuns - a.totalRuns);}
 
   const selectedWK = eligibleWKs[0];
   const wkId = selectedWK ? selectedWK.playerId : null;
 
   const eligibleBatters = playerSeasonStats
-    .filter((s) => s.player.role !== 'Wicket-Keeper' && s.playerId !== wkId && s.totalRuns >= 150)
-    .sort((a, b) => b.totalRuns - a.totalRuns || b.performanceScore - a.performanceScore);
+    .filter(
+      (s) =>
+        s.player.role !== "Wicket-Keeper" &&
+        s.playerId !== wkId &&
+        s.totalRuns >= 150,
+    )
+    .sort(
+      (a, b) =>
+        b.totalRuns - a.totalRuns || b.performanceScore - a.performanceScore,
+    );
   const top4Batters = eligibleBatters.slice(0, 4);
   const batterIds = new Set(top4Batters.map((b) => b.playerId));
 
   const eligibleBowlers = playerSeasonStats
     .filter(
       (s) =>
-        s.player.role !== 'Wicket-Keeper' &&
+        s.player.role !== "Wicket-Keeper" &&
         s.playerId !== wkId &&
         !batterIds.has(s.playerId) &&
-        s.totalWickets >= 8
+        s.totalWickets >= 8,
     )
-    .sort((a, b) => b.totalWickets - a.totalWickets || b.performanceScore - a.performanceScore);
+    .sort(
+      (a, b) =>
+        b.totalWickets - a.totalWickets ||
+        b.performanceScore - a.performanceScore,
+    );
   const top4Bowlers = eligibleBowlers.slice(0, 4);
   const bowlerIds = new Set(top4Bowlers.map((b) => b.playerId));
 
@@ -414,23 +479,24 @@ export async function getSeasonIntelligence(year) {
         s.playerId !== wkId &&
         !batterIds.has(s.playerId) &&
         !bowlerIds.has(s.playerId) &&
-        (s.player.role === 'All-Rounder' || (s.totalRuns >= 100 && s.totalWickets >= 5))
+        (s.player.role === "All-Rounder" ||
+          (s.totalRuns >= 100 && s.totalWickets >= 5)),
     )
     .sort((a, b) => b.performanceScore - a.performanceScore);
   const top2ARs = eligibleARs.slice(0, 2);
 
-  let bestXIList = [
-    ...top4Batters.map((s) => ({ ...s, displayRole: 'Batter' })),
-    ...(selectedWK ? [{ ...selectedWK, displayRole: 'Wicket-Keeper' }] : []),
-    ...top2ARs.map((s) => ({ ...s, displayRole: 'All-Rounder' })),
-    ...top4Bowlers.map((s) => ({ ...s, displayRole: 'Bowler' })),
+  const bestXIList = [
+    ...top4Batters.map((s) => ({ ...s, displayRole: "Batter" })),
+    ...(selectedWK ? [{ ...selectedWK, displayRole: "Wicket-Keeper" }] : []),
+    ...top2ARs.map((s) => ({ ...s, displayRole: "All-Rounder" })),
+    ...top4Bowlers.map((s) => ({ ...s, displayRole: "Bowler" })),
   ];
 
   let bestXICaptain = null;
   let bestXIViceCaptain = null;
   if (bestXIList.length > 0) {
     const sortedForLeadership = [...bestXIList].sort(
-      (a, b) => b.performanceScore - a.performanceScore
+      (a, b) => b.performanceScore - a.performanceScore,
     );
     bestXICaptain = sortedForLeadership[0].playerId;
     if (sortedForLeadership.length > 1) {
@@ -449,23 +515,35 @@ export async function getSeasonIntelligence(year) {
     isViceCaptain: s.playerId === bestXIViceCaptain,
   }));
 
-  const playoffMatches = matches.filter((m) => m.matchNumber === null && m.winner !== null);
+  const playoffMatches = matches.filter(
+    (m) => m.matchNumber === null && m.winner !== null,
+  );
   const playoffMatchIds = new Set(playoffMatches.map((m) => m.id));
-  const playoffStats = allPlayerMatchStats.filter((s) => playoffMatchIds.has(s.matchId));
+  const playoffStats = allPlayerMatchStats.filter((s) =>
+    playoffMatchIds.has(s.matchId),
+  );
 
   const playoffPerformances = {};
   playoffStats.forEach((s) => {
     if (!playoffPerformances[s.playerId]) {
-      playoffPerformances[s.playerId] = { player: s.player, team: s.team, runs: 0, wickets: 0 };
+      playoffPerformances[s.playerId] = {
+        player: s.player,
+        team: s.team,
+        runs: 0,
+        wickets: 0,
+      };
     }
     playoffPerformances[s.playerId].runs += s.runsScored;
     playoffPerformances[s.playerId].wickets += s.wickets;
   });
 
   const topPlayoffBatter =
-    Object.values(playoffPerformances).sort((a, b) => b.runs - a.runs)[0] || null;
+    Object.values(playoffPerformances).sort((a, b) => b.runs - a.runs)[0] ||
+    null;
   const topPlayoffBowler =
-    Object.values(playoffPerformances).sort((a, b) => b.wickets - a.wickets)[0] || null;
+    Object.values(playoffPerformances).sort(
+      (a, b) => b.wickets - a.wickets,
+    )[0] || null;
 
   const clutchPerformers = {
     playoffBatter: topPlayoffBatter?.runs > 0 ? topPlayoffBatter : null,
@@ -477,7 +555,7 @@ export async function getSeasonIntelligence(year) {
 
   if (hasAuctionData) {
     const soldPurchases = auctionEntries.filter(
-      (e) => e.status === 'Sold' && !e.isRetained && e.soldPrice > 0
+      (e) => e.status === "Sold" && !e.isRetained && e.soldPrice > 0,
     );
 
     const analyzedPurchases = soldPurchases.map((p) => {
@@ -487,12 +565,17 @@ export async function getSeasonIntelligence(year) {
       return { ...p, performanceScore: perf, roi };
     });
 
-    const qualifiedPurchases = analyzedPurchases.filter((p) => p.soldPrice >= 50);
+    const qualifiedPurchases = analyzedPurchases.filter(
+      (p) => p.soldPrice >= 50,
+    );
     qualifiedPurchases.sort((a, b) => b.roi - a.roi);
 
-    const bestRoi = qualifiedPurchases.length > 0 ? qualifiedPurchases[0] : null;
+    const bestRoi =
+      qualifiedPurchases.length > 0 ? qualifiedPurchases[0] : null;
     const worstRoi =
-      qualifiedPurchases.length > 0 ? qualifiedPurchases[qualifiedPurchases.length - 1] : null;
+      qualifiedPurchases.length > 0
+        ? qualifiedPurchases[qualifiedPurchases.length - 1]
+        : null;
     const highestSpend = soldPurchases.length > 0 ? soldPurchases[0] : null;
 
     const steals = analyzedPurchases
@@ -509,15 +592,21 @@ export async function getSeasonIntelligence(year) {
       }));
 
     const unsoldPlayers = auctionEntries
-      .filter((e) => e.status === 'Unsold' && e.basePrice >= 100)
+      .filter((e) => e.status === "Unsold" && e.basePrice >= 100)
       .slice(0, 5)
       .map((u) => ({
         player: u.player,
         basePrice: u.basePrice,
       }));
 
-    const totalAuctionSpend = franchiseSeasonStats.reduce((sum, f) => sum + f.totalSpent, 0);
-    const totalPlayersBought = franchiseSeasonStats.reduce((sum, f) => sum + f.playersBought, 0);
+    const totalAuctionSpend = franchiseSeasonStats.reduce(
+      (sum, f) => sum + f.totalSpent,
+      0,
+    );
+    const totalPlayersBought = franchiseSeasonStats.reduce(
+      (sum, f) => sum + f.playersBought,
+      0,
+    );
 
     const formatEntry = (entry) => {
       if (!entry) return null;
@@ -549,7 +638,9 @@ export async function getSeasonIntelligence(year) {
     };
   }
 
-  const mvpList = [...playerSeasonStats].sort((a, b) => b.performanceScore - a.performanceScore);
+  const mvpList = [...playerSeasonStats].sort(
+    (a, b) => b.performanceScore - a.performanceScore,
+  );
   const seasonMvp =
     mvpList.length > 0
       ? {
@@ -563,16 +654,22 @@ export async function getSeasonIntelligence(year) {
   const superOversList = matches
     .filter((m) => m.winner === null && m.playerOfMatch !== null)
     .map((m) => {
-      let winnerTeam = 'Unknown';
+      let winnerTeam = "Unknown";
       if (m.playerOfMatch) {
-        const pStat = playerSeasonStats.find((s) => s.player.name === m.playerOfMatch);
+        const pStat = playerSeasonStats.find(
+          (s) => s.player.name === m.playerOfMatch,
+        );
         if (pStat) winnerTeam = pStat.team;
       }
-      return { matchInfo: `${m.team1} vs ${m.team2}`, winner: winnerTeam, pom: m.playerOfMatch };
+      return {
+        matchInfo: `${m.team1} vs ${m.team2}`,
+        winner: winnerTeam,
+        pom: m.playerOfMatch,
+      };
     });
 
   const abandonedMatches = matches.filter(
-    (m) => m.winner === null && m.playerOfMatch === null
+    (m) => m.winner === null && m.playerOfMatch === null,
   ).length;
 
   let bestSRInnings = null;
@@ -582,7 +679,8 @@ export async function getSeasonIntelligence(year) {
 
   allPlayerMatchStats.forEach((stat) => {
     if (stat.runsScored >= 50) {
-      const sr = stat.ballsFaced > 0 ? (stat.runsScored / stat.ballsFaced) * 100 : 0;
+      const sr =
+        stat.ballsFaced > 0 ? (stat.runsScored / stat.ballsFaced) * 100 : 0;
       if (!bestSRInnings || sr > bestSRInnings.sr) {
         bestSRInnings = { ...stat, sr };
       }
@@ -713,11 +811,11 @@ export async function getSeasonIntelligence(year) {
       matches,
       allPlayerMatchStats,
       playerSeasonStats,
-      seasonMilestones
+      seasonMilestones,
     );
     Object.assign(result, eliteFeatures);
   } catch (e) {
-    console.error('Error computing elite features:', e);
+    console.error("Error computing elite features:", e);
   }
 
   intelligenceCache.set(year, result);

@@ -16,6 +16,7 @@ import {
 import { useFranchises, useCompareFranchises } from "../hooks/useFranchise.js";
 import StatCard from "../components/common/StatCard.jsx";
 import { ChartSkeleton } from "../components/common/LoadingSkeleton.jsx";
+import PageHeader from "../components/common/PageHeader.jsx";
 import SportsCricketIcon from "@mui/icons-material/SportsCricket";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import StarIcon from "@mui/icons-material/Star";
@@ -228,24 +229,10 @@ function FranchiseComparison() {
 
   return (
     <Box>
-      <Box mb={5} textAlign="center">
-        <Typography
-          variant="h3"
-          fontWeight={900}
-          gutterBottom
-          sx={{
-            background: "linear-gradient(45deg, #FF6B6B 10%, #6B66FF 90%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            letterSpacing: "-1.5px",
-          }}
-        >
-          Clash of the Titans
-        </Typography>
-        <Typography variant="h6" color="text.secondary" fontWeight={400}>
-          The ultimate, world-class analytical breakdown of legendary rivalries
-        </Typography>
-      </Box>
+      <PageHeader
+        title="Clash of the Titans"
+        subtitle="The ultimate, world-class analytical breakdown of legendary rivalries"
+      />
 
       <Paper
         elevation={0}

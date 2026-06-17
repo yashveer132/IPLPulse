@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { PrismaClient } from "@prisma/client";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const prisma = new PrismaClient();
 
@@ -9,12 +9,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function applyManualAliases() {
-  console.log('=============================================');
-  console.log('🚀 Phase 9: Manual Player Alias Patch');
-  console.log('=============================================\n');
+  console.log("=============================================");
+  console.log("🚀 Phase 9: Manual Player Alias Patch");
+  console.log("=============================================\n");
 
-  const configPath = path.join(__dirname, 'config', 'manual-aliases.json');
-  const aliases = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  const configPath = path.join(__dirname, "config", "manual-aliases.json");
+  const aliases = JSON.parse(fs.readFileSync(configPath, "utf8"));
 
   let updatedEntries = 0;
   let skipped = 0;
@@ -68,10 +68,14 @@ async function applyManualAliases() {
           data: { playerId: cricsheetPlayer.id },
         });
         updatedEntries++;
-        console.log(`✅ Linked ${auctionName} ↔ ${cricsheetName} (Season ${entry.season})`);
+        console.log(
+          `✅ Linked ${auctionName} ↔ ${cricsheetName} (Season ${entry.season})`,
+        );
       } catch (e) {
-        if (e.code === 'P2002') {
-          console.log(`ℹ️ Link already exists for ${auctionName} in ${entry.season}`);
+        if (e.code === "P2002") {
+          console.log(
+            `ℹ️ Link already exists for ${auctionName} in ${entry.season}`,
+          );
         } else {
           console.error(`Error linking ${auctionName}:`, e.message);
         }
@@ -79,7 +83,9 @@ async function applyManualAliases() {
     }
   }
 
-  console.log(`\n✅ Manual Patch Complete! Updated ${updatedEntries} auction entries.`);
+  console.log(
+    `\n✅ Manual Patch Complete! Updated ${updatedEntries} auction entries.`,
+  );
 }
 
 applyManualAliases()

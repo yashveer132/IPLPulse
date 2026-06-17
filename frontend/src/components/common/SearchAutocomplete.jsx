@@ -132,7 +132,7 @@ function SearchAutocomplete({
                 bgcolor: "background.paper",
                 ...sx.inputStyle,
               },
-            }
+            },
           }}
         />
       )}
