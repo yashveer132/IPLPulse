@@ -89,9 +89,19 @@ function DataTable({
           sx={{
             ".MuiTablePagination-toolbar": {
               justifyContent: "center",
+              flexWrap: { xs: "wrap", sm: "nowrap" },
+              gap: { xs: 0.5, sm: 1 },
+              px: { xs: 1, sm: 2 },
             },
             ".MuiTablePagination-spacer": {
               display: "none",
+            },
+            ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows":
+              {
+                fontSize: { xs: "0.75rem", sm: "0.875rem" },
+              },
+            ".MuiTablePagination-actions": {
+              marginLeft: { xs: 0.5, sm: 2 },
             },
           }}
         />

@@ -31,8 +31,8 @@ import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import { FRANCHISES } from "../../constants/index.js";
 
-const DRAWER_WIDTH = 260;
-const COLLAPSED_WIDTH = 72;
+const DRAWER_WIDTH = 220;
+const COLLAPSED_WIDTH = 220;
 
 const NAV_SECTIONS = [
   {
@@ -115,11 +115,11 @@ const NAV_SECTIONS = [
 ];
 
 function Sidebar({ mobileOpen, handleDrawerToggle }) {
-  const [collapsed, setCollapsed] = useState(true);
+  const collapsed = false;
   const location = useLocation();
   const navigate = useNavigate();
 
-  const width = collapsed ? COLLAPSED_WIDTH : DRAWER_WIDTH;
+  const width = DRAWER_WIDTH;
 
   const drawerContent = (
     <>
@@ -128,28 +128,15 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
           p: 2,
           display: "flex",
           alignItems: "center",
-          justifyContent: collapsed ? "center" : "space-between",
+          justifyContent: "space-between",
         }}
       >
-        {!collapsed && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <SportsBaseballIcon sx={{ color: "primary.main" }} />
-            <Typography variant="h6" fontWeight={800} color="primary.main">
-              IPLPulse
-            </Typography>
-          </Box>
-        )}
-        {collapsed && (
-          <SportsBaseballIcon
-            sx={{ color: "primary.main", cursor: "pointer" }}
-            onClick={() => setCollapsed(false)}
-          />
-        )}
-        {!collapsed && (
-          <IconButton onClick={() => setCollapsed(true)} size="small">
-            <ChevronLeftIcon />
-          </IconButton>
-        )}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <SportsBaseballIcon sx={{ color: "primary.main" }} />
+          <Typography variant="h6" fontWeight={800} color="primary.main">
+            IPLPulse
+          </Typography>
+        </Box>
       </Box>
 
       <Divider />
@@ -314,16 +301,6 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
           ))}
         </List>
       </Box>
-
-      {collapsed && (
-        <Box
-          sx={{ mt: "auto", p: 1, display: "flex", justifyContent: "center" }}
-        >
-          <IconButton onClick={() => setCollapsed(false)}>
-            <ChevronRightIcon />
-          </IconButton>
-        </Box>
-      )}
     </>
   );
 

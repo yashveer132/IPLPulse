@@ -25,6 +25,65 @@ import api from "../api/apiClient.js";
 import PageHeader from "../components/common/PageHeader.jsx";
 import PageLoader from "../components/common/PageLoader.jsx";
 
+const collectionColors = [
+  {
+    main: "#8b5cf6",
+    bg: "rgba(139, 92, 246, 0.02)",
+    bgHover: "rgba(139, 92, 246, 0.06)",
+    border: "rgba(139, 92, 246, 0.12)",
+    selected: "rgba(139, 92, 246, 0.15)",
+  },
+  {
+    main: "#ef4444",
+    bg: "rgba(239, 68, 68, 0.02)",
+    bgHover: "rgba(239, 68, 68, 0.06)",
+    border: "rgba(239, 68, 68, 0.12)",
+    selected: "rgba(239, 68, 68, 0.15)",
+  },
+  {
+    main: "#3b82f6",
+    bg: "rgba(59, 130, 246, 0.02)",
+    bgHover: "rgba(59, 130, 246, 0.06)",
+    border: "rgba(59, 130, 246, 0.12)",
+    selected: "rgba(59, 130, 246, 0.15)",
+  },
+  {
+    main: "#f59e0b",
+    bg: "rgba(245, 158, 11, 0.02)",
+    bgHover: "rgba(245, 158, 11, 0.06)",
+    border: "rgba(245, 158, 11, 0.12)",
+    selected: "rgba(245, 158, 11, 0.15)",
+  },
+  {
+    main: "#10b981",
+    bg: "rgba(16, 185, 129, 0.02)",
+    bgHover: "rgba(16, 185, 129, 0.06)",
+    border: "rgba(16, 185, 129, 0.12)",
+    selected: "rgba(16, 185, 129, 0.15)",
+  },
+  {
+    main: "#ec4899",
+    bg: "rgba(236, 72, 153, 0.02)",
+    bgHover: "rgba(236, 72, 153, 0.06)",
+    border: "rgba(236, 72, 153, 0.12)",
+    selected: "rgba(236, 72, 153, 0.15)",
+  },
+  {
+    main: "#06b6d4",
+    bg: "rgba(6, 182, 212, 0.02)",
+    bgHover: "rgba(6, 182, 212, 0.06)",
+    border: "rgba(6, 182, 212, 0.12)",
+    selected: "rgba(6, 182, 212, 0.15)",
+  },
+  {
+    main: "#14b8a6",
+    bg: "rgba(20, 184, 166, 0.02)",
+    bgHover: "rgba(20, 184, 166, 0.06)",
+    border: "rgba(20, 184, 166, 0.12)",
+    selected: "rgba(20, 184, 166, 0.15)",
+  },
+];
+
 const getSeverityLabel = (fp) => {
   if (fp.tier === "S")
     return { label: "Tier S: Changed IPL History", color: "error" };
@@ -79,14 +138,14 @@ const Flashpoints = () => {
   if (loading) return <PageLoader />;
 
   const {
-    definingMoment,
-    shockTimeline,
-    eras,
-    mostChaoticEra,
-    categoryBreakdown,
-  } = analytics;
+    definingMoment = null,
+    shockTimeline = [],
+    eras = {},
+    mostChaoticEra = null,
+    categoryBreakdown = [],
+  } = analytics || {};
 
-  const areaData = shockTimeline.map((stat) => ({
+  const areaData = (shockTimeline || []).map((stat) => ({
     year: stat.year,
     Governance: stat.categories["Governance"] || 0,
     Ownership: stat.categories["Ownership"] || 0,
@@ -112,142 +171,196 @@ const Flashpoints = () => {
 
   return (
     <Box
+      component={motion.div}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
       sx={{
-        py: 4,
-        px: { xs: 2, md: 4, lg: 6 },
+        pt: 0,
+        pb: 4,
+        px: { xs: 0, sm: 1, md: 2 },
         width: "100%",
         maxWidth: "100%",
       }}
     >
       <PageHeader
-        title="The Legendary Archive"
+        title="Historical Archive"
         subtitle="Cricket's Most Comprehensive Knowledge Graph of Scandals & Flashpoints"
       />
 
       <Grid container spacing={4} sx={{ mb: 6 }}>
         <Grid size={{ xs: 12 }}>
-          <Paper sx={{ p: 4, height: 480, borderRadius: 4 }}>
-            <Typography variant="h6" align="center" sx={{ mb: 2 }}>
+          <Paper
+            sx={{
+              p: { xs: 2, sm: 3, md: 4 },
+              minHeight: 520,
+              borderRadius: 4,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Typography
+              variant="h6"
+              align="center"
+              sx={{ mb: 2, fontWeight: 700 }}
+            >
               Category Evolution
             </Typography>
-            <Box sx={{ width: "100%", height: 380, minHeight: 0 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={areaData}>
-                  <XAxis
-                    dataKey="year"
-                    interval={isMobile ? "preserveStartEnd" : 0}
-                    angle={isMobile ? -45 : 0}
-                    textAnchor={isMobile ? "end" : "middle"}
-                    height={isMobile ? 50 : 30}
-                    tick={{ fontSize: isMobile ? 10 : 12 }}
-                  />
-                  <YAxis />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#1e1e1e",
-                      border: "none",
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="BettingFixing"
-                    stackId="1"
-                    stroke="#ef4444"
-                    fill="#ef4444"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="Governance"
-                    stackId="1"
-                    stroke="#8b5cf6"
-                    fill="#8b5cf6"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="Ownership"
-                    stackId="1"
-                    stroke="#f59e0b"
-                    fill="#f59e0b"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="PlayerConflicts"
-                    stackId="1"
-                    stroke="#3b82f6"
-                    fill="#3b82f6"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="TeamManagement"
-                    stackId="1"
-                    stroke="#10b981"
-                    fill="#10b981"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="FranchiseStructure"
-                    stackId="1"
-                    stroke="#ec4899"
-                    fill="#ec4899"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="RuleChanges"
-                    stackId="1"
-                    stroke="#06b6d4"
-                    fill="#06b6d4"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="Triumphs"
-                    stackId="1"
-                    stroke="#f43f5e"
-                    fill="#f43f5e"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="BusinessBroadcasting"
-                    stackId="1"
-                    stroke="#84cc16"
-                    fill="#84cc16"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="Legal"
-                    stackId="1"
-                    stroke="#06b6d4"
-                    fill="#06b6d4"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="Umpiring"
-                    stackId="1"
-                    stroke="#ec4899"
-                    fill="#ec4899"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="SpiritOfCricket"
-                    stackId="1"
-                    stroke="#eab308"
-                    fill="#eab308"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="CovidBioBubble"
-                    stackId="1"
-                    stroke="#14b8a6"
-                    fill="#14b8a6"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="Franchise"
-                    stackId="1"
-                    stroke="#6366f1"
-                    fill="#6366f1"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+            <Box
+              sx={{
+                width: "100%",
+                overflowX: "auto",
+                overflowY: "hidden",
+                pb: 1,
+                "&::-webkit-scrollbar": { height: 6 },
+                "&::-webkit-scrollbar-track": {
+                  bgcolor: "rgba(255,255,255,0.02)",
+                  borderRadius: 3,
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  bgcolor: "rgba(255,255,255,0.12)",
+                  borderRadius: 3,
+                },
+              }}
+            >
+              <Box sx={{ minWidth: { xs: 750, md: "100%" }, height: 420 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={areaData}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <XAxis
+                      dataKey="year"
+                      interval={isMobile ? "preserveStartEnd" : 0}
+                      angle={isMobile ? -45 : 0}
+                      textAnchor={isMobile ? "end" : "middle"}
+                      height={isMobile ? 50 : 30}
+                      tick={{ fontSize: isMobile ? 10 : 12 }}
+                    />
+                    <YAxis />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#1e1e1e",
+                        border: "none",
+                        borderRadius: 8,
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="BettingFixing"
+                      name="Betting & Fixing"
+                      stackId="1"
+                      stroke="#ef4444"
+                      fill="#ef4444"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="Governance"
+                      name="Governance"
+                      stackId="1"
+                      stroke="#8b5cf6"
+                      fill="#8b5cf6"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="Ownership"
+                      name="Ownership"
+                      stackId="1"
+                      stroke="#f59e0b"
+                      fill="#f59e0b"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="PlayerConflicts"
+                      name="Player Conflicts & Conduct"
+                      stackId="1"
+                      stroke="#3b82f6"
+                      fill="#3b82f6"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="TeamManagement"
+                      name="Team Management"
+                      stackId="1"
+                      stroke="#10b981"
+                      fill="#10b981"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="FranchiseStructure"
+                      name="Franchise Structure"
+                      stackId="1"
+                      stroke="#ec4899"
+                      fill="#ec4899"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="RuleChanges"
+                      name="Rule Changes & League Rules"
+                      stackId="1"
+                      stroke="#06b6d4"
+                      fill="#06b6d4"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="Triumphs"
+                      name="Triumphs"
+                      stackId="1"
+                      stroke="#f43f5e"
+                      fill="#f43f5e"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="BusinessBroadcasting"
+                      name="Business & Broadcasting"
+                      stackId="1"
+                      stroke="#84cc16"
+                      fill="#84cc16"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="Legal"
+                      name="Legal"
+                      stackId="1"
+                      stroke="#00acc1"
+                      fill="#00acc1"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="Umpiring"
+                      name="Umpiring"
+                      stackId="1"
+                      stroke="#d81b60"
+                      fill="#d81b60"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="SpiritOfCricket"
+                      name="Spirit of Cricket"
+                      stackId="1"
+                      stroke="#ffb300"
+                      fill="#ffb300"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="CovidBioBubble"
+                      name="Covid / Bio Bubble"
+                      stackId="1"
+                      stroke="#00b0ff"
+                      fill="#00b0ff"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="Franchise"
+                      name="Franchise"
+                      stackId="1"
+                      stroke="#3f51b5"
+                      fill="#3f51b5"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Box>
             </Box>
           </Paper>
         </Grid>
@@ -257,74 +370,84 @@ const Flashpoints = () => {
         Curated Collections
       </Typography>
       <Grid container spacing={3} sx={{ mb: 8 }}>
-        {collections.map((coll, i) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={i}>
-            <Paper
-              onClick={() => handleCollectionClick(coll.theme)}
-              sx={{
-                p: 3,
-                borderRadius: 4,
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                textAlign: "center",
-                bgcolor:
-                  selectedCollection === coll.theme
-                    ? "rgba(229,46,113,0.15)"
-                    : "rgba(255,255,255,0.02)",
-                border: "1px solid",
-                borderColor:
-                  selectedCollection === coll.theme
-                    ? "#e52e71"
-                    : "rgba(255,255,255,0.05)",
-                cursor: "pointer",
-                "&:hover": {
-                  bgcolor:
-                    selectedCollection === coll.theme
-                      ? "rgba(229,46,113,0.2)"
-                      : "rgba(255,255,255,0.05)",
-                },
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
-                {coll.theme}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {coll.events.length} Events
-              </Typography>
-              <Box
+        {collections.map((coll, i) => {
+          const colors = collectionColors[i % collectionColors.length];
+          const isSelected = selectedCollection === coll.theme;
+          return (
+            <Grid size={{ xs: 12, sm: 6, md: 3 }} key={i}>
+              <Paper
+                onClick={() => handleCollectionClick(coll.theme)}
                 sx={{
-                  mt: 2,
+                  p: 3,
+                  borderRadius: 4,
+                  height: "100%",
                   display: "flex",
-                  flexWrap: "wrap",
-                  gap: 0.5,
-                  justifyContent: "center",
-                  maxWidth: "100%",
-                  width: "100%",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                  bgcolor: isSelected
+                    ? "rgba(255,255,255,0.08)"
+                    : "background.paper",
+                  border: "1px solid rgba(255,255,255,0.05)",
+                  borderTop: `6px solid ${colors.main}`,
+                  cursor: "pointer",
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  "&:hover": {
+                    bgcolor: "action.hover",
+                    borderColor: colors.main,
+                    transform: "translateY(-4px)",
+                    boxShadow: `0 8px 24px ${colors.main}22`,
+                  },
                 }}
               >
-                {coll.events.slice(0, 3).map((e, idx) => (
-                  <Chip
-                    key={idx}
-                    label={e.title}
-                    size="small"
-                    sx={{
-                      fontSize: "0.65rem",
-                      maxWidth: "100%",
-                      "& .MuiChip-label": {
-                        display: "block",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      },
-                    }}
-                  />
-                ))}
-              </Box>
-            </Paper>
-          </Grid>
-        ))}
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 800,
+                    mb: 1,
+                    color: isSelected ? colors.main : "inherit",
+                  }}
+                >
+                  {coll.theme}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {coll.events.length} Events
+                </Typography>
+                <Box
+                  sx={{
+                    mt: 2,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 0.5,
+                    justifyContent: "center",
+                    maxWidth: "100%",
+                    width: "100%",
+                  }}
+                >
+                  {coll.events.slice(0, 3).map((e, idx) => (
+                    <Chip
+                      key={idx}
+                      label={e.title}
+                      size="small"
+                      sx={{
+                        fontSize: "0.78rem",
+                        maxWidth: "100%",
+                        bgcolor: "rgba(255,255,255,0.04)",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                        "& .MuiChip-label": {
+                          display: "block",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        },
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Paper>
+            </Grid>
+          );
+        })}
       </Grid>
 
       <Box
@@ -385,19 +508,49 @@ const Flashpoints = () => {
         </Box>
       </Box>
       <Grid container spacing={3}>
-        {flashpoints
-          .filter(
-            (fp) =>
-              !selectedCollection ||
-              collections
-                .find((c) => c.theme === selectedCollection)
-                ?.events.some((e) => e.id === fp.id),
-          )
-          .filter((fp) => selectedTier === "All" || fp.tier === selectedTier)
-          .map((fp, idx) => {
+        {(() => {
+          const filtered = (flashpoints || [])
+            .filter(
+              (fp) =>
+                !selectedCollection ||
+                collections
+                  .find((c) => c.theme === selectedCollection)
+                  ?.events?.some((e) => e.id === fp.id),
+            )
+            .filter((fp) => selectedTier === "All" || fp.tier === selectedTier);
+
+          if (filtered.length === 0) {
+            return (
+              <Grid size={{ xs: 12 }}>
+                <Paper
+                  sx={{
+                    p: 6,
+                    textAlign: "center",
+                    borderRadius: 4,
+                    border: "1px dashed rgba(255, 255, 255, 0.1)",
+                    bgcolor: "rgba(255,255,255,0.01)",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    color="text.secondary"
+                    sx={{ fontWeight: "bold", mb: 1 }}
+                  >
+                    No Records Found
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    There are no incidents in the database matching your current
+                    collection or tier criteria.
+                  </Typography>
+                </Paper>
+              </Grid>
+            );
+          }
+
+          return filtered.map((fp, idx) => {
             const { label, color } = getSeverityLabel(fp);
             return (
-              <Grid size={{ xs: 12, sm: 4, md: 4, lg: 4, xl: 4 }} key={fp.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={fp.id}>
                 <Paper
                   component={Link}
                   to={`/flashpoints/${fp.id}`}
@@ -469,7 +622,8 @@ const Flashpoints = () => {
                 </Paper>
               </Grid>
             );
-          })}
+          });
+        })()}
       </Grid>
     </Box>
   );

@@ -36,34 +36,37 @@ export async function computeEliteFeatures(
   const bowlerClutchStats = {};
 
   const getBatterStat = (id, name, role) => {
-    if (!batterClutchStats[id])
-      {batterClutchStats[id] = {
+    if (!batterClutchStats[id]) {
+      batterClutchStats[id] = {
         player: { id, name, role },
         runs: 0,
         clutchPoints: 0,
-      };}
+      };
+    }
     return batterClutchStats[id];
   };
 
   const getBowlerStat = (id, name, role) => {
-    if (!bowlerClutchStats[id])
-      {bowlerClutchStats[id] = {
+    if (!bowlerClutchStats[id]) {
+      bowlerClutchStats[id] = {
         player: { id, name, role },
         wickets: 0,
         clutchPoints: 0,
         topOrderWickets: 0,
-      };}
+      };
+    }
     return bowlerClutchStats[id];
   };
 
   const finisherStats = {};
   const getFinisherStat = (id, name, role) => {
-    if (!finisherStats[id])
-      {finisherStats[id] = {
+    if (!finisherStats[id]) {
+      finisherStats[id] = {
         player: { id, name, role },
         deathRuns: 0,
         deathBalls: 0,
-      };}
+      };
+    }
     return finisherStats[id];
   };
 
@@ -93,22 +96,24 @@ export async function computeEliteFeatures(
           const batterId = getCricsheetId(batterName);
           const bowlerId = getCricsheetId(bowlerName);
 
-          if (!batterRuns[batterName])
-            {batterRuns[batterName] = {
+          if (!batterRuns[batterName]) {
+            batterRuns[batterName] = {
               runs: 0,
               balls: 0,
               position: Object.keys(batterRuns).length + 1,
-            };}
+            };
+          }
 
           const h2hKey = `${batterName}|${bowlerName}`;
-          if (!dynamicH2H[h2hKey])
-            {dynamicH2H[h2hKey] = {
+          if (!dynamicH2H[h2hKey]) {
+            dynamicH2H[h2hKey] = {
               batter: batterName,
               bowler: bowlerName,
               runs: 0,
               balls: 0,
               wkts: 0,
-            };}
+            };
+          }
 
           const runs = del.runs?.batter || 0;
           const extras = del.extras || {};
@@ -248,28 +253,41 @@ export async function computeEliteFeatures(
   };
 
   const finishers = Object.values(finisherStats)
-    .filter((f) => f.deathRuns >= 50)
+    .filter((f) => f.deathRuns >= 10)
     .map((f) => ({
       ...f,
-      strikeRate: Math.round((f.deathRuns / f.deathBalls) * 100),
+      strikeRate:
+        f.deathBalls > 0 ? Math.round((f.deathRuns / f.deathBalls) * 100) : 0,
     }))
     .sort((a, b) => b.strikeRate - a.strikeRate);
 
-  const finisherOfTheSeason = finishers[0] || null;
+  const finisherOfTheSeason =
+    finishers[0] ||
+    Object.values(finisherStats)
+      .map((f) => ({
+        ...f,
+        strikeRate:
+          f.deathBalls > 0 ? Math.round((f.deathRuns / f.deathBalls) * 100) : 0,
+      }))
+      .sort((a, b) => b.deathRuns - a.deathRuns)[0] ||
+    null;
+
   const enforcer =
     Object.values(bowlerClutchStats).sort(
       (a, b) => b.topOrderWickets - a.topOrderWickets,
     )[0] || null;
   const economyKing =
     playerSeasonStats
-      .filter(
-        (s) => s.economyRate > 0 && s.totalWickets >= 10 && s.matches >= 5,
-      )
-      .sort((a, b) => a.economyRate - b.economyRate)[0] || null;
+      .filter((s) => s.economyRate > 0 && s.totalWickets >= 3 && s.matches >= 3)
+      .sort((a, b) => a.economyRate - b.economyRate)[0] ||
+    playerSeasonStats
+      .filter((s) => s.economyRate > 0)
+      .sort((a, b) => a.economyRate - b.economyRate)[0] ||
+    null;
 
   const seasonAwards = {
     finisher: finisherOfTheSeason,
-    enforcer: enforcer?.topOrderWickets > 0 ? enforcer : null,
+    enforcer: enforcer,
     economyKing: economyKing,
   };
 
@@ -330,12 +348,14 @@ export async function computeEliteFeatures(
     const ballsChasing = chaseStats.reduce((sum, s) => sum + s.ballsFaced, 0);
     if (m.winType === "wickets" && ballsChasing >= 115) {
       score += 15;
-      if (!summary.includes("Super Over Thriller"))
-        {summary.push("Final over drama");}
+      if (!summary.includes("Super Over Thriller")) {
+        summary.push("Final over drama");
+      }
     } else if (m.winType === "runs" && m.winMargin <= 10) {
       score += 15;
-      if (!summary.includes("Super Over Thriller"))
-        {summary.push("Final over drama");}
+      if (!summary.includes("Super Over Thriller")) {
+        summary.push("Final over drama");
+      }
     }
 
     matchStats.forEach((s) => {

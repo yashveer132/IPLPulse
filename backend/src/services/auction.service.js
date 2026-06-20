@@ -1,21 +1,33 @@
 import { getPrisma } from "../config/index.js";
 import { buildSearchCondition } from "../utils/searchHelpers.js";
+import NodeCache from "node-cache";
 
-export async function getAuctionEntries({
-  season,
-  team,
-  role,
-  nationality: reqNationality,
-  status,
-  minPrice,
-  maxPrice,
-  search,
-  quickFilter,
-  page = 1,
-  limit = 25,
-  sortBy = "soldPrice",
-  sortOrder = "desc",
-}) {
+const auctionCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
+let allPlayerNamesCache = null;
+
+export async function getAuctionEntries(params) {
+  const cacheKey = JSON.stringify(params);
+  const cachedResponse = auctionCache.get(cacheKey);
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+
+  const {
+    season,
+    team,
+    role,
+    nationality: reqNationality,
+    status,
+    minPrice,
+    maxPrice,
+    search,
+    quickFilter,
+    page = 1,
+    limit = 25,
+    sortBy = "soldPrice",
+    sortOrder = "desc",
+  } = params;
+
   const prisma = await getPrisma();
   const parsedLimit = parseInt(limit, 10) || 25;
   const parsedPage = parseInt(page, 10) || 1;
@@ -33,13 +45,31 @@ export async function getAuctionEntries({
     where.role = role;
   }
 
-  if (search || reqNationality) {
-    where.player = {};
-    if (reqNationality) where.player.nationality = reqNationality;
+  if (reqNationality) {
+    where.player = where.player || {};
+    where.player.nationality = reqNationality;
+  }
 
-    if (search) {
-      Object.assign(where.player, buildSearchCondition(search));
+  if (search) {
+    const searchInt = parseInt(search, 10);
+    const isSeasonSearch =
+      !isNaN(searchInt) && searchInt >= 2008 && searchInt <= 2026;
+
+    const searchConditions = [
+      { player: buildSearchCondition(search) },
+      { role: { contains: search, mode: "insensitive" } },
+      { player: { role: { contains: search, mode: "insensitive" } } },
+      { player: { nationality: { contains: search, mode: "insensitive" } } },
+      { status: { contains: search, mode: "insensitive" } },
+      { franchise: { name: { contains: search, mode: "insensitive" } } },
+      { franchise: { shortName: { contains: search, mode: "insensitive" } } },
+    ];
+
+    if (isSeasonSearch) {
+      searchConditions.push({ season: searchInt });
     }
+
+    where.OR = searchConditions;
   }
 
   if (minPrice || maxPrice) {
@@ -69,6 +99,8 @@ export async function getAuctionEntries({
       where.playerId = { in: grouped.map((g) => g.playerId) };
     } else if (quickFilter === "high_rollers") {
       where.soldPrice = { ...where.soldPrice, gt: 1000 };
+    } else if (quickFilter === "mega_buys") {
+      where.soldPrice = { ...where.soldPrice, gt: 1500 };
     }
   }
 
@@ -94,15 +126,18 @@ export async function getAuctionEntries({
     prisma.auctionEntry.count({ where }),
   ]);
 
-  return {
+  const response = {
     entries,
     pagination: {
-      page,
-      limit,
+      page: parsedPage,
+      limit: parsedLimit,
       total,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / parsedLimit),
     },
   };
+
+  auctionCache.set(cacheKey, response);
+  return response;
 }
 
 export async function getAuctionSeasons() {
@@ -118,18 +153,22 @@ export async function getAuctionSeasons() {
 
 export async function getSearchSuggestions(query) {
   if (!query || query.length < 2) return [];
-  const prisma = await getPrisma();
 
-  const suggestions = await prisma.player.findMany({
-    where: {
-      name: { contains: query, mode: "insensitive" },
-      auctionEntries: { some: {} },
-    },
-    select: { name: true },
-    distinct: ["name"],
-    take: 10,
-    orderBy: { name: "asc" },
-  });
+  if (!allPlayerNamesCache) {
+    const prisma = await getPrisma();
+    const suggestions = await prisma.player.findMany({
+      where: {
+        auctionEntries: { some: {} },
+      },
+      select: { name: true },
+      distinct: ["name"],
+      orderBy: { name: "asc" },
+    });
+    allPlayerNamesCache = suggestions.map((s) => s.name);
+  }
 
-  return suggestions.map((s) => s.name);
+  const queryLower = query.toLowerCase();
+  return allPlayerNamesCache
+    .filter((name) => name.toLowerCase().includes(queryLower))
+    .slice(0, 10);
 }

@@ -62,6 +62,7 @@ const FlashpointDetail = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setLoading(true);
     const fetchDetail = async () => {
       try {
         const [resFp, resGraph] = await Promise.all([
@@ -99,10 +100,42 @@ const FlashpointDetail = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Button
+        component={Link}
+        to="/flashpoints"
+        startIcon={<ArrowBackIcon sx={{ color: "#00c6ff" }} />}
+        sx={{
+          mb: 3,
+          color: "text.primary",
+          fontWeight: "bold",
+          bgcolor: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: 2,
+          px: 2,
+          py: 1,
+          textTransform: "none",
+          "&:hover": {
+            bgcolor: "rgba(255,255,255,0.08)",
+            borderColor: "#00c6ff",
+            color: "#00c6ff",
+          },
+        }}
+      >
+        Back to Archive
+      </Button>
+
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                gap: 1.5,
+                mb: 2,
+              }}
+            >
               <Chip
                 label={`Tier ${fp.tier}`}
                 color={
@@ -112,12 +145,16 @@ const FlashpointDetail = () => {
                       ? "warning"
                       : "primary"
                 }
-                sx={{ fontWeight: "bold", mr: 2, borderRadius: 1 }}
+                sx={{ fontWeight: "bold", borderRadius: 1 }}
               />
               <Typography
                 variant="overline"
                 color="text.secondary"
-                sx={{ fontWeight: "bold", letterSpacing: 1, mr: 3 }}
+                sx={{
+                  fontWeight: "bold",
+                  letterSpacing: 1,
+                  display: "inline-block",
+                }}
               >
                 {fp.year} • {fp.entryType} • {fp.eventType}
               </Typography>
@@ -130,6 +167,12 @@ const FlashpointDetail = () => {
                     fontWeight: "bold",
                     color: "text.secondary",
                     borderColor: "rgba(255,255,255,0.2)",
+                    maxWidth: "100%",
+                    "& .MuiChip-label": {
+                      whiteSpace: "normal",
+                      textAlign: "center",
+                      py: 0.5,
+                    },
                   }}
                 />
               )}
@@ -145,20 +188,26 @@ const FlashpointDetail = () => {
               {fp.shortSummary}
             </Typography>
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 4 }}>
-              {fp.affectedTeams.map((t) => (
+              {fp.affectedTeams?.map((t) => (
                 <Chip
                   key={t}
                   label={t}
                   sx={{ bgcolor: "rgba(255,255,255,0.1)" }}
                 />
               ))}
-              {fp.affectedPlayers.map((p) => (
+              {fp.affectedPlayers?.map((p) => (
                 <Chip key={p} label={p} variant="outlined" />
               ))}
             </Box>
           </Box>
           <Paper
-            sx={{ p: 4, mb: 4, bgcolor: "background.paper", borderRadius: 4 }}
+            sx={{
+              p: { xs: 2.5, sm: 4 },
+              mb: 4,
+              bgcolor: "background.paper",
+              borderRadius: 4,
+              borderLeft: "5px solid #00c6ff",
+            }}
           >
             <Typography
               variant="h5"
@@ -182,11 +231,12 @@ const FlashpointDetail = () => {
           {fp.whyItMatters && fp.whyItMatters.length > 0 && (
             <Paper
               sx={{
-                p: 4,
+                p: { xs: 2.5, sm: 4 },
                 mb: 4,
                 borderRadius: 4,
-                bgcolor: "rgba(234, 179, 8, 0.05)",
-                border: "1px solid rgba(234, 179, 8, 0.2)",
+                bgcolor: "rgba(234, 179, 8, 0.03)",
+                border: "1px solid rgba(234, 179, 8, 0.15)",
+                borderLeft: "5px solid #eab308",
               }}
             >
               <Typography
@@ -217,11 +267,12 @@ const FlashpointDetail = () => {
           {fp.outcomes && Object.keys(fp.outcomes).length > 0 && (
             <Paper
               sx={{
-                p: 4,
+                p: { xs: 2.5, sm: 4 },
                 mb: 4,
                 borderRadius: 4,
-                bgcolor: "rgba(16, 185, 129, 0.05)",
-                border: "1px solid rgba(16, 185, 129, 0.2)",
+                bgcolor: "rgba(16, 185, 129, 0.03)",
+                border: "1px solid rgba(16, 185, 129, 0.15)",
+                borderLeft: "5px solid #10b981",
               }}
             >
               <Typography
@@ -256,7 +307,15 @@ const FlashpointDetail = () => {
             </Paper>
           )}
           {fp.howIplChanged && Object.keys(fp.howIplChanged).length > 0 && (
-            <Paper sx={{ p: 4, mb: 4, borderRadius: 4, textAlign: "center" }}>
+            <Paper
+              sx={{
+                p: { xs: 2.5, sm: 4 },
+                mb: 4,
+                borderRadius: 4,
+                borderLeft: "5px solid #a855f7",
+                bgcolor: "background.paper",
+              }}
+            >
               <Typography
                 variant="h5"
                 align="center"
@@ -289,14 +348,18 @@ const FlashpointDetail = () => {
                         mb: 2,
                       }}
                     >
-                      <GavelIcon sx={{ mr: 1, fontSize: "1.2rem" }} /> Rule
-                      Changes
+                      <GavelIcon
+                        sx={{ mr: 1, fontSize: "1.2rem", color: "#ef4444" }}
+                      />{" "}
+                      Rule Changes
                     </Typography>
                     {fp.howIplChanged.ruleChanges.map((c, i) => (
                       <Box
                         key={i}
                         sx={{
-                          bgcolor: "rgba(255,255,255,0.05)",
+                          bgcolor: "rgba(239, 68, 68, 0.02)",
+                          borderLeft: "4px solid #ef4444",
+                          border: "1px solid rgba(239, 68, 68, 0.1)",
                           p: 2,
                           borderRadius: 2,
                           mb: 1.5,
@@ -330,14 +393,18 @@ const FlashpointDetail = () => {
                         mb: 2,
                       }}
                     >
-                      <AccountBalanceIcon sx={{ mr: 1, fontSize: "1.2rem" }} />{" "}
+                      <AccountBalanceIcon
+                        sx={{ mr: 1, fontSize: "1.2rem", color: "#8b5cf6" }}
+                      />{" "}
                       Governance
                     </Typography>
                     {fp.howIplChanged.governanceChanges.map((c, i) => (
                       <Box
                         key={i}
                         sx={{
-                          bgcolor: "rgba(255,255,255,0.05)",
+                          bgcolor: "rgba(139, 92, 246, 0.02)",
+                          borderLeft: "4px solid #8b5cf6",
+                          border: "1px solid rgba(139, 92, 246, 0.1)",
                           p: 2,
                           borderRadius: 2,
                           mb: 1.5,
@@ -371,14 +438,18 @@ const FlashpointDetail = () => {
                         mb: 2,
                       }}
                     >
-                      <PolicyIcon sx={{ mr: 1, fontSize: "1.2rem" }} />{" "}
+                      <PolicyIcon
+                        sx={{ mr: 1, fontSize: "1.2rem", color: "#3b82f6" }}
+                      />{" "}
                       Franchise Structure
                     </Typography>
                     {fp.howIplChanged.franchiseChanges.map((c, i) => (
                       <Box
                         key={i}
                         sx={{
-                          bgcolor: "rgba(255,255,255,0.05)",
+                          bgcolor: "rgba(59, 130, 246, 0.02)",
+                          borderLeft: "4px solid #3b82f6",
+                          border: "1px solid rgba(59, 130, 246, 0.1)",
                           p: 2,
                           borderRadius: 2,
                           mb: 1.5,
@@ -403,39 +474,54 @@ const FlashpointDetail = () => {
         <Grid size={{ xs: 12, md: 4 }}>
           <Paper
             sx={{
-              p: 4,
+              p: { xs: 2.5, sm: 4 },
               mb: 4,
-              bgcolor: "rgba(99, 102, 241, 0.05)",
-              border: "1px solid rgba(99, 102, 241, 0.2)",
+              bgcolor: "rgba(99, 102, 241, 0.03)",
+              border: "1px solid rgba(99, 102, 241, 0.15)",
+              borderLeft: "5px solid #6366f1",
               borderRadius: 4,
             }}
           >
             <Typography
               variant="subtitle2"
-              sx={{ mb: 2, color: "text.secondary", fontWeight: "bold" }}
+              align="center"
+              sx={{
+                mb: 3,
+                color: "text.secondary",
+                fontWeight: "bold",
+                letterSpacing: 1,
+              }}
             >
               EVENT IMPORTANCE BREAKDOWN
             </Typography>
             <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+              sx={{ display: "flex", justifyContent: "space-between", mb: 1.5 }}
             >
-              <Typography variant="body2">Severity</Typography>
+              <Typography variant="body2">Severity Rating</Typography>
               <Typography variant="body2" sx={{ fontWeight: "bold" }}>
                 {fp.severity} / 10
               </Typography>
             </Box>
             <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+              sx={{ display: "flex", justifyContent: "space-between", mb: 1.5 }}
             >
-              <Typography variant="body2">League Impact</Typography>
+              <Typography variant="body2">Historical Importance</Typography>
               <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                {fp.impactType}
+                {fp.importance} / 100
               </Typography>
             </Box>
             <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+              sx={{ display: "flex", justifyContent: "space-between", mb: 1.5 }}
             >
-              <Typography variant="body2">Media Attention</Typography>
+              <Typography variant="body2">Evidence Reliability</Typography>
+              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                {fp.reliability} / 10
+              </Typography>
+            </Box>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 0 }}
+            >
+              <Typography variant="body2">Media Exposure</Typography>
               <Typography variant="body2" sx={{ fontWeight: "bold" }}>
                 {fp.mediaAttention} / 10
               </Typography>
@@ -445,11 +531,12 @@ const FlashpointDetail = () => {
           {fp.impactMetrics && Object.keys(fp.impactMetrics).length > 0 && (
             <Paper
               sx={{
-                p: 4,
+                p: { xs: 2.5, sm: 4 },
                 mb: 4,
                 borderRadius: 4,
-                bgcolor: "rgba(59, 130, 246, 0.05)",
-                border: "1px solid rgba(59, 130, 246, 0.2)",
+                bgcolor: "rgba(59, 130, 246, 0.03)",
+                border: "1px solid rgba(59, 130, 246, 0.15)",
+                borderLeft: "5px solid #3b82f6",
               }}
             >
               <Typography
@@ -502,10 +589,12 @@ const FlashpointDetail = () => {
           {fp.entities && fp.entities.length > 0 && (
             <Paper
               sx={{
-                p: 4,
+                p: { xs: 2.5, sm: 4 },
                 mb: 4,
                 borderRadius: 4,
-                border: "1px solid rgba(255,255,255,0.1)",
+                bgcolor: "background.paper",
+                border: "1px solid rgba(255,255,255,0.05)",
+                borderLeft: "5px solid #ec4899",
               }}
             >
               <Typography
@@ -563,8 +652,20 @@ const FlashpointDetail = () => {
           )}
 
           {graphData && graphData.nodes && graphData.nodes.length > 1 && (
-            <Paper sx={{ p: 4, borderRadius: 4 }}>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 2 }}>
+            <Paper
+              sx={{
+                p: { xs: 2.5, sm: 4 },
+                borderRadius: 4,
+                bgcolor: "background.paper",
+                border: "1px solid rgba(255,255,255,0.05)",
+                borderLeft: "5px solid #14b8a6",
+              }}
+            >
+              <Typography
+                variant="h6"
+                align="center"
+                sx={{ fontWeight: 800, mb: 2 }}
+              >
                 Related Flashpoints
               </Typography>
               <List disablePadding>

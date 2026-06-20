@@ -50,8 +50,9 @@ export const getFlashpointById = async (req, res) => {
         },
       },
     });
-    if (!flashpoint)
-      {return res.status(404).json({ success: false, message: "Not Found" });}
+    if (!flashpoint) {
+      return res.status(404).json({ success: false, message: "Not Found" });
+    }
     res.json({ success: true, data: flashpoint });
   } catch (error) {
     console.error("Error fetching flashpoint:", error);
@@ -99,17 +100,36 @@ export const getFlashpointGraph = async (req, res) => {
 
       relatedEdges.forEach((rel) => {
         if (!edges.some((e) => e.id === rel.id)) {
+          const sourceNode = allFlashpoints.find((f) => f.id === rel.sourceId);
+          const targetNode = allFlashpoints.find((f) => f.id === rel.targetId);
+
+          let actualSourceId = rel.sourceId;
+          let actualTargetId = rel.targetId;
+          let relType = rel.relationshipType;
+
+          if (sourceNode && targetNode) {
+            if (sourceNode.year > targetNode.year) {
+              actualSourceId = rel.targetId;
+              actualTargetId = rel.sourceId;
+              if (relType === "FOLLOWED") {
+                relType = "FOLLOWED_BY";
+              }
+            }
+          }
+
           edges.push({
             id: rel.id,
-            source: rel.sourceId,
-            target: rel.targetId,
-            type: rel.relationshipType,
+            source: actualSourceId,
+            target: actualTargetId,
+            type: relType,
           });
         }
-        if (!visited.has(rel.sourceId))
-          {queue.push({ id: rel.sourceId, depth: current.depth + 1 });}
-        if (!visited.has(rel.targetId))
-          {queue.push({ id: rel.targetId, depth: current.depth + 1 });}
+        if (!visited.has(rel.sourceId)) {
+          queue.push({ id: rel.sourceId, depth: current.depth + 1 });
+        }
+        if (!visited.has(rel.targetId)) {
+          queue.push({ id: rel.targetId, depth: current.depth + 1 });
+        }
       });
     }
 
@@ -220,8 +240,9 @@ export const getFlashpointAnalytics = async (req, res) => {
     const teamCounts = {};
     flashpoints.forEach((fp) => {
       fp.affectedTeams.forEach((team) => {
-        if (!teamCounts[team])
-          {teamCounts[team] = { count: 0, legacyScore: 0, peakYear: fp.year };}
+        if (!teamCounts[team]) {
+          teamCounts[team] = { count: 0, legacyScore: 0, peakYear: fp.year };
+        }
         teamCounts[team].count += 1;
         teamCounts[team].legacyScore += fp.legacyScore;
       });
@@ -233,8 +254,9 @@ export const getFlashpointAnalytics = async (req, res) => {
     const playerCounts = {};
     flashpoints.forEach((fp) => {
       fp.affectedPlayers.forEach((player) => {
-        if (!playerCounts[player])
-          {playerCounts[player] = { count: 0, legacyScore: 0 };}
+        if (!playerCounts[player]) {
+          playerCounts[player] = { count: 0, legacyScore: 0 };
+        }
         playerCounts[player].count += 1;
         playerCounts[player].legacyScore += fp.legacyScore;
       });

@@ -6,6 +6,7 @@ export const useAuctionEntries = (params, options = {}) => {
     queryKey: ["auctionEntries", params],
     queryFn: () => auctionApi.getAuctionEntries(params),
     placeholderData: keepPreviousData,
+    staleTime: 60000,
     ...options,
   });
 };

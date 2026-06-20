@@ -10,6 +10,11 @@ import {
   InputAdornment,
   Button,
   Autocomplete,
+  Backdrop,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  LinearProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -18,6 +23,7 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import * as XLSX from "xlsx";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuctionEntries, useAuctionSeasons } from "../hooks/useAuction.js";
 import { auctionApi } from "../api/index.js";
 import DataTable from "../components/common/DataTable.jsx";
@@ -28,6 +34,30 @@ import {
   NATIONALITY,
   AUCTION_STATUS,
 } from "../constants/index.js";
+
+const getHistoricalTeamName = (shortName, fullName, season) => {
+  if (!shortName) return fullName || "";
+  const sn = shortName.toUpperCase();
+  if (sn === "DC" && season < 2019) return "Delhi Daredevils";
+  if (sn === "PBKS" && season < 2021) return "Kings XI Punjab";
+  if (sn === "RCB" && season < 2024) return "Royal Challengers Bangalore";
+  return fullName || "";
+};
+
+const getHistoricalRole = (role) => {
+  if (!role) return "";
+  if (role === "Batter") return "Batsman";
+  if (role === "Wicket-Keeper") return "Wicket Keeper";
+  return role;
+};
+
+const getFilterFranchiseName = (key, defaultName) => {
+  if (key === "DC") return "Delhi Capitals (formerly Delhi Daredevils)";
+  if (key === "PBKS") return "Punjab Kings (formerly Kings XI Punjab)";
+  if (key === "RCB")
+    return "Royal Challengers Bengaluru (formerly Royal Challengers Bangalore)";
+  return defaultName;
+};
 
 function AuctionExplorer() {
   const navigate = useNavigate();
@@ -47,11 +77,17 @@ function AuctionExplorer() {
 
   const [searchInput, setSearchInput] = useState("");
   const [searchOptions, setSearchOptions] = useState([]);
+  const [isExporting, setIsExporting] = useState(false);
+  const [alertState, setAlertState] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       setParams((prev) => ({ ...prev, search: searchInput, page: 1 }));
-    }, 150);
+    }, 450);
     return () => clearTimeout(delayDebounceFn);
   }, [searchInput]);
 
@@ -76,8 +112,30 @@ function AuctionExplorer() {
     };
   }, [searchInput]);
 
+  const queryClient = useQueryClient();
   const { data, isLoading, isFetching } = useAuctionEntries(params);
   const { data: seasons } = useAuctionSeasons();
+
+  useEffect(() => {
+    if (data?.pagination?.page && data?.pagination?.totalPages) {
+      if (params.page < data.pagination.totalPages) {
+        const nextPage = params.page + 1;
+        queryClient.prefetchQuery({
+          queryKey: ["auctionEntries", { ...params, page: nextPage }],
+          queryFn: () =>
+            auctionApi.getAuctionEntries({ ...params, page: nextPage }),
+        });
+      }
+      if (params.page > 1) {
+        const prevPage = params.page - 1;
+        queryClient.prefetchQuery({
+          queryKey: ["auctionEntries", { ...params, page: prevPage }],
+          queryFn: () =>
+            auctionApi.getAuctionEntries({ ...params, page: prevPage }),
+        });
+      }
+    }
+  }, [data, params, queryClient]);
 
   const handleFilterChange = (field) => (e) => {
     setParams({ ...params, [field]: e.target.value, page: 1 });
@@ -115,7 +173,7 @@ function AuctionExplorer() {
         <Chip
           size="small"
           variant="outlined"
-          label={row.role || row.player.role}
+          label={getHistoricalRole(row.role || row.player.role)}
         />
       ),
     },
@@ -128,7 +186,11 @@ function AuctionExplorer() {
         row.franchise ? (
           <Chip
             size="small"
-            label={row.franchise.name}
+            label={getHistoricalTeamName(
+              row.franchise.shortName,
+              row.franchise.name,
+              row.season,
+            )}
             sx={{
               bgcolor: row.franchise.color,
               color: "#fff",
@@ -153,19 +215,34 @@ function AuctionExplorer() {
   const maxYear = yearsCount > 0 ? seasons[0] : "";
 
   const handleExport = async () => {
+    setIsExporting(true);
     try {
       const exportParams = { ...params, limit: 10000, page: 1 };
       const response = await auctionApi.getAuctionEntries(exportParams);
       const entries = response.entries || [];
 
-      if (entries.length === 0) return;
+      if (entries.length === 0) {
+        setAlertState({
+          open: true,
+          message: "No records found to export.",
+          severity: "warning",
+        });
+        setIsExporting(false);
+        return;
+      }
 
       const exportData = entries.map((row) => ({
         Player: row.player?.name || "",
         Nationality: row.player?.nationality || "",
-        Role: row.role || row.player?.role || "",
+        Role: getHistoricalRole(row.role || row.player?.role),
         Season: row.season || "",
-        Franchise: row.franchise?.name || "Unsold",
+        Franchise: row.franchise
+          ? getHistoricalTeamName(
+              row.franchise.shortName,
+              row.franchise.name,
+              row.season,
+            )
+          : "Unsold",
         "Sold Price": row.soldPrice ? row.soldPrice * 100000 : "",
         "Base Price": row.basePrice ? row.basePrice * 100000 : "",
       }));
@@ -174,8 +251,21 @@ function AuctionExplorer() {
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Auction Data");
       XLSX.writeFile(workbook, "auction_data.xlsx");
+
+      setAlertState({
+        open: true,
+        message: "Excel data exported successfully! 🎉",
+        severity: "success",
+      });
     } catch (error) {
       console.error("Export failed", error);
+      setAlertState({
+        open: true,
+        message: "Export failed! Please try again.",
+        severity: "error",
+      });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -234,13 +324,106 @@ function AuctionExplorer() {
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.05)",
         }}
       >
+        <Box sx={{ display: { xs: "block", md: "none" } }}>
+          <Box
+            sx={{
+              mb: 1.5,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <Chip
+              label="Multiple Appearances (>1)"
+              onClick={() => {
+                setParams({
+                  ...params,
+                  quickFilter:
+                    params.quickFilter === "multiple_appearances"
+                      ? ""
+                      : "multiple_appearances",
+                  page: 1,
+                });
+              }}
+              color={
+                params.quickFilter === "multiple_appearances"
+                  ? "primary"
+                  : "default"
+              }
+              variant={
+                params.quickFilter === "multiple_appearances"
+                  ? "filled"
+                  : "outlined"
+              }
+              sx={{ fontWeight: 600, borderRadius: 2 }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              mb: 1.5,
+              display: "flex",
+              justifyContent: "center",
+              gap: 1.5,
+            }}
+          >
+            {[
+              { key: "counts>2", label: "Auctions > 2" },
+              { key: "counts>3", label: "Auctions > 3" },
+            ].map((qf) => (
+              <Chip
+                key={qf.key}
+                label={qf.label}
+                onClick={() => {
+                  setParams({
+                    ...params,
+                    quickFilter: params.quickFilter === qf.key ? "" : qf.key,
+                    page: 1,
+                  });
+                }}
+                color={params.quickFilter === qf.key ? "primary" : "default"}
+                variant={params.quickFilter === qf.key ? "filled" : "outlined"}
+                sx={{ fontWeight: 600, borderRadius: 2 }}
+              />
+            ))}
+          </Box>
+
+          <Box
+            sx={{
+              mb: 3,
+              display: "flex",
+              justifyContent: "center",
+              gap: 1.5,
+            }}
+          >
+            {[
+              { key: "high_rollers", label: "High Rollers (> ₹10Cr)" },
+              { key: "mega_buys", label: "Mega Buys (> ₹15Cr)" },
+            ].map((qf) => (
+              <Chip
+                key={qf.key}
+                label={qf.label}
+                onClick={() => {
+                  setParams({
+                    ...params,
+                    quickFilter: params.quickFilter === qf.key ? "" : qf.key,
+                    page: 1,
+                  });
+                }}
+                color={params.quickFilter === qf.key ? "primary" : "default"}
+                variant={params.quickFilter === qf.key ? "filled" : "outlined"}
+                sx={{ fontWeight: 600, borderRadius: 2 }}
+              />
+            ))}
+          </Box>
+        </Box>
+
         <Box
           sx={{
-            mb: 3,
-            display: "flex",
-            gap: 1,
-            flexWrap: "wrap",
+            display: { xs: "none", md: "flex" },
             justifyContent: "center",
+            gap: 1.5,
+            mb: 3,
+            flexWrap: "wrap",
           }}
         >
           {[
@@ -248,6 +431,7 @@ function AuctionExplorer() {
             { key: "counts>2", label: "Auctions > 2" },
             { key: "counts>3", label: "Auctions > 3" },
             { key: "high_rollers", label: "High Rollers (> ₹10Cr)" },
+            { key: "mega_buys", label: "Mega Buys (> ₹15Cr)" },
           ].map((qf) => (
             <Chip
               key={qf.key}
@@ -346,7 +530,7 @@ function AuctionExplorer() {
                   value={t.key}
                   sx={{ justifyContent: "center" }}
                 >
-                  {t.name}
+                  {getFilterFranchiseName(t.key, t.name)}
                 </MenuItem>
               ))}
             </TextField>
@@ -397,10 +581,12 @@ function AuctionExplorer() {
           </Box>
           <Box
             sx={{
-              flex: "0 0 auto",
+              flex: { xs: "1 1 100%", md: "0 0 auto" },
               display: "flex",
               alignItems: "center",
+              justifyContent: { xs: "center", md: "flex-end" },
               gap: 1,
+              mt: { xs: 1, md: 0 },
             }}
           >
             {hasActiveFilters && (
@@ -409,7 +595,12 @@ function AuctionExplorer() {
                 color="secondary"
                 onClick={handleClearFilters}
                 startIcon={<FilterAltOffIcon />}
-                sx={{ height: 56, borderRadius: 2, px: 3 }}
+                sx={{
+                  height: 56,
+                  borderRadius: 2,
+                  px: 3,
+                  flex: { xs: 1, md: "initial" },
+                }}
               >
                 Clear
               </Button>
@@ -419,7 +610,12 @@ function AuctionExplorer() {
               color="primary"
               onClick={handleExport}
               startIcon={<FileDownloadIcon />}
-              sx={{ height: 56, borderRadius: 2, px: 3 }}
+              sx={{
+                height: 56,
+                borderRadius: 2,
+                px: 3,
+                flex: { xs: 1, md: "initial" },
+              }}
             >
               Export
             </Button>
@@ -435,10 +631,27 @@ function AuctionExplorer() {
           border: "1px solid",
           borderColor: "divider",
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.05)",
-          opacity: isFetching && !isLoading ? 0.6 : 1,
+          position: "relative",
+          opacity: isFetching && !isLoading ? 0.75 : 1,
           transition: "opacity 0.2s ease-in-out",
         }}
       >
+        {(isFetching || isExporting) && (
+          <LinearProgress
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 10,
+              height: 5,
+              backgroundColor: "rgba(99, 102, 241, 0.15)",
+              "& .MuiLinearProgress-bar": {
+                backgroundColor: "#f59e0b",
+              },
+            }}
+          />
+        )}
         <DataTable
           columns={columns}
           data={data?.entries}
@@ -446,11 +659,39 @@ function AuctionExplorer() {
           total={data?.pagination?.total}
           page={params.page}
           limit={params.limit}
-          onPageChange={(p) => setParams({ ...params, page: p })}
-          onLimitChange={(l) => setParams({ ...params, limit: l, page: 1 })}
+          onPageChange={(p) => {
+            setParams({ ...params, page: p });
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          onLimitChange={(l) => {
+            setParams({ ...params, limit: l, page: 1 });
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
           onRowClick={(row) => navigate(`/players/${row.player.id}`)}
         />
       </Paper>
+
+      <Snackbar
+        open={alertState.open}
+        autoHideDuration={4000}
+        onClose={() => setAlertState((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setAlertState((prev) => ({ ...prev, open: false }))}
+          severity={alertState.severity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            borderRadius: 2,
+            bgcolor: alertState.severity === "success" ? "#10b981" : undefined,
+            color: "#ffffff",
+            fontWeight: 600,
+          }}
+        >
+          {alertState.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
