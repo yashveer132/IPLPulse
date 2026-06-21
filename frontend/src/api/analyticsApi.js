@@ -1,9 +1,6 @@
 import apiClient from "./apiClient.js";
 
 export const analyticsApi = {
-  getTeamDevelopmentIndex: () => apiClient.get("/analytics/team-development"),
-  getTeamDevelopmentBreakdown: (franchiseId) =>
-    apiClient.get(`/analytics/team-development/${franchiseId}`),
   getRetentionAnalytics: (params) =>
     apiClient.get("/analytics/retentions", { params }),
   getPlayerValueRankings: (params) =>

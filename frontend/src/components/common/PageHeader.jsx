@@ -16,6 +16,7 @@ const PageHeader = ({ title, subtitle }) => {
           background: "linear-gradient(90deg, #00c6ff 0%, #0072ff 100%)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
+          fontSize: { xs: "1.8rem", sm: "2.4rem", md: "3rem" },
         }}
       >
         {title}

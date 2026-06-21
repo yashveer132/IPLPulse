@@ -56,28 +56,70 @@ function VenueMastery() {
     }
   };
 
-  const renderStatCard = (label, value, color = "white", subtitle = "") => (
-    <Box sx={{ textAlign: "center", mb: 2 }}>
-      <Typography variant="h4" fontWeight={800} color={color}>
+  const renderStatCard = (
+    label,
+    value,
+    color = "text.primary",
+    subtitle = "",
+  ) => (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 1.5,
+        textAlign: "center",
+        borderRadius: 2.5,
+        bgcolor: "rgba(255, 255, 255, 0.02)",
+        border: "1px solid rgba(255, 255, 255, 0.05)",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        transition: "all 0.2s ease",
+        "&:hover": {
+          bgcolor: "rgba(255, 255, 255, 0.04)",
+          borderColor:
+            color !== "text.primary" && color !== "white"
+              ? color
+              : "rgba(99, 102, 241, 0.3)",
+        },
+      }}
+    >
+      <Typography
+        variant="h5"
+        fontWeight={850}
+        color={color}
+        sx={{ fontSize: { xs: "1.25rem", sm: "1.4rem", md: "1.6rem" } }}
+      >
         {value}
       </Typography>
       <Typography
         variant="overline"
-        color="rgba(255,255,255,0.7)"
-        sx={{ lineHeight: 1 }}
+        sx={{
+          fontSize: "0.6rem",
+          color: "text.secondary",
+          fontWeight: 700,
+          lineHeight: 1.2,
+          mt: 0.5,
+          textTransform: "uppercase",
+        }}
       >
         {label}
       </Typography>
       {subtitle && (
         <Typography
           variant="caption"
-          display="block"
-          color="rgba(255,255,255,0.5)"
+          sx={{
+            fontSize: "0.6rem",
+            color: "text.secondary",
+            opacity: 0.8,
+            display: "block",
+            mt: 0.25,
+          }}
         >
           {subtitle}
         </Typography>
       )}
-    </Box>
+    </Paper>
   );
 
   return (
@@ -87,31 +129,80 @@ function VenueMastery() {
         subtitle="Discover which players have turned specific stadiums into their fortresses."
       />
 
-      <Box sx={{ display: "flex", gap: 3, mb: 4 }}>
-        <Autocomplete
-          fullWidth
-          options={players}
-          getOptionLabel={(option) => option.name}
-          value={player}
-          onChange={(e, val) => setPlayer(val)}
-          renderInput={(params) => (
-            <TextField {...params} label="Select Player" variant="outlined" />
-          )}
-        />
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleSearch}
-          disabled={!player || loading}
-          sx={{ px: 4, borderRadius: 2 }}
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2.5, sm: 4 },
+          borderRadius: 4,
+          bgcolor: "background.paper",
+          border: "1px solid",
+          borderColor: "divider",
+          mb: 4,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 3,
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          {loading ? "Searching..." : "Analyze Venue Data"}
-        </Button>
-      </Box>
+          <Autocomplete
+            fullWidth
+            options={players}
+            getOptionLabel={(option) => option.name}
+            value={player}
+            onChange={(e, val) => setPlayer(val)}
+            renderInput={(params) => (
+              <TextField {...params} label="Select Player" variant="outlined" />
+            )}
+          />
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleSearch}
+            disabled={!player || loading}
+            sx={{
+              px: 4,
+              py: 1.5,
+              borderRadius: 2,
+              width: { xs: "100%", sm: "auto" },
+              whiteSpace: "nowrap",
+            }}
+          >
+            {loading ? "Searching..." : "Analyze Venue Data"}
+          </Button>
+        </Box>
+      </Paper>
 
       {loading && (
-        <Box display="flex" justifyContent="center" p={4}>
-          <CircularProgress />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            py: 8,
+            width: "100%",
+            color: "text.primary",
+          }}
+        >
+          <CircularProgress size={60} thickness={4} color="primary" />
+          <Typography
+            variant="h6"
+            sx={{
+              mt: 3,
+              fontWeight: 600,
+              background: "linear-gradient(90deg, #3b82f6, #8b5cf6)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Analyzing Venue Mastery...
+          </Typography>
         </Box>
       )}
 
@@ -173,12 +264,20 @@ function VenueMastery() {
                   sx={{
                     borderRadius: 4,
                     overflow: "hidden",
-                    boxShadow: 6,
-                    background: "linear-gradient(145deg, #1e293b, #0f172a)",
-                    color: "white",
+                    bgcolor: "background.paper",
+                    backgroundImage:
+                      "radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.08) 0px, transparent 50%)",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    color: "text.primary",
                     cursor: "pointer",
-                    transition: "transform 0.2s",
-                    "&:hover": { transform: "scale(1.02)", boxShadow: 10 },
+                    transition:
+                      "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s",
+                    "&:hover": {
+                      transform: "translateY(-6px)",
+                      boxShadow: "0 12px 30px rgba(99, 102, 241, 0.15)",
+                      borderColor: "rgba(99, 102, 241, 0.4)",
+                    },
                   }}
                 >
                   <Box
@@ -263,8 +362,13 @@ function VenueMastery() {
                         <Typography
                           variant="subtitle2"
                           color="#4dabf5"
-                          fontWeight={700}
+                          fontWeight={800}
                           mb={2}
+                          sx={{
+                            textAlign: "center",
+                            width: "100%",
+                            letterSpacing: 1,
+                          }}
                         >
                           🏏 BATTING
                         </Typography>
@@ -299,9 +403,13 @@ function VenueMastery() {
                           <Box mt={2}>
                             <Typography
                               variant="caption"
-                              display="flex"
-                              justifyContent="space-between"
                               mb={0.5}
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                color: "text.secondary",
+                                fontWeight: 600,
+                              }}
                             >
                               <span>Boundary Reliance</span>
                               <span>{boundaryReliance}%</span>
@@ -312,15 +420,20 @@ function VenueMastery() {
                               sx={{
                                 height: 6,
                                 borderRadius: 3,
-                                bgcolor: "rgba(255,255,255,0.1)",
+                                bgcolor: "rgba(255,255,255,0.06)",
                                 "& .MuiLinearProgress-bar": {
-                                  bgcolor: "#f59e0b",
+                                  bgcolor: "secondary.main",
                                 },
                               }}
                             />
                             <Typography
                               variant="caption"
-                              color="rgba(255,255,255,0.5)"
+                              color="text.secondary"
+                              sx={{
+                                display: "block",
+                                mt: 0.5,
+                                fontSize: "0.7rem",
+                              }}
                             >
                               {venueStat.fours} Fours | {venueStat.sixes} Sixes
                             </Typography>
@@ -342,8 +455,13 @@ function VenueMastery() {
                         <Typography
                           variant="subtitle2"
                           color="#ff4757"
-                          fontWeight={700}
+                          fontWeight={800}
                           mb={2}
+                          sx={{
+                            textAlign: "center",
+                            width: "100%",
+                            letterSpacing: 1,
+                          }}
                         >
                           ⚾ BOWLING
                         </Typography>
@@ -386,12 +504,17 @@ function VenueMastery() {
                         <Typography
                           variant="subtitle2"
                           color="#2ed573"
-                          fontWeight={700}
+                          fontWeight={800}
                           mb={2}
+                          sx={{
+                            textAlign: "center",
+                            width: "100%",
+                            letterSpacing: 1,
+                          }}
                         >
                           🧤 FIELDING
                         </Typography>
-                        <Grid container spacing={2}>
+                        <Grid container spacing={2} justifyContent="center">
                           {venueStat.catches > 0 && (
                             <Grid item xs={4}>
                               {renderStatCard("Catches", venueStat.catches)}
@@ -425,7 +548,12 @@ function VenueMastery() {
         fullWidth
       >
         <DialogTitle
-          sx={{ fontWeight: 800, bgcolor: "primary.main", color: "white" }}
+          sx={{
+            fontWeight: 800,
+            bgcolor: "primary.main",
+            color: "white",
+            textAlign: "center",
+          }}
         >
           Historical Match Log: {selectedVenue}
         </DialogTitle>
@@ -434,15 +562,60 @@ function VenueMastery() {
             <Table size="small">
               <TableHead sx={{ bgcolor: "rgba(0,0,0,0.05)" }}>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 700 }}>Date</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Runs</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Balls</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>SR</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Wickets</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Overs</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Econ</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Fielding</TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Date
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Runs
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Balls
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    SR
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Status
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Wickets
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Overs
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Econ
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Fielding
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -474,32 +647,43 @@ function VenueMastery() {
                         key={i}
                         sx={{ "&:hover": { bgcolor: "rgba(0,0,0,0.02)" } }}
                       >
-                        <TableCell sx={{ whiteSpace: "nowrap" }}>
+                        <TableCell
+                          sx={{ whiteSpace: "nowrap", px: { xs: 1, sm: 2 } }}
+                          align="center"
+                        >
                           {formattedDate}
                         </TableCell>
                         <TableCell
+                          align="center"
                           sx={{
                             fontWeight: log.runs >= 50 ? 800 : 400,
                             color:
                               log.runs >= 100
                                 ? "#e65100"
                                 : log.runs >= 50
-                                  ? "#f59e0b"
+                                  ? "secondary.main"
                                   : "inherit",
+                            px: { xs: 1, sm: 2 },
                           }}
                         >
                           {log.runs > 0 || log.balls > 0 ? log.runs : "-"}
                         </TableCell>
-                        <TableCell>{log.balls > 0 ? log.balls : "-"}</TableCell>
-                        <TableCell>{sr}</TableCell>
+                        <TableCell sx={{ px: { xs: 1, sm: 2 } }} align="center">
+                          {log.balls > 0 ? log.balls : "-"}
+                        </TableCell>
+                        <TableCell sx={{ px: { xs: 1, sm: 2 } }} align="center">
+                          {sr}
+                        </TableCell>
                         <TableCell
+                          align="center"
                           sx={{
                             color: log.isOut
-                              ? "#ff4757"
+                              ? "error.main"
                               : log.runs > 0 || log.balls > 0
-                                ? "#2ed573"
+                                ? "success.main"
                                 : "inherit",
                             fontWeight: log.isOut ? 400 : 700,
+                            px: { xs: 1, sm: 2 },
                           }}
                         >
                           {log.runs > 0 || log.balls > 0
@@ -509,20 +693,26 @@ function VenueMastery() {
                             : "-"}
                         </TableCell>
                         <TableCell
+                          align="center"
                           sx={{
                             fontWeight: log.wickets >= 3 ? 800 : 400,
-                            color: log.wickets >= 3 ? "#ff4757" : "inherit",
+                            color: log.wickets >= 3 ? "error.main" : "inherit",
+                            px: { xs: 1, sm: 2 },
                           }}
                         >
                           {log.ballsBowled > 0 ? log.wickets : "-"}
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ px: { xs: 1, sm: 2 } }} align="center">
                           {log.ballsBowled > 0
                             ? `${overs} (${log.runsConceded})`
                             : "-"}
                         </TableCell>
-                        <TableCell>{econ}</TableCell>
-                        <TableCell>{field || "-"}</TableCell>
+                        <TableCell sx={{ px: { xs: 1, sm: 2 } }} align="center">
+                          {econ}
+                        </TableCell>
+                        <TableCell sx={{ px: { xs: 1, sm: 2 } }} align="center">
+                          {field || "-"}
+                        </TableCell>
                       </TableRow>
                     );
                   })}

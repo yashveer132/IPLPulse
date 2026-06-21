@@ -46,7 +46,12 @@ function DataTable({
                 <TableCell
                   key={col.id}
                   align={col.headerAlign || col.align || "left"}
-                  sx={{ fontWeight: 600, color: "text.secondary", py: 2 }}
+                  sx={{
+                    fontWeight: 600,
+                    color: "text.secondary",
+                    py: 2,
+                    px: { xs: 1.5, sm: 2 },
+                  }}
                 >
                   {col.label}
                 </TableCell>
@@ -65,7 +70,11 @@ function DataTable({
                 }}
               >
                 {columns.map((col) => (
-                  <TableCell key={col.id} align={col.align || "left"}>
+                  <TableCell
+                    key={col.id}
+                    align={col.align || "left"}
+                    sx={{ px: { xs: 1.5, sm: 2 } }}
+                  >
                     {col.render ? col.render(row[col.id], row) : row[col.id]}
                   </TableCell>
                 ))}

@@ -1,23 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { analyticsApi } from "../api/index.js";
 
-export const useTeamDevelopmentIndex = (options = {}) => {
-  return useQuery({
-    queryKey: ["teamDevelopmentIndex"],
-    queryFn: () => analyticsApi.getTeamDevelopmentIndex(),
-    ...options,
-  });
-};
-
-export const useTeamDevelopmentBreakdown = (franchiseId, options = {}) => {
-  return useQuery({
-    queryKey: ["teamDevelopmentBreakdown", franchiseId],
-    queryFn: () => analyticsApi.getTeamDevelopmentBreakdown(franchiseId),
-    enabled: !!franchiseId,
-    ...options,
-  });
-};
-
 export const useRetentionAnalytics = (params, options = {}) => {
   return useQuery({
     queryKey: ["retentionAnalytics", params],

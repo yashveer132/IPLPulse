@@ -18,6 +18,8 @@ import {
   TableHead,
   TableRow,
   Chip,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import {
   LineChart,
@@ -31,6 +33,9 @@ import { apiClient } from "../api/index.js";
 import PageHeader from "../components/common/PageHeader.jsx";
 
 function HeadToHeadMatchups() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
   const [players, setPlayers] = useState([]);
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
@@ -161,15 +166,52 @@ function HeadToHeadMatchups() {
     return null;
   };
 
-  const StatCard = ({ label, value, color = "white" }) => (
-    <Box sx={{ textAlign: "center" }}>
-      <Typography variant="h3" fontWeight={800} color={color}>
+  const StatCard = ({ label, value, color = "white", gradient }) => (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 2.5,
+        textAlign: "center",
+        borderRadius: 3,
+        bgcolor: "rgba(255, 255, 255, 0.02)",
+        border: "1px solid rgba(255, 255, 255, 0.05)",
+        backdropFilter: "blur(8px)",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          bgcolor: "rgba(255, 255, 255, 0.04)",
+          borderColor: color !== "white" ? color : "rgba(99, 102, 241, 0.4)",
+          boxShadow: `0 8px 24px ${color !== "white" ? color : "#6366f1"}15`,
+        },
+      }}
+    >
+      <Typography
+        variant="h3"
+        fontWeight={900}
+        color={color}
+        sx={{
+          fontSize: { xs: "1.8rem", sm: "2.2rem", md: "2.8rem" },
+          background: gradient ? gradient : "none",
+          WebkitBackgroundClip: gradient ? "text" : "none",
+          WebkitTextFillColor: gradient ? "transparent" : "inherit",
+          lineHeight: 1.2,
+          mb: 0.5,
+        }}
+      >
         {value}
       </Typography>
-      <Typography variant="overline" color="rgba(255,255,255,0.7)">
+      <Typography
+        variant="overline"
+        sx={{
+          fontSize: { xs: "0.65rem", sm: "0.7rem" },
+          color: "text.secondary",
+          fontWeight: 700,
+          letterSpacing: 1.2,
+        }}
+      >
         {label}
       </Typography>
-    </Box>
+    </Paper>
   );
 
   const renderSection = (batter, bowler, data) => {
@@ -180,30 +222,52 @@ function HeadToHeadMatchups() {
 
     return (
       <Paper
+        elevation={0}
         sx={{
-          p: 4,
+          p: { xs: 2.5, sm: 4 },
           borderRadius: 4,
-          background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)",
-          color: "white",
-          mb: 3,
+          bgcolor: "background.paper",
+          backgroundImage:
+            "radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.08) 0px, transparent 50%)",
+          border: "1px solid",
+          borderColor: "divider",
+          color: "text.primary",
+          mb: 4,
         }}
       >
         <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={3}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            gap: 1.5,
+            mb: 4,
+          }}
         >
           <Typography
             variant="h6"
-            fontWeight={700}
-            color="rgba(255,255,255,0.85)"
+            fontWeight={800}
+            color="text.primary"
+            sx={{ fontSize: { xs: "1.1rem", sm: "1.25rem", md: "1.4rem" } }}
           >
             {title}
           </Typography>
           <Chip
             label={dom.label}
-            sx={{ bgcolor: dom.color, color: "white", fontWeight: 800 }}
+            sx={{
+              bgcolor: dom.color,
+              color: "white",
+              fontWeight: 800,
+              px: 2,
+              py: 2,
+              borderRadius: "8px",
+              boxShadow: `0 4px 14px ${dom.color}44`,
+              fontSize: "0.85rem",
+              textTransform: "uppercase",
+              letterSpacing: 0.5,
+            }}
           />
         </Box>
 
@@ -217,48 +281,88 @@ function HeadToHeadMatchups() {
         >
           <StatCard label="Runs" value={data.runsScored} />
           <StatCard label="Balls" value={data.ballsFaced} />
-          <Box sx={{ textAlign: "center" }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 2.5,
+              textAlign: "center",
+              borderRadius: 3,
+              bgcolor: "rgba(255, 255, 255, 0.02)",
+              border: "1px solid rgba(255, 255, 255, 0.05)",
+              backdropFilter: "blur(8px)",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                bgcolor: "rgba(255, 255, 255, 0.04)",
+                borderColor:
+                  data.dismissals > 0 ? "#ef4444" : "rgba(255, 255, 255, 0.15)",
+                boxShadow: `0 8px 24px ${data.dismissals > 0 ? "#ef4444" : "#ffffff"}15`,
+              },
+            }}
+          >
             <Typography
               variant="h3"
-              fontWeight={800}
-              color={data.dismissals > 0 ? "#ff4757" : "white"}
+              fontWeight={900}
+              color={data.dismissals > 0 ? "#ef4444" : "text.primary"}
+              sx={{
+                fontSize: { xs: "1.8rem", sm: "2.2rem", md: "2.8rem" },
+                lineHeight: 1.2,
+                mb: 0.5,
+              }}
             >
               {data.dismissals}
             </Typography>
-            <Typography variant="overline" color="rgba(255,255,255,0.7)">
+            <Typography
+              variant="overline"
+              sx={{
+                fontSize: { xs: "0.65rem", sm: "0.7rem" },
+                color: "text.secondary",
+                fontWeight: 700,
+                letterSpacing: 1.2,
+              }}
+            >
               Dismissals
             </Typography>
             {data.dismissalDetails &&
               Object.keys(data.dismissalDetails).length > 0 && (
-                <Box mt={0.5}>
+                <Box
+                  sx={{
+                    mt: 1.5,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    gap: 0.5,
+                  }}
+                >
                   {Object.entries(data.dismissalDetails).map(
                     ([kind, count]) => (
-                      <Typography
+                      <Chip
                         key={kind}
-                        variant="caption"
-                        display="block"
-                        sx={{ opacity: 0.8 }}
-                      >
-                        {kind}: {count}
-                      </Typography>
+                        label={`${kind}: ${count}`}
+                        size="small"
+                        sx={{
+                          fontSize: "0.6rem",
+                          height: 18,
+                          bgcolor: "rgba(255, 255, 255, 0.08)",
+                          color: "text.secondary",
+                          fontWeight: 700,
+                          border: "1px solid rgba(255, 255, 255, 0.05)",
+                        }}
+                      />
                     ),
                   )}
                 </Box>
               )}
-          </Box>
+          </Paper>
           <StatCard label="Strike Rate" value={data.strikeRate?.toFixed(1)} />
         </Box>
 
         <Box
           sx={{
-            display: "flex",
-            justifyContent: "center",
-            gap: { xs: 2, md: 5 },
+            display: "grid",
+            gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(4, 1fr)" },
+            gap: { xs: 2, sm: 3 },
             mb: 4,
-            p: 3,
-            bgcolor: "rgba(0,0,0,0.2)",
-            borderRadius: 3,
-            flexWrap: "wrap",
           }}
         >
           <StatCard
@@ -268,7 +372,8 @@ function HeadToHeadMatchups() {
                 ? (data.runsScored / data.dismissals).toFixed(1)
                 : "-"
             }
-            color="#4caf50"
+            color="#10b981"
+            gradient="linear-gradient(135deg, #10b981 0%, #059669 100%)"
           />
           <StatCard
             label="Dot Ball %"
@@ -277,7 +382,8 @@ function HeadToHeadMatchups() {
                 ? ((data.dotBalls / data.ballsFaced) * 100).toFixed(1) + "%"
                 : "0%"
             }
-            color="#ff9800"
+            color="#f59e0b"
+            gradient="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
           />
           <StatCard
             label="Boundary Run %"
@@ -289,12 +395,14 @@ function HeadToHeadMatchups() {
                   ).toFixed(1) + "%"
                 : "0%"
             }
-            color="#2196f3"
+            color="#3b82f6"
+            gradient="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
           />
           <StatCard
             label="Fours / Sixes"
             value={`${data.fours} / ${data.sixes}`}
-            color="#9c27b0"
+            color="#a855f7"
+            gradient="linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)"
           />
         </Box>
 
@@ -305,8 +413,13 @@ function HeadToHeadMatchups() {
               fontWeight={700}
               color="rgba(255,255,255,0.6)"
               mb={2}
-              textAlign="center"
-              sx={{ letterSpacing: 1, textTransform: "uppercase" }}
+              sx={{
+                letterSpacing: 1,
+                textTransform: "uppercase",
+                textAlign: "center",
+                display: "block",
+                width: "100%",
+              }}
             >
               Phase Mastery Breakdown
             </Typography>
@@ -359,7 +472,17 @@ function HeadToHeadMatchups() {
                       alignItems="center"
                     >
                       <Box>
-                        <Typography variant="h5" fontWeight={800}>
+                        <Typography
+                          variant="h5"
+                          fontWeight={800}
+                          sx={{
+                            fontSize: {
+                              xs: "1.1rem",
+                              sm: "1.3rem",
+                              md: "1.5rem",
+                            },
+                          }}
+                        >
                           {pData.runs}
                         </Typography>
                         <Typography
@@ -371,7 +494,17 @@ function HeadToHeadMatchups() {
                         </Typography>
                       </Box>
                       <Box>
-                        <Typography variant="h5" fontWeight={800}>
+                        <Typography
+                          variant="h5"
+                          fontWeight={800}
+                          sx={{
+                            fontSize: {
+                              xs: "1.1rem",
+                              sm: "1.3rem",
+                              md: "1.5rem",
+                            },
+                          }}
+                        >
                           {pData.balls}
                         </Typography>
                         <Typography
@@ -387,6 +520,13 @@ function HeadToHeadMatchups() {
                           variant="h5"
                           fontWeight={800}
                           color={pData.wkts > 0 ? "#ff4757" : "inherit"}
+                          sx={{
+                            fontSize: {
+                              xs: "1.1rem",
+                              sm: "1.3rem",
+                              md: "1.5rem",
+                            },
+                          }}
                         >
                           {pData.wkts}
                         </Typography>
@@ -403,6 +543,13 @@ function HeadToHeadMatchups() {
                           variant="h5"
                           fontWeight={800}
                           color="#4dabf5"
+                          sx={{
+                            fontSize: {
+                              xs: "1.1rem",
+                              sm: "1.3rem",
+                              md: "1.5rem",
+                            },
+                          }}
                         >
                           {pSr}
                         </Typography>
@@ -424,14 +571,26 @@ function HeadToHeadMatchups() {
 
         {data.seasonDetails && Object.keys(data.seasonDetails).length > 0 && (
           <Box
-            sx={{ mt: 4, pt: 3, borderTop: "1px solid rgba(255,255,255,0.2)" }}
+            sx={{
+              mt: 4,
+              pt: 3,
+              borderTop: "1px solid",
+              borderColor: "divider",
+            }}
           >
             <Typography
               variant="subtitle1"
               fontWeight={700}
-              textAlign="center"
-              mb={2}
-              color="rgba(255,255,255,0.8)"
+              mb={2.5}
+              color="text.secondary"
+              sx={{
+                textAlign: "center",
+                display: "block",
+                width: "100%",
+                textTransform: "uppercase",
+                letterSpacing: 1,
+                fontSize: "0.85rem",
+              }}
             >
               Year-by-Year Breakdown (Click for log)
             </Typography>
@@ -439,7 +598,7 @@ function HeadToHeadMatchups() {
               sx={{
                 display: "flex",
                 flexWrap: "wrap",
-                gap: 1,
+                gap: 1.5,
                 justifyContent: "center",
               }}
             >
@@ -459,39 +618,57 @@ function HeadToHeadMatchups() {
                         }
                       }}
                       sx={{
-                        p: 1.5,
-                        border: "1px solid rgba(255,255,255,0.2)",
-                        borderRadius: 2,
+                        p: 2,
+                        bgcolor: "rgba(255, 255, 255, 0.02)",
+                        border: "1px solid rgba(255, 255, 255, 0.05)",
+                        borderRadius: 2.5,
                         textAlign: "center",
-                        minWidth: 100,
+                        minWidth: 110,
                         cursor: "pointer",
-                        "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                          bgcolor: "rgba(99, 102, 241, 0.08)",
+                          borderColor: "rgba(99, 102, 241, 0.3)",
+                          transform: "translateY(-2px)",
+                        },
                       }}
                     >
                       <Typography
                         variant="body2"
                         fontWeight={800}
-                        color="#f59e0b"
+                        color="secondary.main"
                       >
                         {year}
                       </Typography>
-                      <Typography variant="body1" fontWeight={700}>
+                      <Typography
+                        variant="body1"
+                        fontWeight={750}
+                        sx={{ mt: 0.5 }}
+                      >
                         {sData.runs}{" "}
-                        <span style={{ fontSize: "0.75rem", opacity: 0.7 }}>
+                        <span
+                          style={{
+                            fontSize: "0.75rem",
+                            opacity: 0.7,
+                            fontWeight: 500,
+                          }}
+                        >
                           ({sData.balls})
                         </span>
                       </Typography>
                       {sData.wkts > 0 && (
-                        <Typography
-                          variant="caption"
+                        <Chip
+                          label={`${sData.wkts} WKT`}
+                          size="small"
                           sx={{
-                            color: "#ff4757",
-                            display: "block",
+                            mt: 1,
+                            height: 18,
+                            fontSize: "0.6rem",
                             fontWeight: 800,
+                            bgcolor: "error.main",
+                            color: "white",
                           }}
-                        >
-                          {sData.wkts} WKTS
-                        </Typography>
+                        />
                       )}
                     </Box>
                   );
@@ -510,72 +687,98 @@ function HeadToHeadMatchups() {
         subtitle="Analyze every delivery between any two players in IPL history."
       />
 
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2.5, sm: 4 },
+          borderRadius: 4,
+          bgcolor: "background.paper",
+          border: "1px solid",
+          borderColor: "divider",
+          mb: 4,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: 3,
+            mb: 3,
+          }}
+        >
+          <Box sx={{ flex: 1 }}>
+            <Autocomplete
+              fullWidth
+              options={players}
+              getOptionLabel={(option) => option.name}
+              value={player1}
+              onChange={(e, val) => {
+                setPlayer1(val);
+                setSearched(false);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select Player 1"
+                  variant="outlined"
+                />
+              )}
+            />
+          </Box>
+          <Box sx={{ flex: 1 }}>
+            <Autocomplete
+              fullWidth
+              options={players}
+              getOptionLabel={(option) => option.name}
+              value={player2}
+              onChange={(e, val) => {
+                setPlayer2(val);
+                setSearched(false);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select Player 2"
+                  variant="outlined"
+                />
+              )}
+            />
+          </Box>
+        </Box>
+
+        <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleSearch}
+            disabled={!player1 || !player2 || loading}
+            sx={{
+              px: { xs: 4, sm: 6 },
+              py: 1.5,
+              fontSize: "1.1rem",
+              borderRadius: 2,
+              width: { xs: "100%", sm: "auto" },
+              bgcolor: "primary.main",
+              "&:hover": {
+                bgcolor: "primary.dark",
+              },
+            }}
+          >
+            {loading ? "Searching..." : "Analyze Matchup"}
+          </Button>
+        </Box>
+      </Paper>
+
       <Box
         sx={{
           display: "flex",
-          flexDirection: { xs: "column", md: "row" },
-          gap: 3,
-          mb: 3,
+          justifyContent: "center",
+          gap: 1.5,
+          mb: 4,
+          flexWrap: "wrap",
+          width: "100%",
+          px: { xs: 1, sm: 3 },
         }}
-      >
-        <Box sx={{ flex: 1 }}>
-          <Autocomplete
-            fullWidth
-            options={players}
-            getOptionLabel={(option) => option.name}
-            value={player1}
-            onChange={(e, val) => {
-              setPlayer1(val);
-              setSearched(false);
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Select Player 1"
-                variant="outlined"
-              />
-            )}
-          />
-        </Box>
-        <Box sx={{ flex: 1 }}>
-          <Autocomplete
-            fullWidth
-            options={players}
-            getOptionLabel={(option) => option.name}
-            value={player2}
-            onChange={(e, val) => {
-              setPlayer2(val);
-              setSearched(false);
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Select Player 2"
-                variant="outlined"
-              />
-            )}
-          />
-        </Box>
-      </Box>
-
-      <Box display="flex" justifyContent="center" mb={4}>
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleSearch}
-          disabled={!player1 || !player2 || loading}
-          sx={{ px: 6, py: 1.5, fontSize: "1.1rem", borderRadius: 2 }}
-        >
-          {loading ? "Searching..." : "Analyze Matchup"}
-        </Button>
-      </Box>
-
-      <Box
-        display="flex"
-        justifyContent="center"
-        gap={2}
-        mb={4}
-        flexWrap="wrap"
       >
         <Typography
           variant="body2"
@@ -583,69 +786,95 @@ function HeadToHeadMatchups() {
           sx={{
             width: "100%",
             textAlign: "center",
-            mb: 1,
-            fontWeight: 700,
-            letterSpacing: 1,
+            mb: 1.5,
+            fontWeight: 800,
+            letterSpacing: 1.5,
             textTransform: "uppercase",
+            fontSize: "0.75rem",
           }}
         >
           Iconic Rivalries
         </Typography>
-        <Chip
-          label="Dhoni vs Bumrah"
-          onClick={() => handleDefaultClick("MS Dhoni", "JJ Bumrah")}
-          clickable
-          sx={{
-            fontWeight: 800,
-            bgcolor: "rgba(255,255,255,0.05)",
-            color: "white",
-            "&:hover": { bgcolor: "primary.main" },
-          }}
-        />
-        <Chip
-          label="Kohli vs Narine"
-          onClick={() => handleDefaultClick("V Kohli", "SP Narine")}
-          clickable
-          sx={{
-            fontWeight: 800,
-            bgcolor: "rgba(255,255,255,0.05)",
-            color: "white",
-            "&:hover": { bgcolor: "primary.main" },
-          }}
-        />
-        <Chip
-          label="ABD vs Rashid"
-          onClick={() => handleDefaultClick("AB de Villiers", "Rashid Khan")}
-          clickable
-          sx={{
-            fontWeight: 800,
-            bgcolor: "rgba(255,255,255,0.05)",
-            color: "white",
-            "&:hover": { bgcolor: "primary.main" },
-          }}
-        />
-        <Chip
-          label="Russell vs Bhuvi"
-          onClick={() => handleDefaultClick("AD Russell", "B Kumar")}
-          clickable
-          sx={{
-            fontWeight: 800,
-            bgcolor: "rgba(255,255,255,0.05)",
-            color: "white",
-            "&:hover": { bgcolor: "primary.main" },
-          }}
-        />
+        {[
+          { label: "Dhoni vs Bumrah", p1: "MS Dhoni", p2: "JJ Bumrah" },
+          { label: "Kohli vs Narine", p1: "V Kohli", p2: "SP Narine" },
+          { label: "ABD vs Rashid", p1: "AB de Villiers", p2: "Rashid Khan" },
+          { label: "Russell vs Bhuvi", p1: "AD Russell", p2: "B Kumar" },
+          { label: "Rohit vs Mishra", p1: "RG Sharma", p2: "A Mishra" },
+          { label: "Warner vs Ashwin", p1: "DA Warner", p2: "R Ashwin" },
+          {
+            label: "Gayle vs Harbhajan",
+            p1: "CH Gayle",
+            p2: "Harbhajan Singh",
+          },
+          { label: "Dhawan vs Chawla", p1: "S Dhawan", p2: "PP Chawla" },
+        ].map((rivalry) => (
+          <Chip
+            key={rivalry.label}
+            label={rivalry.label}
+            onClick={() => handleDefaultClick(rivalry.p1, rivalry.p2)}
+            clickable
+            sx={{
+              fontWeight: 750,
+              px: 1.5,
+              py: 2,
+              bgcolor: "rgba(99, 102, 241, 0.08)",
+              color: "#818cf8",
+              border: "1px solid rgba(99, 102, 241, 0.2)",
+              "&:hover": {
+                bgcolor: "primary.main",
+                color: "white",
+                transform: "translateY(-2px)",
+                boxShadow: "0 4px 12px rgba(99, 102, 241, 0.35)",
+              },
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+          />
+        ))}
       </Box>
 
       {loading && (
-        <Box display="flex" justifyContent="center" p={4}>
-          <CircularProgress />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            py: 8,
+            width: "100%",
+            color: "text.primary",
+          }}
+        >
+          <CircularProgress size={60} thickness={4} color="primary" />
+          <Typography
+            variant="h6"
+            sx={{
+              mt: 3,
+              fontWeight: 600,
+              background: "linear-gradient(90deg, #3b82f6, #8b5cf6)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Analyzing Matchup...
+          </Typography>
         </Box>
       )}
 
       {!loading && stats && (
         <Box>
-          <Typography variant="h5" fontWeight={700} textAlign="center" mb={3}>
+          <Typography
+            variant="h5"
+            fontWeight={800}
+            sx={{
+              fontSize: { xs: "1.25rem", sm: "1.5rem", md: "1.8rem" },
+              textAlign: "center",
+              mt: 4,
+              mb: 4,
+              display: "block",
+              width: "100%",
+            }}
+          >
             {stats.player1.name} vs {stats.player2.name}
           </Typography>
 
@@ -679,14 +908,29 @@ function HeadToHeadMatchups() {
         <DialogTitle
           sx={{ fontWeight: 800, bgcolor: "primary.main", color: "white" }}
         >
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="h6" fontWeight={800}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              width: "100%",
+            }}
+          >
+            <Typography
+              variant="h6"
+              fontWeight={800}
+              sx={{ textAlign: "center", width: "100%" }}
+            >
               Ball-by-Ball Log: {selectedYear}
             </Typography>
             {selectedBatter && selectedBowler && (
-              <Typography variant="subtitle2" sx={{ opacity: 0.9 }}>
+              <Typography
+                variant="subtitle2"
+                sx={{ opacity: 0.9, textAlign: "center", width: "100%" }}
+              >
                 {selectedBatter.name} (
-                {selectedBatter.teamMap?.[selectedYear] || "Unknown"}){" vs "}
+                {selectedBatter.teamMap?.[selectedYear] || "Unknown"}) vs{" "}
                 {selectedBowler.name} (
                 {selectedBowler.teamMap?.[selectedYear] || "Unknown"})
               </Typography>
@@ -698,12 +942,42 @@ function HeadToHeadMatchups() {
             <Table size="small">
               <TableHead sx={{ bgcolor: "rgba(0,0,0,0.05)" }}>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 700 }}>Date</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Venue</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Over</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Runs</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Extras</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Wicket</TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Date
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Venue
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Over
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Runs
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Extras
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: 700, px: { xs: 1, sm: 2 } }}
+                    align="center"
+                  >
+                    Wicket
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -719,10 +993,17 @@ function HeadToHeadMatchups() {
                           : "inherit",
                       }}
                     >
-                      <TableCell>{fDate}</TableCell>
-                      <TableCell>{ball.venue}</TableCell>
-                      <TableCell>Over {ball.over}</TableCell>
+                      <TableCell sx={{ px: { xs: 1, sm: 2 } }} align="center">
+                        {fDate}
+                      </TableCell>
+                      <TableCell sx={{ px: { xs: 1, sm: 2 } }} align="center">
+                        {ball.venue}
+                      </TableCell>
+                      <TableCell sx={{ px: { xs: 1, sm: 2 } }} align="center">
+                        Over {ball.over}
+                      </TableCell>
                       <TableCell
+                        align="center"
                         sx={{
                           fontWeight: ball.runs >= 4 ? 800 : 400,
                           color:
@@ -731,12 +1012,22 @@ function HeadToHeadMatchups() {
                               : ball.runs === 6
                                 ? "#9c27b0"
                                 : "inherit",
+                          px: { xs: 1, sm: 2 },
                         }}
                       >
                         {ball.runs}
                       </TableCell>
-                      <TableCell>{ball.extras || "-"}</TableCell>
-                      <TableCell sx={{ color: "#ff4757", fontWeight: 700 }}>
+                      <TableCell sx={{ px: { xs: 1, sm: 2 } }} align="center">
+                        {ball.extras || "-"}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{
+                          color: "#ff4757",
+                          fontWeight: 700,
+                          px: { xs: 1, sm: 2 },
+                        }}
+                      >
                         {ball.wicket || "-"}
                       </TableCell>
                     </TableRow>

@@ -65,11 +65,6 @@ const NAV_SECTIONS = [
         icon: <InsightsIcon />,
         path: "/analytics/player-value",
       },
-      {
-        text: "Team Progression Index",
-        icon: <TrendingUpIcon />,
-        path: "/analytics/team-development",
-      },
     ],
   },
   {

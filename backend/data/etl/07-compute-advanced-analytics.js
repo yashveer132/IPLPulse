@@ -237,6 +237,38 @@ async function computeFranchiseAnalytics() {
   );
 }
 
+function getPercentile(values, percentile) {
+  if (!values || values.length === 0) return 1;
+  const sorted = [...values].sort((a, b) => a - b);
+  const index = Math.ceil((percentile / 100) * sorted.length) - 1;
+  const val = sorted[Math.max(0, index)];
+  return val > 0 ? val : 1;
+}
+
+function normalizeWithMagnitude(value, p95, maxVal) {
+  if (value <= 0) return 0;
+  if (p95 <= 0) return 0;
+  if (value <= p95) {
+    return (value / p95) * 80;
+  }
+  if (maxVal <= p95) return 100;
+  return Math.min(100, 80 + ((value - p95) / (maxVal - p95)) * 20);
+}
+
+function normalizeInverseWithMagnitude(value, p05, minVal, maxVal) {
+  if (value <= 0) return 0;
+  if (value <= minVal) return 100;
+  if (value >= maxVal) return 0;
+
+  if (value >= p05) {
+    if (maxVal <= p05) return 0;
+    return Math.max(0, 80 * (1 - (value - p05) / (maxVal - p05)));
+  } else {
+    if (p05 <= minVal) return 100;
+    return Math.min(100, 80 + 20 * (1 - (value - minVal) / (p05 - minVal)));
+  }
+}
+
 async function computePlayerValueScores() {
   console.log("\nCalculating Player Value Scores...");
 
@@ -247,7 +279,7 @@ async function computePlayerValueScores() {
   const playersMap = {};
 
   let processed = 0;
-  const BATCH_SIZE = 500;
+  const BATCH_SIZE = 100;
   for (let i = 0; i < allPlayerStats.length; i += BATCH_SIZE) {
     const batch = allPlayerStats.slice(i, i + BATCH_SIZE);
 
@@ -306,12 +338,29 @@ async function computePlayerValueScores() {
         bowlingContribution +
         consistencyContribution +
         awardContribution;
-      let valueScore = Math.min(100, Math.max(0, rawValueScore / 4));
+      let valueScore = Math.max(0, rawValueScore / 4);
 
       if (!playersMap[stat.playerId]) {
         playersMap[stat.playerId] = [];
       }
       playersMap[stat.playerId].push({
+        id: stat.id,
+        season: stat.season,
+        matches: stat.matches,
+        innings: stat.innings,
+        totalRuns: stat.totalRuns,
+        strikeRate: stat.strikeRate,
+        average: stat.average,
+        fifties: stat.fifties,
+        hundreds: stat.hundreds,
+        fours: stat.fours,
+        sixes: stat.sixes,
+        totalWickets: stat.totalWickets,
+        bowlingAvg: stat.bowlingAvg,
+        economyRate: stat.economyRate,
+        dotBallPct: stat.dotBallPct,
+        playerOfMatch: stat.playerOfMatch,
+        role: stat.player.role,
         battingContribution,
         bowlingContribution,
         consistencyContribution,
@@ -345,51 +394,384 @@ async function computePlayerValueScores() {
   console.log("\nAggregating Lifetime Player Analytics...");
 
   const playerIds = Object.keys(playersMap);
-  let aggregated = 0;
 
-  const ops = [];
+  const rawPlayerStatsList = [];
 
   for (const pId of playerIds) {
     const seasons = playersMap[pId];
 
+    const totalRuns = seasons.reduce((sum, s) => sum + s.totalRuns, 0);
+    const totalWickets = seasons.reduce((sum, s) => sum + s.totalWickets, 0);
+    const totalMatches = seasons.reduce((sum, s) => sum + s.matches, 0);
+    const totalBoundaries = seasons.reduce(
+      (sum, s) => sum + s.fours + s.sixes,
+      0,
+    );
+    const seasonsPlayed = seasons.length;
+    const totalPOM = seasons.reduce((sum, s) => sum + s.playerOfMatch, 0);
+
+    const totalBattingInnings = seasons.reduce(
+      (sum, s) => sum + (s.totalRuns > 0 ? s.innings || 1 : 0),
+      0,
+    );
+    const rawBattingAverage =
+      totalBattingInnings > 0
+        ? seasons.reduce(
+            (sum, s) => sum + (s.average || 0) * (s.innings || 1),
+            0,
+          ) / totalBattingInnings
+        : 0;
+
+    let totalBallsFaced = 0;
+    seasons.forEach((s) => {
+      if (s.strikeRate > 0) {
+        totalBallsFaced += (s.totalRuns / s.strikeRate) * 100;
+      }
+    });
+    const rawBattingSR =
+      totalBallsFaced > 0 ? (totalRuns / totalBallsFaced) * 100 : 0;
+
+    let totalRunsConceded = 0;
+    let totalOversBowled = 0;
+    seasons.forEach((s) => {
+      if (s.totalWickets > 0) {
+        const runs = s.totalWickets * s.bowlingAvg;
+        totalRunsConceded += runs;
+        if (s.economyRate > 0) {
+          totalOversBowled += runs / s.economyRate;
+        }
+      }
+    });
+    const rawEconomyRate =
+      totalOversBowled > 0 ? totalRunsConceded / totalOversBowled : 0;
+    const rawBowlingSR =
+      totalWickets > 0 ? (totalOversBowled * 6) / totalWickets : 0;
+
+    const activeBowlingSeasons = seasons.filter((s) => s.totalWickets > 0);
+    const rawDotBallPct =
+      activeBowlingSeasons.length > 0
+        ? activeBowlingSeasons.reduce((sum, s) => sum + s.dotBallPct, 0) /
+          activeBowlingSeasons.length
+        : 0;
+
     const sortedValue = [...seasons]
       .sort((a, b) => b.valueScore - a.valueScore)
-      .slice(0, 3);
-    const lifetimeValueScore =
-      sortedValue.reduce((sum, s) => sum + s.valueScore, 0) /
-      sortedValue.length;
+      .slice(0, 5);
+    const weights = [0.35, 0.25, 0.2, 0.12, 0.08];
+    let rawPeakPerformance = 0;
+    sortedValue.forEach((s, idx) => {
+      rawPeakPerformance += s.valueScore * weights[idx];
+    });
 
-    const battingValueScore =
-      seasons.reduce((sum, s) => sum + s.battingContribution, 0) /
-      seasons.length;
-    const bowlingValueScore =
-      seasons.reduce((sum, s) => sum + s.bowlingContribution, 0) /
-      seasons.length;
-    const consistencyScore =
-      seasons.reduce((sum, s) => sum + s.consistencyContribution, 0) /
-      seasons.length;
+    const meaningfulSeasons = seasons.filter((s) => s.matches >= 5);
+    let rawConsistency = 70;
+    if (meaningfulSeasons.length >= 2) {
+      const seasonScores = meaningfulSeasons.map((s) => s.valueScore);
+      const mean =
+        seasonScores.reduce((sum, val) => sum + val, 0) / seasonScores.length;
+      if (mean > 0) {
+        const variance =
+          seasonScores.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) /
+          seasonScores.length;
+        const stdDev = Math.sqrt(variance);
+        const cv = stdDev / mean;
+        rawConsistency = Math.max(30, Math.min(100, 100 - cv * 50));
+      }
+    }
+
+    rawPlayerStatsList.push({
+      playerId: pId,
+      role: seasons[0].role,
+      totalRuns,
+      totalWickets,
+      totalMatches,
+      totalBoundaries,
+      seasonsPlayed,
+      totalPOM,
+      rawBattingAverage,
+      rawBattingSR,
+      rawEconomyRate,
+      rawBowlingSR,
+      rawDotBallPct,
+      rawPeakPerformance,
+      rawConsistency,
+      totalOversBowled,
+    });
+  }
+
+  const battingQualifiers = rawPlayerStatsList.filter(
+    (p) => p.totalRuns >= 500,
+  );
+  const bowlingQualifiers = rawPlayerStatsList.filter(
+    (p) => p.totalWickets >= 30 && p.totalOversBowled >= 100,
+  );
+
+  const p95Runs = getPercentile(
+    rawPlayerStatsList.map((p) => p.totalRuns),
+    95,
+  );
+  const maxRuns = Math.max(...rawPlayerStatsList.map((p) => p.totalRuns), 1);
+
+  const p95BattingAvg = getPercentile(
+    battingQualifiers.map((p) => p.rawBattingAverage),
+    95,
+  );
+  const activeBattingAvgs = battingQualifiers
+    .map((p) => p.rawBattingAverage)
+    .filter((v) => v > 0);
+  const maxBattingAvg =
+    activeBattingAvgs.length > 0 ? Math.max(...activeBattingAvgs) : 40.0;
+
+  const p95BattingSR = getPercentile(
+    battingQualifiers.map((p) => p.rawBattingSR),
+    95,
+  );
+  const activeBattingSRs = battingQualifiers
+    .map((p) => p.rawBattingSR)
+    .filter((v) => v > 0);
+  const maxBattingSR =
+    activeBattingSRs.length > 0 ? Math.max(...activeBattingSRs) : 160.0;
+
+  const p95Boundaries = getPercentile(
+    rawPlayerStatsList.map((p) => p.totalBoundaries),
+    95,
+  );
+  const maxBoundaries = Math.max(
+    ...rawPlayerStatsList.map((p) => p.totalBoundaries),
+    1,
+  );
+
+  const p95Wickets = getPercentile(
+    rawPlayerStatsList.map((p) => p.totalWickets),
+    95,
+  );
+  const maxWickets = Math.max(
+    ...rawPlayerStatsList.map((p) => p.totalWickets),
+    1,
+  );
+
+  const p05Economy = getPercentile(
+    bowlingQualifiers.map((p) => p.rawEconomyRate).filter((v) => v > 0),
+    5,
+  );
+  const activeEconRates = bowlingQualifiers
+    .map((p) => p.rawEconomyRate)
+    .filter((v) => v > 0);
+  const minEconomy =
+    activeEconRates.length > 0 ? Math.min(...activeEconRates) : 6.0;
+  const maxEconomy =
+    activeEconRates.length > 0 ? Math.max(...activeEconRates) : 12.0;
+
+  const p05BowlingSR = getPercentile(
+    bowlingQualifiers.map((p) => p.rawBowlingSR).filter((v) => v > 0),
+    5,
+  );
+  const activeBowlingSRs = bowlingQualifiers
+    .map((p) => p.rawBowlingSR)
+    .filter((v) => v > 0);
+  const minBowlingSR =
+    activeBowlingSRs.length > 0 ? Math.min(...activeBowlingSRs) : 15.0;
+  const maxBowlingSR =
+    activeBowlingSRs.length > 0 ? Math.max(...activeBowlingSRs) : 35.0;
+
+  const p95DotBallPct = getPercentile(
+    rawPlayerStatsList.map((p) => p.rawDotBallPct),
+    95,
+  );
+  const maxDotBallPct = Math.max(
+    ...rawPlayerStatsList.map((p) => p.rawDotBallPct),
+    1,
+  );
+
+  const p95Peak = getPercentile(
+    rawPlayerStatsList.map((p) => p.rawPeakPerformance),
+    95,
+  );
+  const maxPeak = Math.max(
+    ...rawPlayerStatsList.map((p) => p.rawPeakPerformance),
+    1,
+  );
+
+  const p95Matches = getPercentile(
+    rawPlayerStatsList.map((p) => p.totalMatches),
+    95,
+  );
+  const maxMatches = Math.max(
+    ...rawPlayerStatsList.map((p) => p.totalMatches),
+    1,
+  );
+
+  const p95Seasons = getPercentile(
+    rawPlayerStatsList.map((p) => p.seasonsPlayed),
+    95,
+  );
+  const maxSeasons = Math.max(
+    ...rawPlayerStatsList.map((p) => p.seasonsPlayed),
+    1,
+  );
+
+  const p95POM = getPercentile(
+    rawPlayerStatsList.map((p) => p.totalPOM),
+    95,
+  );
+  const maxPOM = Math.max(...rawPlayerStatsList.map((p) => p.totalPOM), 1);
+
+  const ops = [];
+
+  for (const raw of rawPlayerStatsList) {
+    if (raw.totalMatches < 20) {
+      ops.push(
+        prisma.playerAnalytics.upsert({
+          where: { playerId: raw.playerId },
+          update: {
+            lifetimeValueScore: 0,
+            battingValueScore: 0,
+            bowlingValueScore: 0,
+            consistencyScore: 0,
+          },
+          create: {
+            playerId: raw.playerId,
+            lifetimeValueScore: 0,
+            battingValueScore: 0,
+            bowlingValueScore: 0,
+            consistencyScore: 0,
+          },
+        }),
+      );
+      continue;
+    }
+
+    let runsScore = normalizeWithMagnitude(raw.totalRuns, p95Runs, maxRuns);
+    let boundaryScore = normalizeWithMagnitude(
+      raw.totalBoundaries,
+      p95Boundaries,
+      maxBoundaries,
+    );
+
+    let careerBattingScore = 0;
+    if (raw.totalRuns >= 500) {
+      const avgScore = normalizeWithMagnitude(
+        raw.rawBattingAverage,
+        p95BattingAvg,
+        maxBattingAvg,
+      );
+      const srScore = normalizeWithMagnitude(
+        raw.rawBattingSR,
+        p95BattingSR,
+        maxBattingSR,
+      );
+      careerBattingScore =
+        runsScore * 0.5 + avgScore * 0.2 + srScore * 0.2 + boundaryScore * 0.1;
+    } else {
+      careerBattingScore = runsScore * 0.8333 + boundaryScore * 0.1667;
+    }
+
+    let wicketsScore = normalizeWithMagnitude(
+      raw.totalWickets,
+      p95Wickets,
+      maxWickets,
+    );
+    let dotBallScore = normalizeWithMagnitude(
+      raw.rawDotBallPct,
+      p95DotBallPct,
+      maxDotBallPct,
+    );
+
+    let careerBowlingScore = 0;
+    if (raw.totalWickets >= 30 && raw.totalOversBowled >= 100) {
+      const economyScore = normalizeInverseWithMagnitude(
+        raw.rawEconomyRate,
+        p05Economy,
+        minEconomy,
+        maxEconomy,
+      );
+      const bowlingSRScore = normalizeInverseWithMagnitude(
+        raw.rawBowlingSR,
+        p05BowlingSR,
+        minBowlingSR,
+        maxBowlingSR,
+      );
+      careerBowlingScore =
+        wicketsScore * 0.5 +
+        economyScore * 0.25 +
+        bowlingSRScore * 0.15 +
+        dotBallScore * 0.1;
+    } else {
+      careerBowlingScore = wicketsScore * 0.8333 + dotBallScore * 0.1667;
+    }
+
+    let careerPerformance = 0;
+    const isBatter =
+      raw.role.includes("Bat") ||
+      raw.role.includes("Keeper") ||
+      raw.role.includes("Wicket");
+    const isBowler = raw.role.includes("Bowl");
+    const isAllRounder = raw.role.includes("All");
+
+    if (isAllRounder) {
+      const basePerformance = (careerBattingScore + careerBowlingScore) / 2;
+      const allRounderBonus = Math.min(
+        10,
+        Math.min(careerBattingScore, careerBowlingScore) * 0.1,
+      );
+      careerPerformance = Math.min(100, basePerformance + allRounderBonus);
+    } else if (isBowler) {
+      careerPerformance = careerBowlingScore;
+    } else {
+      careerPerformance = careerBattingScore;
+    }
+
+    const peakPerformance = normalizeWithMagnitude(
+      raw.rawPeakPerformance,
+      p95Peak,
+      maxPeak,
+    );
+
+    const consistency = raw.rawConsistency;
+
+    const matchesScore = normalizeWithMagnitude(
+      raw.totalMatches,
+      p95Matches,
+      maxMatches,
+    );
+    const seasonsScore = normalizeWithMagnitude(
+      raw.seasonsPlayed,
+      p95Seasons,
+      maxSeasons,
+    );
+    const longevityScore = matchesScore * 0.6 + seasonsScore * 0.4;
+
+    const impactScore = normalizeWithMagnitude(raw.totalPOM, p95POM, maxPOM);
+
+    const lifetimeValueScore =
+      careerPerformance * 0.4 +
+      peakPerformance * 0.25 +
+      consistency * 0.1 +
+      longevityScore * 0.15 +
+      impactScore * 0.1;
 
     ops.push(
       prisma.playerAnalytics.upsert({
-        where: { playerId: pId },
+        where: { playerId: raw.playerId },
         update: {
           lifetimeValueScore,
-          battingValueScore,
-          bowlingValueScore,
-          consistencyScore,
+          battingValueScore: careerBattingScore,
+          bowlingValueScore: careerBowlingScore,
+          consistencyScore: consistency,
         },
         create: {
-          playerId: pId,
+          playerId: raw.playerId,
           lifetimeValueScore,
-          battingValueScore,
-          bowlingValueScore,
-          consistencyScore,
+          battingValueScore: careerBattingScore,
+          bowlingValueScore: careerBowlingScore,
+          consistencyScore: consistency,
         },
       }),
     );
   }
 
-  const chunkedOps = chunkArray(ops, 500);
+  const chunkedOps = chunkArray(ops, 100);
+  let aggregated = 0;
   for (const batch of chunkedOps) {
     await prisma.$transaction(batch);
     aggregated += batch.length;

@@ -14,7 +14,6 @@ const BestPurchases = React.lazy(() => import("./pages/BestPurchases.jsx"));
 const FranchiseComparison = React.lazy(
   () => import("./pages/FranchiseComparison.jsx"),
 );
-const TeamDevelopment = React.lazy(() => import("./pages/TeamDevelopment.jsx"));
 const SeasonIntelligence = React.lazy(
   () => import("./pages/SeasonIntelligence.jsx"),
 );
@@ -66,10 +65,6 @@ function AppRoutes() {
               element={<BestPurchases />}
             />
             <Route path="/rankings/leaderboards" element={<Leaderboards />} />
-            <Route
-              path="/analytics/team-development"
-              element={<TeamDevelopment />}
-            />
             <Route
               path="/analytics/player-intelligence"
               element={<PlayerIntelligence />}
