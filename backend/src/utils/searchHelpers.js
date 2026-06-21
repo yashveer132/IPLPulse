@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const aliasesPath = path.resolve(
   __dirname,
-  "../../../data/etl/config/manual-aliases.json",
+  "../../data/etl/config/manual-aliases.json",
 );
 let aliases = {};
 
