@@ -120,6 +120,9 @@ const GlassCard = ({ children, sx = {}, ...props }) => (
       flexDirection: "column",
       alignItems: "center",
       textAlign: "center",
+      width: "100%",
+      maxWidth: { xs: 360, sm: "100%" },
+      mx: "auto",
       "&:hover": {
         border: "1px solid rgba(148, 163, 184, 0.15)",
         boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
@@ -262,7 +265,7 @@ function SeasonIntelligence() {
         />
         <Grid container spacing={3}>
           {[...Array(4)].map((_, i) => (
-            <Grid item xs={6} md={3} key={i}>
+            <Grid size={{ xs: 6, md: 3 }} key={i}>
               <Skeleton
                 variant="rectangular"
                 height={120}
@@ -384,6 +387,7 @@ function SeasonIntelligence() {
           overflow: "hidden",
           alignItems: "stretch",
           width: "100%",
+          height: "100%",
         }}
       >
         <Box
@@ -399,7 +403,7 @@ function SeasonIntelligence() {
             color="#f59e0b"
           />
         </Box>
-        <TableContainer sx={{ maxHeight: 440 }}>
+        <TableContainer sx={{ maxHeight: 440, overflowX: "auto" }}>
           <Table size="small" stickyHeader>
             <TableHead>
               <TableRow>
@@ -488,6 +492,7 @@ function SeasonIntelligence() {
           overflow: "hidden",
           alignItems: "stretch",
           width: "100%",
+          height: "100%",
         }}
       >
         <Box
@@ -503,7 +508,7 @@ function SeasonIntelligence() {
             color="#9c27b0"
           />
         </Box>
-        <TableContainer sx={{ maxHeight: 440 }}>
+        <TableContainer sx={{ maxHeight: 440, overflowX: "auto" }}>
           <Table size="small" stickyHeader>
             <TableHead>
               <TableRow>
@@ -594,6 +599,8 @@ function SeasonIntelligence() {
         flexDirection: "column",
         alignItems: "stretch",
         width: "100%",
+        overflowX: "hidden",
+        px: { xs: 2, sm: 3, md: 4 },
       }}
     >
       <Box sx={{ width: "100%" }}>
@@ -620,7 +627,7 @@ function SeasonIntelligence() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              mb: 3,
+              mb: { xs: 0.5, md: 3 },
               gap: 2,
               textAlign: "center",
             }}
@@ -665,6 +672,7 @@ function SeasonIntelligence() {
               borderRadius: 3,
               bgcolor: "rgba(17, 24, 39, 0.5)",
               border: "1px solid rgba(148, 163, 184, 0.08)",
+              overflow: "hidden",
             }}
           >
             <Box
@@ -717,7 +725,9 @@ function SeasonIntelligence() {
                 flexDirection: "column",
                 gap: 1.25,
                 flexGrow: 1,
-                width: "100%",
+                flexShrink: 1,
+                width: { xs: "100%", md: 0 },
+                minWidth: 0,
               }}
             >
               <Box
@@ -726,7 +736,8 @@ function SeasonIntelligence() {
                   gap: 0.75,
                   flexWrap: "nowrap",
                   overflowX: "auto",
-                  justifyContent: "center",
+                  justifyContent: "flex-start",
+                  px: 2,
                   width: "100%",
                   py: 0.5,
                   "&::-webkit-scrollbar": { display: "none" },
@@ -771,7 +782,8 @@ function SeasonIntelligence() {
                   gap: 0.75,
                   flexWrap: "nowrap",
                   overflowX: "auto",
-                  justifyContent: "center",
+                  justifyContent: "flex-start",
+                  px: 2,
                   width: "100%",
                   py: 0.5,
                   "&::-webkit-scrollbar": { display: "none" },
@@ -965,8 +977,7 @@ function SeasonIntelligence() {
                     sx={{ width: "100%", m: 0 }}
                   >
                     <Grid
-                      item
-                      xs={6}
+                      size={{ xs: 6 }}
                       sx={{ display: "flex", justifyContent: "center" }}
                     >
                       <Box sx={{ width: "100%", height: "100%" }}>
@@ -974,8 +985,7 @@ function SeasonIntelligence() {
                       </Box>
                     </Grid>
                     <Grid
-                      item
-                      xs={6}
+                      size={{ xs: 6 }}
                       sx={{ display: "flex", justifyContent: "center" }}
                     >
                       <Box sx={{ width: "100%", height: "100%" }}>
@@ -1006,7 +1016,7 @@ function SeasonIntelligence() {
 
             <Grid
               container
-              spacing={4}
+              spacing={{ xs: 2, md: 4 }}
               sx={{ mb: 4 }}
               justifyContent="center"
               alignItems="stretch"
@@ -1030,7 +1040,7 @@ function SeasonIntelligence() {
 
             <Grid
               container
-              spacing={4}
+              spacing={{ xs: 2, md: 4 }}
               sx={{ mb: 4 }}
               justifyContent="center"
               alignItems="stretch"
@@ -1055,8 +1065,8 @@ function SeasonIntelligence() {
                     : 0;
 
                   return (
-                    <Grid item xs={12}>
-                      <Box sx={{ width: "100%" }}>
+                    <Grid size={{ xs: 12 }}>
+                      <Box sx={{ width: "100%", pl: { xs: 3, sm: 0 } }}>
                         <SectionHeader
                           icon={CampaignIcon}
                           title={`Records Check (${selectedYear} vs ${compareYear})`}
@@ -1072,6 +1082,7 @@ function SeasonIntelligence() {
                               md: "repeat(4, 1fr)",
                             },
                             justifyContent: "center",
+                            justifyItems: "center",
                             gap: 2,
                             width: "100%",
                           }}
@@ -1089,6 +1100,8 @@ function SeasonIntelligence() {
                                   flexDirection: "column",
                                   justifyContent: "space-between",
                                   width: "100%",
+                                  maxWidth: { xs: 360, sm: "100%" },
+                                  mx: "auto",
                                   boxSizing: "border-box",
                                   bgcolor: rec.isBroken
                                     ? "rgba(239, 68, 68, 0.12)"
@@ -1266,6 +1279,8 @@ function SeasonIntelligence() {
                                   flexDirection: "column",
                                   justifyContent: "space-between",
                                   width: "100%",
+                                  maxWidth: { xs: 360, sm: "100%" },
+                                  mx: "auto",
                                   boxSizing: "border-box",
                                   bgcolor: rec.isBroken
                                     ? "rgba(239, 68, 68, 0.12)"
@@ -1437,8 +1452,8 @@ function SeasonIntelligence() {
 
                 const d = data;
                 return (
-                  <Grid item xs={12} key={`records-${d.year}`}>
-                    <Box sx={{ width: "100%" }}>
+                  <Grid size={{ xs: 12 }} key={`records-${d.year}`}>
+                    <Box sx={{ width: "100%", pl: { xs: 3, sm: 0 } }}>
                       <SectionHeader
                         icon={CampaignIcon}
                         title={`Records Check (${d.year})`}
@@ -1459,6 +1474,7 @@ function SeasonIntelligence() {
                             lg: "repeat(5, 1fr)",
                           },
                           justifyContent: "center",
+                          justifyItems: "center",
                           gap: 2,
                           width: "100%",
                         }}
@@ -1475,6 +1491,8 @@ function SeasonIntelligence() {
                               flexDirection: "column",
                               justifyContent: "space-between",
                               width: "100%",
+                              maxWidth: { xs: 360, sm: "100%" },
+                              mx: "auto",
                               boxSizing: "border-box",
                               bgcolor: rec.isBroken
                                 ? "rgba(239, 68, 68, 0.12)"
@@ -1624,7 +1642,7 @@ function SeasonIntelligence() {
 
             <Grid
               container
-              spacing={4}
+              spacing={{ xs: 2, md: 4 }}
               sx={{ mb: 4 }}
               justifyContent="center"
               alignItems="stretch"
@@ -1634,7 +1652,7 @@ function SeasonIntelligence() {
                 .map((d, dIdx) => {
                   if (!d.storyline) return null;
                   return (
-                    <Grid item xs={12} md={12} key={`storyline-${d.year}`}>
+                    <Grid size={{ xs: 12, md: 12 }} key={`storyline-${d.year}`}>
                       <Box sx={{ width: "100%" }}>
                         <SectionHeader
                           icon={MenuBookIcon}
@@ -1651,6 +1669,8 @@ function SeasonIntelligence() {
                               md: "repeat(3, 1fr)",
                               lg: "repeat(4, 1fr)",
                             },
+                            justifyContent: "center",
+                            justifyItems: "center",
                             gap: 2,
                             width: "100%",
                           }}
@@ -2055,6 +2075,7 @@ function SeasonIntelligence() {
                                       display: "flex",
                                       gap: 1,
                                       flexWrap: "wrap",
+                                      justifyContent: "center",
                                     }}
                                   >
                                     {d.hallOfFameMatch.summary.map((tag, i) => (
@@ -2084,8 +2105,8 @@ function SeasonIntelligence() {
 
             <Grid
               container
-              spacing={4}
-              sx={{ mb: 4, width: "100%" }}
+              spacing={{ xs: 2, md: 4 }}
+              sx={{ mb: 4 }}
               justifyContent="stretch"
               alignItems="stretch"
             >
@@ -2094,8 +2115,8 @@ function SeasonIntelligence() {
                 .map((d, dIdx) => {
                   if (!d.trends) return null;
                   return (
-                    <Grid item xs={12} md={12} key={`trends-${d.year}`}>
-                      <Box sx={{ width: "100%" }}>
+                    <Grid size={{ xs: 12, md: 12 }} key={`trends-${d.year}`}>
+                      <Box sx={{ width: "100%", pl: { xs: 3, sm: 0 } }}>
                         <SectionHeader
                           icon={TimelineIcon}
                           title={`Season Meta & Trends (${d.year})`}
@@ -2111,6 +2132,8 @@ function SeasonIntelligence() {
                               md: "repeat(4, 1fr)",
                               lg: "repeat(4, 1fr)",
                             },
+                            justifyContent: "center",
+                            justifyItems: "center",
                             gap: 2,
                             width: "100%",
                           }}
@@ -2453,7 +2476,7 @@ function SeasonIntelligence() {
 
             <Grid
               container
-              spacing={4}
+              spacing={{ xs: 2, md: 4 }}
               sx={{ mb: 4 }}
               justifyContent="center"
               alignItems="stretch"
@@ -2726,7 +2749,7 @@ function SeasonIntelligence() {
 
             <Grid
               container
-              spacing={4}
+              spacing={{ xs: 2, md: 4 }}
               sx={{ mb: 4 }}
               justifyContent="center"
               alignItems="stretch"
@@ -2737,7 +2760,7 @@ function SeasonIntelligence() {
                   if (!d.seasonMilestones) return null;
                   return (
                     <Grid item xs={12} md={12} key={`milestones-${d.year}`}>
-                      <Box sx={{ width: "100%" }}>
+                      <Box sx={{ width: "100%", pl: { xs: 3, sm: 0 } }}>
                         <SectionHeader
                           icon={EmojiEventsIcon}
                           title={`Season Milestones (${d.year})`}
@@ -2753,6 +2776,8 @@ function SeasonIntelligence() {
                               md: "repeat(4, 1fr)",
                               lg: "repeat(4, 1fr)",
                             },
+                            justifyContent: "center",
+                            justifyItems: "center",
                             gap: 2,
                             width: "100%",
                           }}
@@ -2979,7 +3004,7 @@ function SeasonIntelligence() {
 
             <Grid
               container
-              spacing={4}
+              spacing={{ xs: 2, md: 4 }}
               sx={{ mb: 4 }}
               justifyContent="stretch"
               alignItems="stretch"
@@ -2989,9 +3014,7 @@ function SeasonIntelligence() {
                 .map((d, dIdx) => {
                   return (
                     <Grid
-                      item
-                      xs={12}
-                      md={compareMode && compareData ? 6 : 12}
+                      size={{ xs: 12, md: 6 }}
                       key={`bestxi-${d.year}`}
                       sx={{ display: "flex", flexDirection: "column" }}
                     >
@@ -3226,9 +3249,7 @@ function SeasonIntelligence() {
                 .map((d, dIdx) => {
                   return (
                     <Grid
-                      item
-                      xs={12}
-                      md={compareMode && compareData ? 6 : 12}
+                      size={{ xs: 12, md: 6 }}
                       key={`standings-${d.year}`}
                       sx={{ display: "flex", flexDirection: "column" }}
                     >
@@ -3461,8 +3482,8 @@ function SeasonIntelligence() {
 
             <Grid
               container
-              spacing={4}
-              sx={{ mb: 4, width: "100%" }}
+              spacing={{ xs: 2, md: 4 }}
+              sx={{ mb: 4 }}
               justifyContent="stretch"
               alignItems="stretch"
             >
@@ -3470,9 +3491,7 @@ function SeasonIntelligence() {
                 .filter(Boolean)
                 .map((d, dIdx) => (
                   <Grid
-                    item
-                    xs={12}
-                    md={compareMode && compareData ? 6 : 12}
+                    size={{ xs: 12, md: compareMode && compareData ? 6 : 12 }}
                     key={`elite-clutch-${d.year}`}
                   >
                     <Box sx={{ width: "100%" }}>
@@ -3508,6 +3527,8 @@ function SeasonIntelligence() {
                                   md: "repeat(6, 1fr)",
                                   lg: "repeat(6, 1fr)",
                                 },
+                          justifyContent: "center",
+                          justifyItems: "center",
                           gap: 2,
                           width: "100%",
                         }}
@@ -3517,12 +3538,12 @@ function SeasonIntelligence() {
                             sx={{
                               borderLeft: "4px solid #ef4444",
                               cursor: "pointer",
-                              height: 280,
+                              height: { xs: 220, sm: 280 },
                               width: "100%",
                               display: "flex",
                               flexDirection: "column",
                               justifyContent: "space-between",
-                              p: 2,
+                              p: { xs: 1.5, sm: 2 },
                             }}
                             onClick={() =>
                               navigate(
@@ -3614,12 +3635,12 @@ function SeasonIntelligence() {
                             sx={{
                               borderLeft: "4px solid #f59e0b",
                               cursor: "pointer",
-                              height: 280,
+                              height: { xs: 220, sm: 280 },
                               width: "100%",
                               display: "flex",
                               flexDirection: "column",
                               justifyContent: "space-between",
-                              p: 2,
+                              p: { xs: 1.5, sm: 2 },
                             }}
                             onClick={() =>
                               navigate(
@@ -3716,12 +3737,12 @@ function SeasonIntelligence() {
                               "&:hover": {
                                 boxShadow: "0 0 32px rgba(59,130,246,0.2)",
                               },
-                              height: 280,
+                              height: { xs: 220, sm: 280 },
                               width: "100%",
                               display: "flex",
                               flexDirection: "column",
                               justifyContent: "space-between",
-                              p: 2,
+                              p: { xs: 1.5, sm: 2 },
                             }}
                             onClick={() =>
                               navigate(`/players/${d.seasonMvp.player.id}`)
@@ -3811,7 +3832,7 @@ function SeasonIntelligence() {
                           <GlassCard
                             sx={{
                               cursor: "pointer",
-                              height: 280,
+                              height: { xs: 220, sm: 280 },
                               width: "100%",
                               background:
                                 "linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(17,24,39,0.8) 70%)",
@@ -3822,7 +3843,7 @@ function SeasonIntelligence() {
                               display: "flex",
                               flexDirection: "column",
                               justifyContent: "space-between",
-                              p: 2,
+                              p: { xs: 1.5, sm: 2 },
                             }}
                             onClick={() =>
                               navigate(`/players/${d.orangeCap.player.id}`)
@@ -3929,7 +3950,7 @@ function SeasonIntelligence() {
                           <GlassCard
                             sx={{
                               cursor: "pointer",
-                              height: 280,
+                              height: { xs: 220, sm: 280 },
                               width: "100%",
                               background:
                                 "linear-gradient(135deg, rgba(156,39,176,0.15) 0%, rgba(17,24,39,0.8) 70%)",
@@ -3940,7 +3961,7 @@ function SeasonIntelligence() {
                               display: "flex",
                               flexDirection: "column",
                               justifyContent: "space-between",
-                              p: 2,
+                              p: { xs: 1.5, sm: 2 },
                             }}
                             onClick={() =>
                               navigate(`/players/${d.purpleCap.player.id}`)
@@ -4058,7 +4079,7 @@ function SeasonIntelligence() {
                             <GlassCard
                               sx={{
                                 cursor: "pointer",
-                                height: 280,
+                                height: { xs: 220, sm: 280 },
                                 width: "100%",
                                 background: isFinisher
                                   ? "linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(17,24,39,0.8) 70%)"
@@ -4080,7 +4101,7 @@ function SeasonIntelligence() {
                                 display: "flex",
                                 flexDirection: "column",
                                 justifyContent: "space-between",
-                                p: 2,
+                                p: { xs: 1.5, sm: 2 },
                               }}
                               onClick={() =>
                                 navigate(`/players/${award.player.id}`)
@@ -4201,47 +4222,44 @@ function SeasonIntelligence() {
 
             <Box sx={{ mb: 4, width: "100%" }}>
               {compareMode && compareData ? (
-                <Grid container spacing={4}>
-                  <Grid item xs={12}>
-                    <SectionHeader
-                      icon={SportsCricketIcon}
-                      title="Top Run Scorers Comparison"
-                      subtitle={`IPL ${selectedYear} vs IPL ${compareYear}`}
-                      color="#f59e0b"
-                    />
-                    <Grid container spacing={3}>
-                      <Grid item xs={12} md={6}>
-                        {renderRunScorersTable(data, selectedYear)}
-                      </Grid>
-                      <Grid item xs={12} md={6}>
-                        {renderRunScorersTable(compareData, compareYear)}
-                      </Grid>
-                    </Grid>
+                <Grid container spacing={{ xs: 2, md: 3 }} alignItems="stretch">
+                  <Grid
+                    size={{ xs: 12, sm: 6 }}
+                    sx={{ display: "flex", flexDirection: "column" }}
+                  >
+                    {renderRunScorersTable(data, selectedYear)}
                   </Grid>
-
-                  <Grid item xs={12}>
-                    <SectionHeader
-                      icon={WhatshotIcon}
-                      title="Top Wicket Takers Comparison"
-                      subtitle={`IPL ${selectedYear} vs IPL ${compareYear}`}
-                      color="#9c27b0"
-                    />
-                    <Grid container spacing={3}>
-                      <Grid item xs={12} md={6}>
-                        {renderWicketTakersTable(data, selectedYear)}
-                      </Grid>
-                      <Grid item xs={12} md={6}>
-                        {renderWicketTakersTable(compareData, compareYear)}
-                      </Grid>
-                    </Grid>
+                  <Grid
+                    size={{ xs: 12, sm: 6 }}
+                    sx={{ display: "flex", flexDirection: "column" }}
+                  >
+                    {renderRunScorersTable(compareData, compareYear)}
+                  </Grid>
+                  <Grid
+                    size={{ xs: 12, sm: 6 }}
+                    sx={{ display: "flex", flexDirection: "column" }}
+                  >
+                    {renderWicketTakersTable(data, selectedYear)}
+                  </Grid>
+                  <Grid
+                    size={{ xs: 12, sm: 6 }}
+                    sx={{ display: "flex", flexDirection: "column" }}
+                  >
+                    {renderWicketTakersTable(compareData, compareYear)}
                   </Grid>
                 </Grid>
               ) : (
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
+                <Grid container spacing={{ xs: 2, md: 3 }} alignItems="stretch">
+                  <Grid
+                    size={{ xs: 12, sm: 6 }}
+                    sx={{ display: "flex", flexDirection: "column" }}
+                  >
                     {renderRunScorersTable(data, selectedYear)}
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid
+                    size={{ xs: 12, sm: 6 }}
+                    sx={{ display: "flex", flexDirection: "column" }}
+                  >
                     {renderWicketTakersTable(data, selectedYear)}
                   </Grid>
                 </Grid>

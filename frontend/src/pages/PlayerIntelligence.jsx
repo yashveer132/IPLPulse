@@ -26,6 +26,35 @@ import {
 } from "recharts";
 import PageHeader from "../components/common/PageHeader.jsx";
 
+const GlassCard = ({ children, sx = {}, ...props }) => (
+  <Paper
+    elevation={0}
+    sx={{
+      p: 4,
+      borderRadius: 4,
+      border: "1px solid rgba(148, 163, 184, 0.08)",
+      bgcolor: "rgba(17, 24, 39, 0.6)",
+      backdropFilter: "blur(20px)",
+      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      textAlign: "center",
+      width: "100%",
+      boxSizing: "border-box",
+      "&:hover": {
+        border: "1px solid rgba(148, 163, 184, 0.15)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+        transform: "translateY(-2px)",
+      },
+      ...sx,
+    }}
+    {...props}
+  >
+    {children}
+  </Paper>
+);
+
 export default function PlayerIntelligence() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -42,8 +71,6 @@ export default function PlayerIntelligence() {
   const [playerDna, setPlayerDna] = useState(null);
   const [trajectory, setTrajectory] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  const { photoUrl, loading: photoLoading } = usePlayerPhoto(playerInfo?.name);
 
   useEffect(() => {
     apiClient
@@ -102,7 +129,10 @@ export default function PlayerIntelligence() {
 
   if (!id) {
     return (
-      <Container maxWidth="md" sx={{ mt: 10, textAlign: "center" }}>
+      <Container
+        maxWidth="md"
+        sx={{ mt: { xs: 0.5, sm: 1, md: 2 }, textAlign: "center" }}
+      >
         <PageHeader
           title="Player Intelligence Hub"
           subtitle="Search for any IPL player to generate a deep-dive analytics dossier."
@@ -131,11 +161,34 @@ export default function PlayerIntelligence() {
     return (
       <Box
         display="flex"
+        flexDirection="column"
         justifyContent="center"
         alignItems="center"
-        minHeight="60vh"
+        minHeight="70vh"
+        gap={3}
       >
-        <CircularProgress size={60} thickness={4} />
+        <CircularProgress
+          size={50}
+          thickness={4.5}
+          sx={{
+            color: "primary.main",
+            "& .MuiCircularProgress-circle": {
+              strokeLinecap: "round",
+            },
+          }}
+        />
+        <Typography
+          variant="h6"
+          fontWeight={800}
+          color="text.secondary"
+          sx={{
+            background: "linear-gradient(90deg, #6366f1, #0ea5e9)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Synthesizing Player DNA...
+        </Typography>
       </Box>
     );
   }
@@ -191,15 +244,15 @@ export default function PlayerIntelligence() {
     const primeSeasons = trajectory.seasons.filter(
       (s) => s.season >= parseInt(start) && s.season <= parseInt(end),
     );
-    const isBatter = derivedRole === "Batter";
+    const isBlockBatter = derivedRole === "Batter";
     primeDetails = {
       start,
       end,
-      metric1: isBatter
+      metric1: isBlockBatter
         ? primeSeasons.reduce((sum, s) => sum + s.runs, 0)
         : primeSeasons.reduce((sum, s) => sum + s.wickets, 0),
-      label1: isBatter ? "Runs" : "Wickets",
-      metric2: isBatter
+      label1: isBlockBatter ? "Runs" : "Wickets",
+      metric2: isBlockBatter
         ? (
             primeSeasons.reduce((sum, s) => sum + s.average, 0) /
             primeSeasons.length
@@ -208,8 +261,8 @@ export default function PlayerIntelligence() {
             primeSeasons.reduce((sum, s) => sum + s.economy, 0) /
             primeSeasons.length
           ).toFixed(1),
-      label2: isBatter ? "Average" : "Economy",
-      metric3: isBatter
+      label2: isBlockBatter ? "Average" : "Economy",
+      metric3: isBlockBatter
         ? (
             primeSeasons.reduce((sum, s) => sum + s.strikeRate, 0) /
             primeSeasons.length
@@ -218,7 +271,7 @@ export default function PlayerIntelligence() {
             primeSeasons.reduce((sum, s) => sum + s.bowlingAvg, 0) /
             primeSeasons.length
           ).toFixed(1),
-      label3: isBatter ? "Strike Rate" : "Bowling Avg",
+      label3: isBlockBatter ? "Strike Rate" : "Bowling Avg",
     };
   }
 
@@ -233,8 +286,15 @@ export default function PlayerIntelligence() {
     recordsHeld.push("Most Valuable Player (All-Time)");
 
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
-      <Box mb={4}>
+    <Container maxWidth="xl" sx={{ pt: 0, pb: { xs: 2, md: 4 } }}>
+      <Box sx={{ mb: { xs: 1, sm: 2 } }}>
+        <PageHeader
+          title="Player Intelligence"
+          subtitle={`Deep-dive analytics dossier for ${playerInfo.name}`}
+        />
+      </Box>
+
+      <Box sx={{ mb: { xs: 1.5, md: 2 } }}>
         <Autocomplete
           options={players}
           getOptionLabel={(option) => option.name}
@@ -252,891 +312,1179 @@ export default function PlayerIntelligence() {
         />
       </Box>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
+      <Box
+        sx={{ display: "flex", flexDirection: "column", gap: { xs: 3, md: 4 } }}
       >
-        <Paper
-          sx={{
-            p: 0,
-            mb: 6,
-            borderRadius: 6,
-            overflow: "hidden",
-            position: "relative",
-            bgcolor: "#121212",
-            color: "white",
-          }}
+        <Box
+          component={motion.div}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          sx={{ width: "100%" }}
         >
-          <Box
+          <GlassCard
             sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundImage: `url(${photoUrl})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center 20%",
-              filter: "blur(20px) brightness(0.3)",
-              zIndex: 0,
+              background:
+                "linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
+              borderLeft: "4px solid #6366f1",
+              p: { xs: 4, md: 6 },
             }}
-          />
-
-          <Grid container sx={{ position: "relative", zIndex: 1 }}>
-            <Grid
-              item
-              xs={12}
-              md={4}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "flex-end",
-                pt: 4,
-                bgcolor: "rgba(0,0,0,0.4)",
-              }}
+          >
+            <Box
+              display="flex"
+              justifyContent="center"
+              gap={2}
+              mb={3.5}
+              flexWrap="wrap"
             >
-              <Box
-                component="img"
-                src={photoUrl}
+              <Chip
+                label={derivedRole}
+                color="primary"
+                sx={{ fontWeight: 800, fontSize: "0.9rem" }}
+              />
+              <Chip
+                label={`All-Time Rank: #${hof.hallOfFame.rank}`}
                 sx={{
-                  width: "80%",
-                  objectFit: "contain",
-                  maxHeight: 350,
-                  filter: "drop-shadow(0px 10px 20px rgba(0,0,0,0.5))",
+                  bgcolor: "white",
+                  color: "black",
+                  fontWeight: 950,
+                  fontSize: "0.9rem",
                 }}
               />
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              md={8}
+            </Box>
+
+            <Typography
+              variant="h3"
+              fontWeight={900}
+              mb={3.5}
               sx={{
-                p: 6,
+                letterSpacing: "-0.02em",
+                textAlign: "center",
+                background: "linear-gradient(90deg, #ffffff 0%, #cbd5e1 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              {playerInfo.name}
+            </Typography>
+
+            <Box
+              display="flex"
+              justifyContent="center"
+              gap={1.5}
+              mb={4.5}
+              flexWrap="wrap"
+            >
+              {badges.map((b, i) => (
+                <Chip
+                  key={i}
+                  label={b}
+                  size="small"
+                  sx={{
+                    bgcolor: "rgba(99, 102, 241, 0.15)",
+                    color: "#a5b4fc",
+                    border: "1px solid rgba(99, 102, 241, 0.2)",
+                    fontWeight: 800,
+                  }}
+                />
+              ))}
+            </Box>
+
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: "1.15rem",
+                lineHeight: 1.7,
+                color: "rgba(226, 232, 240, 0.85)",
+                maxWidth: "800px",
+                mx: "auto",
+                textAlign: "center",
+              }}
+            >
+              {generateNarrative()}
+            </Typography>
+          </GlassCard>
+        </Box>
+
+        <Grid container spacing={4} alignItems="stretch">
+          {primeDetails && (
+            <Grid item xs={12} md={4}>
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={itemVariants}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                style={{ height: "100%" }}
+              >
+                <GlassCard
+                  sx={{
+                    height: "100%",
+                    justifyContent: "space-between",
+                    background:
+                      "linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(17, 24, 39, 0.9) 100%)",
+                    borderLeft: "4px solid #6366f1",
+                    p: 4,
+                  }}
+                >
+                  <Box sx={{ width: "100%" }}>
+                    <Typography
+                      variant="overline"
+                      sx={{
+                        fontWeight: 800,
+                        letterSpacing: 1.5,
+                        color: "#818cf8",
+                        display: "block",
+                        mb: 1,
+                      }}
+                    >
+                      PRIME ERA
+                    </Typography>
+                    <Typography
+                      variant="h3"
+                      fontWeight={900}
+                      mb={1}
+                      color="white"
+                    >
+                      {primeDetails.start}–{primeDetails.end}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "text.secondary", mb: 4 }}
+                    >
+                      Highest 3-year peak in career
+                    </Typography>
+                  </Box>
+                  <Grid
+                    container
+                    spacing={2}
+                    sx={{ width: "100%", mt: "auto" }}
+                  >
+                    <Grid item xs={4}>
+                      <Typography variant="h4" fontWeight={900} color="#f59e0b">
+                        {primeDetails.metric1}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "text.secondary", fontWeight: 800 }}
+                      >
+                        {primeDetails.label1}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="h4" fontWeight={900} color="#10b981">
+                        {primeDetails.metric2}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "text.secondary", fontWeight: 800 }}
+                      >
+                        {primeDetails.label2}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="h4" fontWeight={900} color="#0ea5e9">
+                        {primeDetails.metric3}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "text.secondary", fontWeight: 800 }}
+                      >
+                        {primeDetails.label3}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </GlassCard>
+              </motion.div>
+            </Grid>
+          )}
+
+          {playerDna && (
+            <Grid item xs={12} md={primeDetails ? 8 : 12}>
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={itemVariants}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                style={{ height: "100%" }}
+              >
+                <GlassCard
+                  sx={{
+                    p: 4,
+                    height: "100%",
+                    borderLeft: "4px solid #10b981",
+                    background:
+                      "linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
+                  }}
+                >
+                  <Typography
+                    variant="h5"
+                    fontWeight={800}
+                    mb={3}
+                    sx={{
+                      color: "#10b981",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                    }}
+                  >
+                    🧬 Player DNA
+                  </Typography>
+                  <Grid container spacing={4} sx={{ width: "100%" }}>
+                    <Grid item xs={12} sm={6}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        fontWeight={800}
+                        mb={2.5}
+                        sx={{ letterSpacing: 1 }}
+                      >
+                        RUN DISTRIBUTION
+                      </Typography>
+                      <Box display="flex" alignItems="center" mb={2}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            width: 110,
+                            textAlign: "left",
+                            fontWeight: 700,
+                          }}
+                        >
+                          Boundary Runs
+                        </Typography>
+                        <Box sx={{ flexGrow: 1, mx: 2 }}>
+                          <LinearProgress
+                            variant="determinate"
+                            value={playerDna.distribution.boundaryPct}
+                            sx={{
+                              height: 8,
+                              borderRadius: 4,
+                              bgcolor: "rgba(255, 255, 255, 0.05)",
+                              "& .MuiLinearProgress-bar": {
+                                bgcolor: "#ec4899",
+                              },
+                            }}
+                          />
+                        </Box>
+                        <Typography
+                          variant="body2"
+                          fontWeight={800}
+                          color="#ec4899"
+                        >
+                          {Math.round(playerDna.distribution.boundaryPct)}%
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" mb={3}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            width: 110,
+                            textAlign: "left",
+                            fontWeight: 700,
+                          }}
+                        >
+                          Running Runs
+                        </Typography>
+                        <Box sx={{ flexGrow: 1, mx: 2 }}>
+                          <LinearProgress
+                            variant="determinate"
+                            value={playerDna.distribution.runningPct}
+                            sx={{
+                              height: 8,
+                              borderRadius: 4,
+                              bgcolor: "rgba(255, 255, 255, 0.05)",
+                              "& .MuiLinearProgress-bar": {
+                                bgcolor: "#6366f1",
+                              },
+                            }}
+                          />
+                        </Box>
+                        <Typography
+                          variant="body2"
+                          fontWeight={800}
+                          color="#6366f1"
+                        >
+                          {Math.round(playerDna.distribution.runningPct)}%
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          p: 2,
+                          bgcolor: "rgba(16, 185, 129, 0.08)",
+                          borderRadius: 3,
+                          border: "1px solid rgba(16, 185, 129, 0.15)",
+                          textAlign: "center",
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          display="block"
+                          fontWeight={750}
+                          sx={{ mb: 0.5 }}
+                        >
+                          IDENTIFIED PLAYSTYLE
+                        </Typography>
+                        <Typography
+                          variant="h6"
+                          fontWeight={900}
+                          color="#10b981"
+                        >
+                          {playerDna.playstyle}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        fontWeight={800}
+                        mb={2.5}
+                        sx={{ letterSpacing: 1 }}
+                      >
+                        PHASE IMPACT SCORE
+                      </Typography>
+                      <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        mb={2}
+                        sx={{
+                          p: 1.5,
+                          bgcolor: "rgba(255,255,255,0.02)",
+                          borderRadius: 2,
+                        }}
+                      >
+                        <Typography variant="body2" fontWeight={700}>
+                          Powerplay
+                        </Typography>
+                        <Chip
+                          label={`${playerDna.phaseImpacts.powerplay} / 10`}
+                          size="small"
+                          sx={{
+                            bgcolor: "rgba(245, 158, 11, 0.15)",
+                            color: "#f59e0b",
+                            fontWeight: 800,
+                          }}
+                        />
+                      </Box>
+                      <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        mb={2}
+                        sx={{
+                          p: 1.5,
+                          bgcolor: "rgba(255,255,255,0.02)",
+                          borderRadius: 2,
+                        }}
+                      >
+                        <Typography variant="body2" fontWeight={700}>
+                          Middle Overs
+                        </Typography>
+                        <Chip
+                          label={`${playerDna.phaseImpacts.middleOvers} / 10`}
+                          size="small"
+                          sx={{
+                            bgcolor: "rgba(16, 185, 129, 0.15)",
+                            color: "#10b981",
+                            fontWeight: 800,
+                          }}
+                        />
+                      </Box>
+                      <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        sx={{
+                          p: 1.5,
+                          bgcolor: "rgba(255,255,255,0.02)",
+                          borderRadius: 2,
+                        }}
+                      >
+                        <Typography variant="body2" fontWeight={700}>
+                          Death Overs
+                        </Typography>
+                        <Chip
+                          label={`${playerDna.phaseImpacts.deathOvers} / 10`}
+                          size="small"
+                          sx={{
+                            bgcolor: "rgba(236, 72, 153, 0.15)",
+                            color: "#ec4899",
+                            fontWeight: 800,
+                          }}
+                        />
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </GlassCard>
+              </motion.div>
+            </Grid>
+          )}
+        </Grid>
+
+        <Box
+          component={motion.div}
+          initial="hidden"
+          animate="visible"
+          variants={itemVariants}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          sx={{ width: "100%" }}
+        >
+          <GlassCard
+            sx={{
+              pt: 4,
+              pb: 4,
+              px: { xs: 1.5, sm: 2, md: 3 },
+              alignItems: "stretch",
+              borderLeft: "4px solid #ec4899",
+              background:
+                "linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
+            }}
+          >
+            <Typography
+              variant="h5"
+              fontWeight={800}
+              mb={3}
+              sx={{
+                color: "#ec4899",
                 display: "flex",
-                flexDirection: "column",
+                alignItems: "center",
+                gap: 1,
                 justifyContent: "center",
               }}
             >
-              <Box display="flex" gap={2} mb={2} flexWrap="wrap">
-                <Chip
-                  label={derivedRole}
-                  color="primary"
-                  sx={{ fontWeight: 800, fontSize: "0.9rem" }}
-                />
-                <Chip
-                  label={`All-Time Rank: #${hof.hallOfFame.rank}`}
-                  sx={{ bgcolor: "white", color: "black", fontWeight: 900 }}
-                />
-                {legacy && (
-                  <Chip
-                    label={`Legacy Points: ${Math.round(legacy.valueScore)}`}
-                    sx={{
-                      bgcolor: "rgba(255,255,255,0.1)",
+              📈 Career Trajectory
+            </Typography>
+            <Box sx={{ width: "100%", height: 320, mt: 2 }}>
+              <ResponsiveContainer width="99%" height="100%">
+                <LineChart
+                  data={trajectory.seasons}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                >
+                  <XAxis
+                    dataKey="season"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "#94a3b8" }}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "#94a3b8" }}
+                  />
+                  <RechartsTooltip
+                    cursor={{
+                      strokeDasharray: "3 3",
+                      stroke: "rgba(255,255,255,0.1)",
+                    }}
+                    contentStyle={{
+                      borderRadius: 12,
+                      border: "1px solid rgba(148, 163, 184, 0.15)",
+                      backgroundColor: "rgba(17, 24, 39, 0.95)",
                       color: "white",
-                      fontWeight: 600,
+                      boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
                     }}
                   />
-                )}
-              </Box>
+                  {primeDetails && (
+                    <ReferenceArea
+                      x1={parseInt(primeDetails.start)}
+                      x2={parseInt(primeDetails.end)}
+                      strokeOpacity={0.3}
+                      fill="#26D0CE"
+                      fillOpacity={0.12}
+                    />
+                  )}
+                  <Line
+                    type="monotone"
+                    dataKey="score"
+                    name="Performance Score"
+                    stroke="#ec4899"
+                    strokeWidth={4}
+                    dot={{
+                      r: 4,
+                      fill: "#ec4899",
+                      strokeWidth: 2,
+                      stroke: "#fff",
+                    }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </Box>
+          </GlassCard>
+        </Box>
 
-              <Typography
-                variant="h2"
-                fontWeight={900}
-                mb={1}
-                sx={{ letterSpacing: "-0.02em" }}
-              >
-                {playerInfo.name}
-              </Typography>
-
-              <Box display="flex" gap={1} mb={4} flexWrap="wrap">
-                {badges.map((b, i) => (
-                  <Chip
-                    key={i}
-                    label={b}
-                    size="small"
+        <Box width="100%">
+          <Grid container spacing={4} alignItems="stretch">
+            {similarPlayers?.similarPlayers && (
+              <Grid item xs={12} md={4}>
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={itemVariants}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  style={{ height: "100%" }}
+                >
+                  <GlassCard
                     sx={{
-                      bgcolor: "rgba(255,255,255,0.15)",
-                      color: "#fff",
-                      fontWeight: 600,
-                      backdropFilter: "blur(10px)",
+                      p: 4,
+                      height: "100%",
+                      borderLeft: "4px solid #6366f1",
+                      background:
+                        "linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
                     }}
-                  />
-                ))}
-              </Box>
+                  >
+                    <Typography
+                      variant="h5"
+                      fontWeight={800}
+                      mb={4}
+                      sx={{ color: "#818cf8" }}
+                    >
+                      👥 Similar Players
+                    </Typography>
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      gap={3}
+                      sx={{ width: "100%" }}
+                    >
+                      {similarPlayers.similarPlayers
+                        .slice(0, 2)
+                        .map((sim, idx) => (
+                          <Box
+                            key={idx}
+                            sx={{
+                              p: 2.5,
+                              borderRadius: 3,
+                              bgcolor: "rgba(255,255,255,0.02)",
+                              border: "1px solid rgba(148, 163, 184, 0.05)",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              textAlign: "center",
+                            }}
+                          >
+                            <Box
+                              display="flex"
+                              flexDirection="column"
+                              alignItems="center"
+                              gap={1.5}
+                              mb={2}
+                            >
+                              <Box
+                                sx={{
+                                  position: "relative",
+                                  display: "inline-flex",
+                                }}
+                              >
+                                <CircularProgress
+                                  variant="determinate"
+                                  value={sim.matchPercentage}
+                                  size={55}
+                                  thickness={4.5}
+                                  sx={{ color: "#6366f1" }}
+                                />
+                                <Box
+                                  sx={{
+                                    top: 0,
+                                    left: 0,
+                                    bottom: 0,
+                                    right: 0,
+                                    position: "absolute",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <Typography
+                                    variant="caption"
+                                    fontWeight={900}
+                                    color="white"
+                                  >
+                                    {sim.matchPercentage}%
+                                  </Typography>
+                                </Box>
+                              </Box>
+                              <Box>
+                                <Typography
+                                  variant="subtitle1"
+                                  fontWeight={800}
+                                  color="white"
+                                >
+                                  {sim.name}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  fontWeight={700}
+                                >
+                                  {sim.role}
+                                </Typography>
+                              </Box>
+                            </Box>
+                            <Box
+                              display="flex"
+                              flexDirection="column"
+                              gap={0.75}
+                              alignItems="center"
+                            >
+                              {sim.reasons?.map((reason, i) => (
+                                <Typography
+                                  key={i}
+                                  variant="caption"
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                    color: "rgba(255,255,255,0.7)",
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  <span style={{ color: "#10b981" }}>✓</span>{" "}
+                                  {reason}
+                                </Typography>
+                              ))}
+                            </Box>
+                          </Box>
+                        ))}
+                    </Box>
+                  </GlassCard>
+                </motion.div>
+              </Grid>
+            )}
 
-              <Typography
-                variant="body1"
-                sx={{
-                  fontSize: "1.1rem",
-                  lineHeight: 1.6,
-                  color: "rgba(255,255,255,0.85)",
-                  maxWidth: "90%",
-                }}
+            <Grid item xs={12} md={similarPlayers?.similarPlayers ? 4 : 6}>
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={itemVariants}
+                transition={{ duration: 0.5, delay: 0.45 }}
+                style={{ height: "100%" }}
               >
-                {generateNarrative()}
-              </Typography>
+                <GlassCard
+                  sx={{
+                    p: 4,
+                    height: "100%",
+                    borderLeft: "4px solid #f59e0b",
+                    background:
+                      "linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography
+                    variant="h5"
+                    fontWeight={800}
+                    mb={5}
+                    sx={{ color: "#f59e0b" }}
+                  >
+                    📊 Historical Context
+                  </Typography>
+                  <Box mb={4} sx={{ width: "100%" }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "text.secondary", fontWeight: 700, mb: 1 }}
+                    >
+                      Career Average
+                    </Typography>
+                    <Typography variant="h2" fontWeight={900} color="white">
+                      {hof.contextRankings?.careerAverage}
+                    </Typography>
+                    <Chip
+                      label={`${hof.contextRankings?.averagePercentile}th Percentile`}
+                      size="small"
+                      sx={{
+                        mt: 1.5,
+                        bgcolor: "rgba(16, 185, 129, 0.15)",
+                        color: "#10b981",
+                        fontWeight: 800,
+                      }}
+                    />
+                  </Box>
+                  <Box sx={{ width: "100%" }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "text.secondary", fontWeight: 700, mb: 1 }}
+                    >
+                      Career Strike Rate
+                    </Typography>
+                    <Typography variant="h2" fontWeight={900} color="white">
+                      {hof.contextRankings?.careerStrikeRate}
+                    </Typography>
+                    <Chip
+                      label={`${hof.contextRankings?.strikeRatePercentile}th Percentile`}
+                      size="small"
+                      sx={{
+                        mt: 1.5,
+                        bgcolor: "rgba(16, 185, 129, 0.15)",
+                        color: "#10b981",
+                        fontWeight: 800,
+                      }}
+                    />
+                  </Box>
+                </GlassCard>
+              </motion.div>
+            </Grid>
+
+            <Grid item xs={12} md={similarPlayers?.similarPlayers ? 4 : 6}>
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={itemVariants}
+                transition={{ duration: 0.5, delay: 0.6 }}
+                style={{ height: "100%" }}
+              >
+                <GlassCard
+                  sx={{
+                    p: 4,
+                    height: "100%",
+                    borderLeft: "4px solid #f59e0b",
+                    background:
+                      "linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
+                  }}
+                >
+                  <Typography
+                    variant="h5"
+                    fontWeight={800}
+                    mb={3}
+                    sx={{ color: "#f59e0b" }}
+                  >
+                    🏆 Records Held
+                  </Typography>
+                  {recordsHeld.length > 0 ? (
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      gap={2}
+                      sx={{ width: "100%" }}
+                    >
+                      {recordsHeld.map((rec, i) => (
+                        <Box
+                          key={i}
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          gap={2}
+                          p={2}
+                          sx={{
+                            bgcolor: "rgba(255,255,255,0.02)",
+                            border: "1px solid rgba(148, 163, 184, 0.05)",
+                            borderRadius: 3,
+                          }}
+                        >
+                          <Typography variant="h6" sx={{ fontSize: "1.3rem" }}>
+                            🏅
+                          </Typography>
+                          <Typography
+                            variant="subtitle1"
+                            fontWeight={850}
+                            color="white"
+                          >
+                            {rec}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography variant="body1" color="text.secondary">
+                      No all-time IPL records held currently.
+                    </Typography>
+                  )}
+                </GlassCard>
+              </motion.div>
             </Grid>
           </Grid>
-        </Paper>
-      </motion.div>
-
-      <Grid container spacing={4} mb={6}>
-        {primeDetails && (
-          <Grid item xs={12} md={4}>
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={itemVariants}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <Paper
-                sx={{
-                  p: 4,
-                  borderRadius: 4,
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  background:
-                    "linear-gradient(135deg, #1A2980 0%, #26D0CE 100%)",
-                  color: "white",
-                }}
-              >
-                <Box>
-                  <Typography
-                    variant="overline"
-                    sx={{ fontWeight: 800, letterSpacing: 1, opacity: 0.8 }}
-                  >
-                    PRIME ERA
-                  </Typography>
-                  <Typography variant="h3" fontWeight={900} mb={1}>
-                    {primeDetails.start}–{primeDetails.end}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9, mb: 4 }}>
-                    Highest 3-year peak in career
-                  </Typography>
-                </Box>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography variant="h5" fontWeight={900}>
-                      {primeDetails.metric1}
-                    </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                      {primeDetails.label1}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="h5" fontWeight={900}>
-                      {primeDetails.metric2}
-                    </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                      {primeDetails.label2}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="h5" fontWeight={900}>
-                      {primeDetails.metric3}
-                    </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                      {primeDetails.label3}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </motion.div>
-          </Grid>
-        )}
-
-        {playerDna && (
-          <Grid item xs={12} md={8}>
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={itemVariants}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <Paper sx={{ p: 4, borderRadius: 4, height: "100%" }}>
-                <Typography variant="h5" fontWeight={800} mb={3}>
-                  🧬 Player DNA
-                </Typography>
-                <Grid container spacing={4}>
-                  <Grid item xs={12} sm={6}>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      fontWeight={700}
-                      mb={1}
-                    >
-                      RUN DISTRIBUTION
-                    </Typography>
-                    <Box display="flex" alignItems="center" mb={1}>
-                      <Typography variant="body1" sx={{ width: 120 }}>
-                        Boundary Runs
-                      </Typography>
-                      <Box sx={{ flexGrow: 1, mx: 2 }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={playerDna.distribution.boundaryPct}
-                          sx={{
-                            height: 8,
-                            borderRadius: 4,
-                            bgcolor: "grey.200",
-                            "& .MuiLinearProgress-bar": { bgcolor: "#FF416C" },
-                          }}
-                        />
-                      </Box>
-                      <Typography variant="body2" fontWeight={700}>
-                        {Math.round(playerDna.distribution.boundaryPct)}%
-                      </Typography>
-                    </Box>
-                    <Box display="flex" alignItems="center" mb={3}>
-                      <Typography variant="body1" sx={{ width: 120 }}>
-                        Running Runs
-                      </Typography>
-                      <Box sx={{ flexGrow: 1, mx: 2 }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={playerDna.distribution.runningPct}
-                          sx={{
-                            height: 8,
-                            borderRadius: 4,
-                            bgcolor: "grey.200",
-                            "& .MuiLinearProgress-bar": { bgcolor: "#4A00E0" },
-                          }}
-                        />
-                      </Box>
-                      <Typography variant="body2" fontWeight={700}>
-                        {Math.round(playerDna.distribution.runningPct)}%
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        p: 2,
-                        bgcolor: "rgba(0,0,0,0.03)",
-                        borderRadius: 2,
-                      }}
-                    >
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        display="block"
-                      >
-                        IDENTIFIED PLAYSTYLE
-                      </Typography>
-                      <Typography
-                        variant="h6"
-                        fontWeight={800}
-                        color="primary.main"
-                      >
-                        {playerDna.playstyle}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      fontWeight={700}
-                      mb={2}
-                    >
-                      PHASE IMPACT SCORE (OUT OF 10)
-                    </Typography>
-                    <Box display="flex" justifyContent="space-between" mb={1.5}>
-                      <Typography variant="body1">Powerplay</Typography>
-                      <Typography variant="body1" fontWeight={800}>
-                        {playerDna.phaseImpacts.powerplay}
-                      </Typography>
-                    </Box>
-                    <Box display="flex" justifyContent="space-between" mb={1.5}>
-                      <Typography variant="body1">Middle Overs</Typography>
-                      <Typography variant="body1" fontWeight={800}>
-                        {playerDna.phaseImpacts.middleOvers}
-                      </Typography>
-                    </Box>
-                    <Box display="flex" justifyContent="space-between">
-                      <Typography variant="body1">Death Overs</Typography>
-                      <Typography variant="body1" fontWeight={800}>
-                        {playerDna.phaseImpacts.deathOvers}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </motion.div>
-          </Grid>
-        )}
-
-        <Grid item xs={12}>
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={itemVariants}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <Paper sx={{ p: 4, borderRadius: 4 }}>
-              <Typography variant="h5" fontWeight={800} mb={3}>
-                📈 Career Trajectory
-              </Typography>
-              <Box sx={{ width: "100%", height: 300 }}>
-                <ResponsiveContainer>
-                  <LineChart
-                    data={trajectory.seasons}
-                    margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-                  >
-                    <XAxis
-                      dataKey="season"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12, fill: "#888" }}
-                    />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12, fill: "#888" }}
-                    />
-                    <RechartsTooltip
-                      cursor={{ strokeDasharray: "3 3" }}
-                      contentStyle={{
-                        borderRadius: 8,
-                        border: "none",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                      }}
-                    />
-                    {primeDetails && (
-                      <ReferenceArea
-                        x1={parseInt(primeDetails.start)}
-                        x2={parseInt(primeDetails.end)}
-                        strokeOpacity={0.3}
-                        fill="#26D0CE"
-                        fillOpacity={0.15}
-                      />
-                    )}
-                    <Line
-                      type="monotone"
-                      dataKey="score"
-                      name="Performance Score"
-                      stroke="#FF416C"
-                      strokeWidth={4}
-                      dot={{
-                        r: 4,
-                        fill: "#FF416C",
-                        strokeWidth: 2,
-                        stroke: "#fff",
-                      }}
-                      activeDot={{ r: 6 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </Box>
-            </Paper>
-          </motion.div>
-        </Grid>
-
-        <Grid item xs={12} md={8}>
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={itemVariants}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <Paper sx={{ p: 4, borderRadius: 4, height: "100%" }}>
-              <Typography variant="h5" fontWeight={800} mb={3}>
-                🏛️ Hall of Fame Breakdown
-              </Typography>
-              <Grid container spacing={3}>
-                <Grid item xs={6} sm={3}>
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      p: 2,
-                      bgcolor: "rgba(0,0,0,0.02)",
-                      borderRadius: 3,
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      fontWeight={700}
-                    >
-                      Peak Component
-                    </Typography>
-                    <Typography variant="h4" fontWeight={900} mt={1}>
-                      {hof.hallOfFame.peakComponent}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={6} sm={3}>
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      p: 2,
-                      bgcolor: "rgba(0,0,0,0.02)",
-                      borderRadius: 3,
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      fontWeight={700}
-                    >
-                      Longevity Component
-                    </Typography>
-                    <Typography variant="h4" fontWeight={900} mt={1}>
-                      {hof.hallOfFame.longevityComponent}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={6} sm={3}>
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      p: 2,
-                      bgcolor: "rgba(0,0,0,0.02)",
-                      borderRadius: 3,
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      fontWeight={700}
-                    >
-                      Consistency Component
-                    </Typography>
-                    <Typography variant="h4" fontWeight={900} mt={1}>
-                      {hof.hallOfFame.consistencyComponent}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={6} sm={3}>
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      p: 2,
-                      bgcolor: "rgba(0,0,0,0.02)",
-                      borderRadius: 3,
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      fontWeight={700}
-                    >
-                      Playoff Component
-                    </Typography>
-                    <Typography variant="h4" fontWeight={900} mt={1}>
-                      {hof.hallOfFame.playoffComponent}
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Paper>
-          </motion.div>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={itemVariants}
-            transition={{ duration: 0.5, delay: 0.45 }}
-          >
-            <Paper
-              sx={{
-                p: 4,
-                borderRadius: 4,
-                height: "100%",
-                bgcolor: "#121212",
-                color: "white",
-              }}
-            >
-              <Typography variant="h5" fontWeight={800} mb={3}>
-                📊 Historical Context
-              </Typography>
-              <Box mb={2}>
-                <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  Career Average
-                </Typography>
-                <Box display="flex" alignItems="baseline" gap={2}>
-                  <Typography variant="h4" fontWeight={900}>
-                    {hof.contextRankings?.careerAverage}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{ color: "#4CAF50", fontWeight: 600 }}
-                  >
-                    {hof.contextRankings?.averagePercentile}th PCTL
-                  </Typography>
-                </Box>
-              </Box>
-              <Box>
-                <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  Career Strike Rate
-                </Typography>
-                <Box display="flex" alignItems="baseline" gap={2}>
-                  <Typography variant="h4" fontWeight={900}>
-                    {hof.contextRankings?.careerStrikeRate}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{ color: "#4CAF50", fontWeight: 600 }}
-                  >
-                    {hof.contextRankings?.strikeRatePercentile}th PCTL
-                  </Typography>
-                </Box>
-              </Box>
-            </Paper>
-          </motion.div>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={4} mb={6}>
-        {similarPlayers?.similarPlayers && (
-          <Grid item xs={12}>
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={itemVariants}
-              transition={{ duration: 0.5, delay: 0.5 }}
-            >
-              <Typography variant="h5" fontWeight={800} mb={3}>
-                👥 Similar Players
-              </Typography>
-              <Grid container spacing={3}>
-                {similarPlayers.similarPlayers.slice(0, 3).map((sim, idx) => (
-                  <Grid item xs={12} md={4} key={idx}>
-                    <Paper
-                      sx={{
-                        p: 3,
-                        borderRadius: 4,
-                        transition: "transform 0.2s",
-                        "&:hover": { transform: "translateY(-4px)" },
-                      }}
-                    >
-                      <Box display="flex" alignItems="center" gap={2} mb={2}>
-                        <Box
-                          sx={{ position: "relative", display: "inline-flex" }}
-                        >
-                          <CircularProgress
-                            variant="determinate"
-                            value={sim.matchPercentage}
-                            size={60}
-                            thickness={4}
-                            sx={{ color: "primary.main" }}
-                          />
-                          <Box
-                            sx={{
-                              top: 0,
-                              left: 0,
-                              bottom: 0,
-                              right: 0,
-                              position: "absolute",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <Typography variant="caption" fontWeight={800}>
-                              {sim.matchPercentage}%
-                            </Typography>
-                          </Box>
-                        </Box>
-                        <Box>
-                          <Typography variant="h6" fontWeight={800}>
-                            {sim.name}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {sim.role}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box display="flex" flexDirection="column" gap={1}>
-                        {sim.reasons?.map((reason, i) => (
-                          <Typography
-                            key={i}
-                            variant="caption"
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                              color: "text.secondary",
-                              fontWeight: 600,
-                            }}
-                          >
-                            <span style={{ color: "#4CAF50" }}>✓</span> {reason}
-                          </Typography>
-                        ))}
-                      </Box>
-                    </Paper>
-                  </Grid>
-                ))}
-              </Grid>
-            </motion.div>
-          </Grid>
-        )}
+        </Box>
 
         {rivalries && (
-          <Grid item xs={12}>
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={itemVariants}
-              transition={{ duration: 0.5, delay: 0.6 }}
+          <Box
+            component={motion.div}
+            initial="hidden"
+            animate="visible"
+            variants={itemVariants}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            sx={{ width: "100%", display: "flex", justifyContent: "center" }}
+          >
+            <GlassCard
+              sx={{
+                p: 4,
+                maxWidth: { xs: "100%", md: "85%", lg: "75%" },
+                width: "100%",
+                borderLeft: "4px solid #6366f1",
+                background:
+                  "linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
+              }}
             >
-              <Typography variant="h5" fontWeight={800} mb={3}>
+              <Typography
+                variant="h5"
+                fontWeight={800}
+                mb={4}
+                sx={{ color: "#818cf8" }}
+              >
                 ⚔️ Rivalry Matrix
               </Typography>
-              <Grid container spacing={3}>
+              <Grid
+                container
+                spacing={4}
+                sx={{ width: "100%" }}
+                justifyContent="center"
+              >
                 {rivalries.nemesis && (
                   <Grid item xs={12} md={6}>
-                    <Paper
+                    <Box
                       sx={{
-                        p: 4,
+                        p: 3.5,
                         borderRadius: 4,
-                        borderLeft: "6px solid #f44336",
+                        bgcolor: "rgba(239, 68, 68, 0.05)",
+                        border: "1px solid rgba(239, 68, 68, 0.15)",
+                        textAlign: "center",
+                        height: "100%",
                       }}
                     >
                       <Typography
                         variant="overline"
-                        color="error"
-                        fontWeight={800}
+                        sx={{
+                          color: "#ef4444",
+                          fontWeight: 900,
+                          letterSpacing: 1.5,
+                          display: "block",
+                          mb: 1,
+                        }}
                       >
                         STRUGGLES AGAINST
                       </Typography>
-                      <Typography variant="h4" fontWeight={900} mb={2}>
+                      <Typography
+                        variant="h4"
+                        fontWeight={900}
+                        mb={3}
+                        color="white"
+                      >
                         {rivalries.nemesis.opponent}
                       </Typography>
-                      <Grid container spacing={2}>
+                      <Grid container spacing={2} sx={{ mb: 3 }}>
                         <Grid item xs={4}>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                              fontWeight: 700,
+                              display: "block",
+                            }}
+                          >
                             Dismissals
                           </Typography>
-                          <Typography variant="h6" fontWeight={800}>
+                          <Typography
+                            variant="h5"
+                            fontWeight={900}
+                            color="#ef4444"
+                          >
                             {rivalries.nemesis.dismissals}
                           </Typography>
                         </Grid>
                         <Grid item xs={4}>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                              fontWeight: 700,
+                              display: "block",
+                            }}
+                          >
                             Average
                           </Typography>
-                          <Typography variant="h6" fontWeight={800}>
-                            {rivalries.nemesis.average}
+                          <Typography
+                            variant="h5"
+                            fontWeight={900}
+                            color="white"
+                          >
+                            {rivalries.nemesis.dismissals === 0 ||
+                            String(rivalries.nemesis.average).includes("∞") ||
+                            String(rivalries.nemesis.average).includes(
+                              "Infinity",
+                            )
+                              ? "—"
+                              : rivalries.nemesis.average}
                           </Typography>
                         </Grid>
                         <Grid item xs={4}>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                              fontWeight: 700,
+                              display: "block",
+                            }}
+                          >
                             Strike Rate
                           </Typography>
-                          <Typography variant="h6" fontWeight={800}>
+                          <Typography
+                            variant="h5"
+                            fontWeight={900}
+                            color="white"
+                          >
                             {rivalries.nemesis.sr.toFixed(1)}
                           </Typography>
                         </Grid>
                       </Grid>
                       <Typography
                         variant="body2"
-                        mt={2}
-                        sx={{ fontStyle: "italic", color: "text.secondary" }}
+                        sx={{
+                          fontStyle: "italic",
+                          color: "text.secondary",
+                          fontWeight: 700,
+                        }}
                       >
-                        Dismissed every {rivalries.nemesis.ballsPerDismissal}{" "}
-                        balls
+                        {rivalries.nemesis.dismissals === 0 ||
+                        String(rivalries.nemesis.ballsPerDismissal).includes(
+                          "∞",
+                        ) ||
+                        String(rivalries.nemesis.ballsPerDismissal).includes(
+                          "Infinity",
+                        ) ? (
+                          <span style={{ color: "#ef4444", fontWeight: 800 }}>
+                            Never Dismissed
+                          </span>
+                        ) : (
+                          <>
+                            Dismissed every{" "}
+                            <span style={{ color: "#ef4444", fontWeight: 800 }}>
+                              {rivalries.nemesis.ballsPerDismissal}
+                            </span>{" "}
+                            balls
+                          </>
+                        )}
                       </Typography>
-                    </Paper>
+                    </Box>
                   </Grid>
                 )}
                 {rivalries.favorite && (
                   <Grid item xs={12} md={6}>
-                    <Paper
+                    <Box
                       sx={{
-                        p: 4,
+                        p: 3.5,
                         borderRadius: 4,
-                        borderLeft: "6px solid #4CAF50",
+                        bgcolor: "rgba(16, 185, 129, 0.05)",
+                        border: "1px solid rgba(16, 185, 129, 0.15)",
+                        textAlign: "center",
+                        height: "100%",
                       }}
                     >
                       <Typography
                         variant="overline"
-                        sx={{ color: "#4CAF50", fontWeight: 800 }}
+                        sx={{
+                          color: "#10b981",
+                          fontWeight: 900,
+                          letterSpacing: 1.5,
+                          display: "block",
+                          mb: 1,
+                        }}
                       >
                         DOMINATES
                       </Typography>
-                      <Typography variant="h4" fontWeight={900} mb={2}>
+                      <Typography
+                        variant="h4"
+                        fontWeight={900}
+                        mb={3}
+                        color="white"
+                      >
                         {rivalries.favorite.opponent}
                       </Typography>
-                      <Grid container spacing={2}>
+                      <Grid container spacing={2} sx={{ mb: 3 }}>
                         <Grid item xs={4}>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                              fontWeight: 700,
+                              display: "block",
+                            }}
+                          >
                             Runs Scored
                           </Typography>
-                          <Typography variant="h6" fontWeight={800}>
+                          <Typography
+                            variant="h5"
+                            fontWeight={900}
+                            color="#10b981"
+                          >
                             {rivalries.favorite.runs}
                           </Typography>
                         </Grid>
                         <Grid item xs={4}>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                              fontWeight: 700,
+                              display: "block",
+                            }}
+                          >
                             Average
                           </Typography>
-                          <Typography variant="h6" fontWeight={800}>
-                            {rivalries.favorite.average}
+                          <Typography
+                            variant="h5"
+                            fontWeight={900}
+                            color="white"
+                          >
+                            {rivalries.favorite.average === "∞" ||
+                            String(rivalries.favorite.average).includes("∞") ||
+                            String(rivalries.favorite.average).includes(
+                              "Infinity",
+                            )
+                              ? "—"
+                              : rivalries.favorite.average}
                           </Typography>
                         </Grid>
                         <Grid item xs={4}>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                              fontWeight: 700,
+                              display: "block",
+                            }}
+                          >
                             Strike Rate
                           </Typography>
-                          <Typography variant="h6" fontWeight={800}>
+                          <Typography
+                            variant="h5"
+                            fontWeight={900}
+                            color="white"
+                          >
                             {rivalries.favorite.sr.toFixed(1)}
                           </Typography>
                         </Grid>
                       </Grid>
                       <Typography
                         variant="body2"
-                        mt={2}
-                        sx={{ fontStyle: "italic", color: "text.secondary" }}
+                        sx={{
+                          fontStyle: "italic",
+                          color: "text.secondary",
+                          fontWeight: 700,
+                        }}
                       >
-                        Dismissed every {rivalries.favorite.ballsPerDismissal}{" "}
-                        balls
+                        {String(rivalries.favorite.ballsPerDismissal).includes(
+                          "∞",
+                        ) ||
+                        String(rivalries.favorite.ballsPerDismissal).includes(
+                          "Infinity",
+                        ) ? (
+                          <span style={{ color: "#10b981", fontWeight: 800 }}>
+                            Never Dismissed
+                          </span>
+                        ) : (
+                          <>
+                            Dismissed every{" "}
+                            <span style={{ color: "#10b981", fontWeight: 800 }}>
+                              {rivalries.favorite.ballsPerDismissal}
+                            </span>{" "}
+                            balls
+                          </>
+                        )}
                       </Typography>
-                    </Paper>
+                    </Box>
                   </Grid>
                 )}
               </Grid>
-            </motion.div>
-          </Grid>
+            </GlassCard>
+          </Box>
         )}
-      </Grid>
 
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={6}>
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={itemVariants}
-            transition={{ duration: 0.5, delay: 0.7 }}
+        <Box
+          component={motion.div}
+          initial="hidden"
+          animate="visible"
+          variants={itemVariants}
+          transition={{ duration: 0.5, delay: 0.7 }}
+          sx={{ width: "100%", display: "flex", justifyContent: "center" }}
+        >
+          <GlassCard
+            sx={{
+              p: 4,
+              maxWidth: { xs: "100%", md: "85%", lg: "75%" },
+              width: "100%",
+              borderLeft: "4px solid #a855f7",
+              background:
+                "linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
+            }}
           >
-            <Paper sx={{ p: 4, borderRadius: 4, height: "100%" }}>
-              <Typography variant="h5" fontWeight={800} mb={3}>
-                🏆 Records Held
-              </Typography>
-              {recordsHeld.length > 0 ? (
-                <Box display="flex" flexDirection="column" gap={2}>
-                  {recordsHeld.map((rec, i) => (
-                    <Box
-                      key={i}
-                      display="flex"
-                      alignItems="center"
-                      gap={2}
-                      p={2}
-                      sx={{
-                        bgcolor: "background.paper",
-                        borderRadius: 2,
-                        boxShadow: 2,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: "50%",
-                          bgcolor: "primary.dark",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "white",
-                        }}
-                      >
-                        🏅
-                      </Box>
-                      <Typography
-                        variant="h6"
-                        fontWeight={700}
-                        color="text.primary"
-                      >
-                        {rec}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-              ) : (
-                <Typography variant="body1" color="text.secondary">
-                  No all-time IPL records held currently.
-                </Typography>
-              )}
-            </Paper>
-          </motion.div>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={itemVariants}
-            transition={{ duration: 0.5, delay: 0.8 }}
-          >
-            <Paper sx={{ p: 4, borderRadius: 4, height: "100%" }}>
-              <Typography variant="h5" fontWeight={800} mb={3}>
-                ⏳ Career Eras
-              </Typography>
-              <Box
-                sx={{
-                  position: "relative",
-                  pl: 3,
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    left: 8,
-                    top: 10,
-                    bottom: 10,
-                    width: 2,
-                    bgcolor: "divider",
-                  },
-                }}
-              >
-                {trajectory.eras?.map((era, idx) => (
+            <Typography
+              variant="h5"
+              fontWeight={800}
+              mb={3}
+              sx={{ color: "#c084fc" }}
+            >
+              ⏳ Career Eras
+            </Typography>
+            <Box
+              sx={{
+                position: "relative",
+                display: "flex",
+                justifyContent: "center",
+                gap: { xs: 4, sm: 8, md: 16 },
+                alignItems: "center",
+                width: "100%",
+                px: { xs: 2, md: 8 },
+                mt: 4,
+                mb: 2,
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  height: 2,
+                  bgcolor: "rgba(255,255,255,0.1)",
+                  zIndex: 0,
+                },
+              }}
+            >
+              {trajectory.eras?.map((era, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    position: "relative",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    zIndex: 1,
+                    bgcolor: "rgba(17, 24, 39, 0.95)",
+                    px: 2,
+                  }}
+                >
                   <Box
-                    key={idx}
                     sx={{
-                      position: "relative",
-                      mb: 3,
-                      "&:last-child": { mb: 0 },
+                      width: 16,
+                      height: 16,
+                      borderRadius: "50%",
+                      bgcolor: era.name === "Prime" ? "#c084fc" : "#475569",
+                      border: "3px solid #0f172a",
+                      mb: 1,
+                      boxShadow:
+                        era.name === "Prime" ? "0 0 12px #c084fc" : "none",
+                      transition: "all 0.3s ease",
                     }}
+                  />
+                  <Typography
+                    variant="subtitle1"
+                    fontWeight={900}
+                    color={era.name === "Prime" ? "#c084fc" : "white"}
+                    sx={{ fontSize: { xs: "0.85rem", sm: "1.05rem" } }}
                   >
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        left: -29,
-                        top: 4,
-                        width: 10,
-                        height: 10,
-                        borderRadius: "50%",
-                        bgcolor:
-                          era.name === "Prime" ? "primary.main" : "grey.400",
-                        border: "2px solid white",
-                        boxShadow:
-                          era.name === "Prime" ? "0 0 0 2px #4A00E0" : "none",
-                      }}
-                    />
-                    <Typography
-                      variant="h6"
-                      fontWeight={800}
-                      color={
-                        era.name === "Prime" ? "primary.main" : "text.primary"
-                      }
-                    >
-                      {era.name}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      fontWeight={600}
-                      color="text.secondary"
-                    >
-                      {era.start} – {era.end}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Paper>
-          </motion.div>
-        </Grid>
-      </Grid>
+                    {era.name}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    fontWeight={800}
+                    color="text.secondary"
+                  >
+                    {era.start} – {era.end}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </GlassCard>
+        </Box>
+      </Box>
     </Container>
   );
 }

@@ -179,7 +179,11 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
                       disableInteractive
                     >
                       <ListItemButton
-                        onClick={() => navigate(item.path)}
+                        onClick={() => {
+                          navigate(item.path);
+                          if (mobileOpen && handleDrawerToggle)
+                            handleDrawerToggle();
+                        }}
                         selected={isActive}
                         sx={{
                           borderRadius: 2,
@@ -250,7 +254,10 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
                 disableInteractive
               >
                 <ListItemButton
-                  onClick={() => navigate(`/franchises/${team.key}`)}
+                  onClick={() => {
+                    navigate(`/franchises/${team.key}`);
+                    if (mobileOpen && handleDrawerToggle) handleDrawerToggle();
+                  }}
                   sx={{
                     borderRadius: 2,
                     justifyContent: collapsed ? "center" : "flex-start",

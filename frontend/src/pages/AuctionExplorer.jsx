@@ -15,11 +15,16 @@ import {
   Snackbar,
   Alert,
   LinearProgress,
+  Collapse,
+  Divider,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import SwordsIcon from "@mui/icons-material/Hardware";
+import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import TuneIcon from "@mui/icons-material/Tune";
 import SearchIcon from "@mui/icons-material/Search";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import * as XLSX from "xlsx";
@@ -61,6 +66,7 @@ const getFilterFranchiseName = (key, defaultName) => {
 
 function AuctionExplorer() {
   const navigate = useNavigate();
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [params, setParams] = useState({
     page: 1,
     limit: 25,
@@ -307,15 +313,15 @@ function AuctionExplorer() {
     >
       <PageHeader
         title="Auction Explorer"
-        subtitle={`Dive into comprehensive historical IPL auction data.${yearsCount > 0 ? ` Exploring pricing, trends across (${minYear} - ${maxYear})` : ""}`}
+        subtitle={`Dive into comprehensive historical IPL auction data${yearsCount > 0 ? ` across (${minYear} - ${maxYear})` : ""}`}
       />
 
       <Paper
         elevation={0}
         sx={{
-          p: 3,
           mb: 4,
           borderRadius: 3,
+          overflow: "hidden",
           border: "1px solid",
           borderColor: "divider",
           background:
@@ -324,303 +330,350 @@ function AuctionExplorer() {
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.05)",
         }}
       >
-        <Box sx={{ display: { xs: "block", md: "none" } }}>
-          <Box
-            sx={{
-              mb: 1.5,
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <Chip
-              label="Multiple Appearances (>1)"
-              onClick={() => {
-                setParams({
-                  ...params,
-                  quickFilter:
-                    params.quickFilter === "multiple_appearances"
-                      ? ""
-                      : "multiple_appearances",
-                  page: 1,
-                });
-              }}
-              color={
-                params.quickFilter === "multiple_appearances"
-                  ? "primary"
-                  : "default"
-              }
-              variant={
-                params.quickFilter === "multiple_appearances"
-                  ? "filled"
-                  : "outlined"
-              }
-              sx={{ fontWeight: 600, borderRadius: 2 }}
-            />
-          </Box>
-
-          <Box
-            sx={{
-              mb: 1.5,
-              display: "flex",
-              justifyContent: "center",
-              gap: 1.5,
-            }}
-          >
-            {[
-              { key: "counts>2", label: "Auctions > 2" },
-              { key: "counts>3", label: "Auctions > 3" },
-            ].map((qf) => (
-              <Chip
-                key={qf.key}
-                label={qf.label}
-                onClick={() => {
-                  setParams({
-                    ...params,
-                    quickFilter: params.quickFilter === qf.key ? "" : qf.key,
-                    page: 1,
-                  });
-                }}
-                color={params.quickFilter === qf.key ? "primary" : "default"}
-                variant={params.quickFilter === qf.key ? "filled" : "outlined"}
-                sx={{ fontWeight: 600, borderRadius: 2 }}
-              />
-            ))}
-          </Box>
-
-          <Box
-            sx={{
-              mb: 3,
-              display: "flex",
-              justifyContent: "center",
-              gap: 1.5,
-            }}
-          >
-            {[
-              { key: "high_rollers", label: "High Rollers (> ₹10Cr)" },
-              { key: "mega_buys", label: "Mega Buys (> ₹15Cr)" },
-            ].map((qf) => (
-              <Chip
-                key={qf.key}
-                label={qf.label}
-                onClick={() => {
-                  setParams({
-                    ...params,
-                    quickFilter: params.quickFilter === qf.key ? "" : qf.key,
-                    page: 1,
-                  });
-                }}
-                color={params.quickFilter === qf.key ? "primary" : "default"}
-                variant={params.quickFilter === qf.key ? "filled" : "outlined"}
-                sx={{ fontWeight: 600, borderRadius: 2 }}
-              />
-            ))}
-          </Box>
-        </Box>
-
+        {/* Clickable Header Bar */}
         <Box
-          sx={{
-            display: { xs: "none", md: "flex" },
-            justifyContent: "center",
-            gap: 1.5,
-            mb: 3,
-            flexWrap: "wrap",
-          }}
-        >
-          {[
-            { key: "multiple_appearances", label: "Multiple Appearances (>1)" },
-            { key: "counts>2", label: "Auctions > 2" },
-            { key: "counts>3", label: "Auctions > 3" },
-            { key: "high_rollers", label: "High Rollers (> ₹10Cr)" },
-            { key: "mega_buys", label: "Mega Buys (> ₹15Cr)" },
-          ].map((qf) => (
-            <Chip
-              key={qf.key}
-              label={qf.label}
-              onClick={() => {
-                setParams({
-                  ...params,
-                  quickFilter: params.quickFilter === qf.key ? "" : qf.key,
-                  page: 1,
-                });
-              }}
-              color={params.quickFilter === qf.key ? "primary" : "default"}
-              variant={params.quickFilter === qf.key ? "filled" : "outlined"}
-              sx={{ fontWeight: 600, borderRadius: 2 }}
-            />
-          ))}
-        </Box>
-
-        <Box
+          onClick={() => setFiltersOpen(!filtersOpen)}
           sx={{
             display: "flex",
-            flexWrap: "wrap",
-            gap: 2,
             alignItems: "center",
+            justifyContent: { xs: "center", sm: "flex-start" },
+            cursor: "pointer",
+            p: 1.5,
+            userSelect: "none",
+            bgcolor: "rgba(255, 255, 255, 0.035)",
+            borderBottom: filtersOpen ? "1px solid rgba(255, 255, 255, 0.06)" : "none",
+            transition: "all 0.2s ease-in-out",
+            "&:hover": {
+              bgcolor: "rgba(255, 255, 255, 0.06)",
+            }
           }}
         >
-          <Box sx={{ flex: "2 1 200px" }}>
-            <Autocomplete
-              freeSolo
-              options={searchOptions}
-              inputValue={searchInput}
-              filterOptions={(x) => x}
-              onInputChange={(event, newInputValue) => {
-                setSearchInput(newInputValue || "");
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Search by player name..."
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon color="primary" />
-                      </InputAdornment>
-                    ),
-                    sx: { borderRadius: 2, bgcolor: "background.paper" },
-                  }}
-                />
-              )}
-            />
-          </Box>
-          <Box sx={{ flex: "1 1 120px" }}>
-            <TextField
-              select
-              fullWidth
-              label="Season"
-              value={params.season}
-              onChange={handleFilterChange("season")}
-              sx={{ "& .MuiSelect-select": { textAlign: "center" } }}
-              InputProps={{
-                sx: { borderRadius: 2, bgcolor: "background.paper" },
-              }}
-            >
-              <MenuItem value="" sx={{ justifyContent: "center" }}>
-                All Seasons
-              </MenuItem>
-              {Array.isArray(seasons) &&
-                seasons.map((s) => (
-                  <MenuItem key={s} value={s} sx={{ justifyContent: "center" }}>
-                    {s}
-                  </MenuItem>
-                ))}
-            </TextField>
-          </Box>
-          <Box sx={{ flex: "1 1 120px" }}>
-            <TextField
-              select
-              fullWidth
-              label="Franchise"
-              value={params.team}
-              onChange={handleFilterChange("team")}
-              sx={{ "& .MuiSelect-select": { textAlign: "center" } }}
-              InputProps={{
-                sx: { borderRadius: 2, bgcolor: "background.paper" },
-              }}
-            >
-              <MenuItem value="" sx={{ justifyContent: "center" }}>
-                All Teams
-              </MenuItem>
-              {FRANCHISES.map((t) => (
-                <MenuItem
-                  key={t.key}
-                  value={t.key}
-                  sx={{ justifyContent: "center" }}
-                >
-                  {getFilterFranchiseName(t.key, t.name)}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-          <Box sx={{ flex: "1 1 120px" }}>
-            <TextField
-              select
-              fullWidth
-              label="Role"
-              value={params.role}
-              onChange={handleFilterChange("role")}
-              sx={{ "& .MuiSelect-select": { textAlign: "center" } }}
-              InputProps={{
-                sx: { borderRadius: 2, bgcolor: "background.paper" },
-              }}
-            >
-              <MenuItem value="" sx={{ justifyContent: "center" }}>
-                All Roles
-              </MenuItem>
-              {Object.values(PLAYER_ROLES).map((r) => (
-                <MenuItem key={r} value={r} sx={{ justifyContent: "center" }}>
-                  {r}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-          <Box sx={{ flex: "1 1 120px" }}>
-            <TextField
-              select
-              fullWidth
-              label="Nationality"
-              value={params.nationality}
-              onChange={handleFilterChange("nationality")}
-              sx={{ "& .MuiSelect-select": { textAlign: "center" } }}
-              InputProps={{
-                sx: { borderRadius: 2, bgcolor: "background.paper" },
-              }}
-            >
-              <MenuItem value="" sx={{ justifyContent: "center" }}>
-                All Origins
-              </MenuItem>
-              {Object.values(NATIONALITY).map((n) => (
-                <MenuItem key={n} value={n} sx={{ justifyContent: "center" }}>
-                  {n}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-          <Box
-            sx={{
-              flex: { xs: "1 1 100%", md: "0 0 auto" },
-              display: "flex",
-              alignItems: "center",
-              justifyContent: { xs: "center", md: "flex-end" },
-              gap: 1,
-              mt: { xs: 1, md: 0 },
-            }}
-          >
-            {hasActiveFilters && (
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={handleClearFilters}
-                startIcon={<FilterAltOffIcon />}
-                sx={{
-                  height: 56,
-                  borderRadius: 2,
-                  px: 3,
-                  flex: { xs: 1, md: "initial" },
-                }}
-              >
-                Clear
-              </Button>
-            )}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleExport}
-              startIcon={<FileDownloadIcon />}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Chip
+              icon={<TuneIcon sx={{ fontSize: "1.1rem !important", color: hasActiveFilters ? "primary.contrastText" : "inherit" }} />}
+              label="Search & Filters"
+              color={hasActiveFilters ? "primary" : "default"}
+              variant={hasActiveFilters ? "filled" : "outlined"}
               sx={{
-                height: 56,
-                borderRadius: 2,
-                px: 3,
-                flex: { xs: 1, md: "initial" },
+                fontWeight: 700,
+                borderRadius: "8px",
+                px: 0.5,
+                cursor: "pointer",
               }}
-            >
-              Export
-            </Button>
+            />
+            {hasActiveFilters && (
+              <Chip
+                label={`${[params.season, params.team, params.role, params.nationality, params.minPrice, params.maxPrice, params.quickFilter].filter(Boolean).length + (searchInput ? 1 : 0)} Active`}
+                size="small"
+                color="secondary"
+                sx={{ fontWeight: 700, borderRadius: "6px", height: 22, fontSize: "0.75rem" }}
+              />
+            )}
           </Box>
         </Box>
+
+        <Collapse in={filtersOpen}>
+          <Divider sx={{ opacity: 0.4 }} />
+          <Box sx={{ p: 2, pt: 1.5 }}>
+            <Box sx={{ display: { xs: "block", md: "none" } }}>
+              <Box
+                sx={{
+                  mb: 1.5,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <Chip
+                  label="Multiple Appearances (>1)"
+                  onClick={() => {
+                    setParams({
+                      ...params,
+                      quickFilter:
+                        params.quickFilter === "multiple_appearances"
+                          ? ""
+                          : "multiple_appearances",
+                      page: 1,
+                    });
+                  }}
+                  color={
+                    params.quickFilter === "multiple_appearances"
+                      ? "primary"
+                      : "default"
+                  }
+                  variant={
+                    params.quickFilter === "multiple_appearances"
+                      ? "filled"
+                      : "outlined"
+                  }
+                  sx={{ fontWeight: 600, borderRadius: 2 }}
+                />
+              </Box>
+
+              <Box
+                sx={{
+                  mb: 1.5,
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 1.5,
+                }}
+              >
+                {[
+                  { key: "counts>2", label: "Auctions > 2" },
+                  { key: "counts>3", label: "Auctions > 3" },
+                ].map((qf) => (
+                  <Chip
+                    key={qf.key}
+                    label={qf.label}
+                    onClick={() => {
+                      setParams({
+                        ...params,
+                        quickFilter: params.quickFilter === qf.key ? "" : qf.key,
+                        page: 1,
+                      });
+                    }}
+                    color={params.quickFilter === qf.key ? "primary" : "default"}
+                    variant={params.quickFilter === qf.key ? "filled" : "outlined"}
+                    sx={{ fontWeight: 600, borderRadius: 2 }}
+                  />
+                ))}
+              </Box>
+
+              <Box
+                sx={{
+                  mb: 3,
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 1.5,
+                }}
+              >
+                {[
+                  { key: "high_rollers", label: "High Rollers (> ₹10Cr)" },
+                  { key: "mega_buys", label: "Mega Buys (> ₹15Cr)" },
+                ].map((qf) => (
+                  <Chip
+                    key={qf.key}
+                    label={qf.label}
+                    onClick={() => {
+                      setParams({
+                        ...params,
+                        quickFilter: params.quickFilter === qf.key ? "" : qf.key,
+                        page: 1,
+                      });
+                    }}
+                    color={params.quickFilter === qf.key ? "primary" : "default"}
+                    variant={params.quickFilter === qf.key ? "filled" : "outlined"}
+                    sx={{ fontWeight: 600, borderRadius: 2 }}
+                  />
+                ))}
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                justifyContent: "center",
+                gap: 1.5,
+                mb: 3,
+                flexWrap: "wrap",
+              }}
+            >
+              {[
+                { key: "multiple_appearances", label: "Multiple Appearances (>1)" },
+                { key: "counts>2", label: "Auctions > 2" },
+                { key: "counts>3", label: "Auctions > 3" },
+                { key: "high_rollers", label: "High Rollers (> ₹10Cr)" },
+                { key: "mega_buys", label: "Mega Buys (> ₹15Cr)" },
+              ].map((qf) => (
+                <Chip
+                  key={qf.key}
+                  label={qf.label}
+                  onClick={() => {
+                    setParams({
+                      ...params,
+                      quickFilter: params.quickFilter === qf.key ? "" : qf.key,
+                      page: 1,
+                    });
+                  }}
+                  color={params.quickFilter === qf.key ? "primary" : "default"}
+                  variant={params.quickFilter === qf.key ? "filled" : "outlined"}
+                  sx={{ fontWeight: 600, borderRadius: 2 }}
+                />
+              ))}
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 2,
+                alignItems: "center",
+              }}
+            >
+              <Box sx={{ flex: "2 1 200px" }}>
+                <Autocomplete
+                  freeSolo
+                  options={searchOptions}
+                  inputValue={searchInput}
+                  filterOptions={(x) => x}
+                  onInputChange={(event, newInputValue) => {
+                    setSearchInput(newInputValue || "");
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      variant="outlined"
+                      placeholder="Search by player name..."
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon color="primary" />
+                          </InputAdornment>
+                        ),
+                        sx: { borderRadius: 2, bgcolor: "background.paper" },
+                      }}
+                    />
+                  )}
+                />
+              </Box>
+              <Box sx={{ flex: "1 1 120px" }}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Season"
+                  value={params.season}
+                  onChange={handleFilterChange("season")}
+                  sx={{ "& .MuiSelect-select": { textAlign: "center" } }}
+                  InputProps={{
+                    sx: { borderRadius: 2, bgcolor: "background.paper" },
+                  }}
+                >
+                  <MenuItem value="" sx={{ justifyContent: "center" }}>
+                    All Seasons
+                  </MenuItem>
+                  {Array.isArray(seasons) &&
+                    seasons.map((s) => (
+                      <MenuItem key={s} value={s} sx={{ justifyContent: "center" }}>
+                        {s}
+                      </MenuItem>
+                    ))}
+                </TextField>
+              </Box>
+              <Box sx={{ flex: "1 1 120px" }}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Franchise"
+                  value={params.team}
+                  onChange={handleFilterChange("team")}
+                  sx={{ "& .MuiSelect-select": { textAlign: "center" } }}
+                  InputProps={{
+                    sx: { borderRadius: 2, bgcolor: "background.paper" },
+                  }}
+                >
+                  <MenuItem value="" sx={{ justifyContent: "center" }}>
+                    All Teams
+                  </MenuItem>
+                  {FRANCHISES.map((t) => (
+                    <MenuItem
+                      key={t.key}
+                      value={t.key}
+                      sx={{ justifyContent: "center" }}
+                    >
+                      {getFilterFranchiseName(t.key, t.name)}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Box>
+              <Box sx={{ flex: "1 1 120px" }}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Role"
+                  value={params.role}
+                  onChange={handleFilterChange("role")}
+                  sx={{ "& .MuiSelect-select": { textAlign: "center" } }}
+                  InputProps={{
+                    sx: { borderRadius: 2, bgcolor: "background.paper" },
+                  }}
+                >
+                  <MenuItem value="" sx={{ justifyContent: "center" }}>
+                    All Roles
+                  </MenuItem>
+                  {Object.values(PLAYER_ROLES).map((r) => (
+                    <MenuItem key={r} value={r} sx={{ justifyContent: "center" }}>
+                      {r}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Box>
+              <Box sx={{ flex: "1 1 120px" }}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Nationality"
+                  value={params.nationality}
+                  onChange={handleFilterChange("nationality")}
+                  sx={{ "& .MuiSelect-select": { textAlign: "center" } }}
+                  InputProps={{
+                    sx: { borderRadius: 2, bgcolor: "background.paper" },
+                  }}
+                >
+                  <MenuItem value="" sx={{ justifyContent: "center" }}>
+                    All Origins
+                  </MenuItem>
+                  {Object.values(NATIONALITY).map((n) => (
+                    <MenuItem key={n} value={n} sx={{ justifyContent: "center" }}>
+                      {n}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Box>
+            </Box>
+
+            {/* Centered Actions Row */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 2,
+                mt: 2,
+                width: "100%",
+              }}
+            >
+              {hasActiveFilters && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={handleClearFilters}
+                  startIcon={<FilterAltOffIcon />}
+                  sx={{
+                    height: 48,
+                    borderRadius: 2,
+                    px: 4,
+                  }}
+                >
+                  Clear
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleExport}
+                startIcon={<FileDownloadIcon />}
+                sx={{
+                  height: 48,
+                  borderRadius: 2,
+                  px: 4,
+                }}
+              >
+                Export
+              </Button>
+            </Box>
+          </Box>
+        </Collapse>
       </Paper>
 
       <Paper

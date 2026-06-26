@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 
 const PageHeader = ({ title, subtitle }) => {
   return (
-    <Box sx={{ textAlign: "center", mb: 5, mt: 2 }}>
+    <Box sx={{ textAlign: "center", mb: { xs: 1, sm: 3, md: 5 }, mt: 2 }}>
       <Typography
         variant="h3"
         fontWeight={900}

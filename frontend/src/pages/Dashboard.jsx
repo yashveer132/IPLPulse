@@ -13,6 +13,7 @@ import {
   Chip,
   Fade,
   Slide,
+  IconButton,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import SearchAutocomplete from "../components/common/SearchAutocomplete.jsx";
@@ -27,6 +28,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
 import SwordsIcon from "@mui/icons-material/Hardware";
 import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const darkTheme = createTheme({
   palette: {
@@ -279,8 +282,21 @@ const AutoScrollCarousel = ({ children, speed = 0.5 }) => {
   const [isDragging, setIsDragging] = React.useState(false);
   const [startX, setStartX] = React.useState(0);
   const [scrollLeft, setScrollLeft] = React.useState(0);
+  const [isMobile, setIsMobile] = React.useState(false);
+  const [showLeftArrow, setShowLeftArrow] = React.useState(false);
+  const [showRightArrow, setShowRightArrow] = React.useState(true);
 
   React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 600);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  React.useEffect(() => {
+    if (isMobile) return;
     let animationFrameId;
     const scroll = () => {
       if (scrollRef.current && !isHovered && !isDragging) {
@@ -295,46 +311,143 @@ const AutoScrollCarousel = ({ children, speed = 0.5 }) => {
     };
     animationFrameId = requestAnimationFrame(scroll);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isHovered, isDragging, speed]);
+  }, [isHovered, isDragging, speed, isMobile]);
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftArrow(scrollLeft > 10);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
 
   const handleMouseDown = (e) => {
+    if (isMobile) return;
     setIsDragging(true);
     setStartX(e.pageX - scrollRef.current.offsetLeft);
     setScrollLeft(scrollRef.current.scrollLeft);
   };
   const handleMouseLeave = () => {
+    if (isMobile) return;
     setIsDragging(false);
     setIsHovered(false);
   };
-  const handleMouseUp = () => setIsDragging(false);
+  const handleMouseUp = () => {
+    if (isMobile) return;
+    setIsDragging(false);
+  };
   const handleMouseMove = (e) => {
-    if (!isDragging) return;
+    if (!isDragging || isMobile) return;
     e.preventDefault();
     const x = e.pageX - scrollRef.current.offsetLeft;
     const walk = (x - startX) * 1.5;
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
 
+  const handleArrowClick = (direction) => {
+    if (scrollRef.current) {
+      const cardWidth = isMobile ? 260 : 300;
+      const scrollAmount = cardWidth + 24;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
-    <Box
-      ref={scrollRef}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
-      sx={{
-        display: "flex",
-        gap: 3,
-        overflowX: "auto",
-        cursor: isDragging ? "grabbing" : "grab",
-        "&::-webkit-scrollbar": { display: "none" },
-        scrollbarWidth: "none",
-        userSelect: "none",
-        py: 2,
-      }}
-    >
-      {children}
+    <Box sx={{ position: "relative", width: "100%", px: { xs: 1, sm: 0 } }}>
+      {isMobile && showLeftArrow && (
+        <IconButton
+          onClick={() => handleArrowClick("left")}
+          sx={{
+            position: "absolute",
+            left: { xs: 0, sm: -20 },
+            top: "50%",
+            transform: "translateY(-50%)",
+            zIndex: 10,
+            bgcolor: "rgba(255, 23, 68, 0.85)",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(255, 255, 255, 0.15)",
+            color: "#ffffff",
+            width: { xs: 36, sm: 40 },
+            height: { xs: 36, sm: 40 },
+            transition: "all 0.2s ease-in-out",
+            "&:hover": {
+              bgcolor: "#ff1744",
+              borderColor: "#ffffff",
+              color: "#ffffff",
+              transform: "translateY(-50%) scale(1.1)",
+            },
+          }}
+        >
+          <ChevronLeftIcon />
+        </IconButton>
+      )}
+
+      <Box
+        ref={scrollRef}
+        onScroll={handleScroll}
+        onMouseEnter={() => !isMobile && setIsHovered(true)}
+        onMouseLeave={handleMouseLeave}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        sx={{
+          display: "flex",
+          gap: 3,
+          overflowX: "auto",
+          cursor: isMobile ? "default" : isDragging ? "grabbing" : "grab",
+          "&::-webkit-scrollbar": { display: "none" },
+          scrollbarWidth: "none",
+          userSelect: "none",
+          py: 2,
+          px: { xs: 1, sm: 0 },
+          scrollSnapType: { xs: "x mandatory", sm: "none" },
+          scrollBehavior: "smooth",
+        }}
+      >
+        {React.Children.map(children, (child) => {
+          if (React.isValidElement(child)) {
+            return React.cloneElement(child, {
+              sx: {
+                ...child.props.sx,
+                scrollSnapAlign: { xs: "center", sm: "none" },
+                scrollSnapStop: { xs: "always", sm: "normal" },
+              },
+            });
+          }
+          return child;
+        })}
+      </Box>
+
+      {isMobile && showRightArrow && (
+        <IconButton
+          onClick={() => handleArrowClick("right")}
+          sx={{
+            position: "absolute",
+            right: { xs: 0, sm: -20 },
+            top: "50%",
+            transform: "translateY(-50%)",
+            zIndex: 10,
+            bgcolor: "rgba(255, 23, 68, 0.85)",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(255, 255, 255, 0.15)",
+            color: "#ffffff",
+            width: { xs: 36, sm: 40 },
+            height: { xs: 36, sm: 40 },
+            transition: "all 0.2s ease-in-out",
+            "&:hover": {
+              bgcolor: "#ff1744",
+              borderColor: "#ffffff",
+              color: "#ffffff",
+              transform: "translateY(-50%) scale(1.1)",
+            },
+          }}
+        >
+          <ChevronRightIcon />
+        </IconButton>
+      )}
     </Box>
   );
 };
@@ -401,8 +514,8 @@ function Dashboard() {
       >
         <Box
           sx={{
-            pt: { xs: 4, md: 8 },
-            pb: 6,
+            pt: { xs: 3, md: 5 },
+            pb: { xs: 3, md: 5 },
             px: 2,
             textAlign: "center",
             position: "relative",
@@ -419,8 +532,8 @@ function Dashboard() {
             <Typography
               variant="h1"
               sx={{
-                mb: 1,
-                fontSize: { xs: "2.5rem", sm: "3.5rem", md: "5rem" },
+                mb: 0.5,
+                fontSize: { xs: "2.2rem", sm: "3.2rem", md: "4.5rem" },
                 color: "#fff",
                 textShadow: "0 4px 20px rgba(0,0,0,0.5)",
               }}
@@ -430,46 +543,20 @@ function Dashboard() {
             <Typography
               variant="h6"
               sx={{
-                mb: 4,
+                mb: 0,
                 fontWeight: 400,
                 color: "rgba(255,255,255,0.85)",
                 textShadow: "0 2px 10px rgba(0,0,0,0.5)",
+                fontSize: { xs: "0.95rem", sm: "1.1rem", md: "1.25rem" },
               }}
             >
               Your Ultimate IPL Guide
             </Typography>
-
-            <Box sx={{ display: "flex", justifyContent: "center" }}>
-              <SearchAutocomplete
-                size="large"
-                placeholder="Search players, franchises, venues..."
-                sx={{
-                  width: "100%",
-                  maxWidth: 600,
-                  "& .MuiOutlinedInput-root": {
-                    bgcolor: "rgba(0,0,0,0.4)",
-                    backdropFilter: "blur(16px)",
-                    borderRadius: "50px",
-                    fontSize: { xs: "1rem", sm: "1.2rem" },
-                    py: { xs: 0.5, sm: 1 },
-                    px: { xs: 2, sm: 3 },
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    transition: "all 0.3s ease",
-                    "&:hover, &.Mui-focused": {
-                      bgcolor: "rgba(0,0,0,0.6)",
-                      borderColor: "primary.main",
-                      boxShadow: "0 0 20px rgba(0, 229, 255, 0.3)",
-                    },
-                  },
-                  inputStyle: { bgcolor: "transparent" },
-                }}
-              />
-            </Box>
           </Box>
         </Box>
 
-        <Box sx={{ maxWidth: 1200, mx: "auto", px: 3, mt: 4 }}>
-          <Box sx={{ mb: 8, overflow: "hidden" }}>
+        <Box sx={{ maxWidth: 1200, mx: "auto", px: 3, mt: 2.5 }}>
+          <Box sx={{ mb: 4.5, overflow: "hidden" }}>
             <Typography
               variant="h6"
               sx={{
@@ -480,8 +567,9 @@ function Dashboard() {
                 gap: 1,
                 color: "text.secondary",
                 textTransform: "uppercase",
-                letterSpacing: 2,
-                fontSize: "0.85rem",
+                letterSpacing: { xs: 1.2, sm: 2 },
+                fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                whiteSpace: "nowrap",
               }}
             >
               <TipsAndUpdatesIcon fontSize="small" color="primary" /> Discovery
@@ -503,14 +591,14 @@ function Dashboard() {
                       },
                     }}
                   >
-                    <CardContent>
-                      <Typography variant="h5" sx={{ mb: 1 }}>
+                    <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+                      <Typography variant="h5" sx={{ mb: 1, textAlign: "center" }}>
                         {insight?.icon}
                       </Typography>
                       <Typography
                         variant="body2"
                         color="text.secondary"
-                        sx={{ lineHeight: 1.6 }}
+                        sx={{ lineHeight: 1.6, textAlign: "center" }}
                       >
                         {insight?.text}
                       </Typography>
@@ -521,7 +609,7 @@ function Dashboard() {
             </AutoScrollCarousel>
           </Box>
 
-          <Box sx={{ mb: 8 }}>
+          <Box sx={{ mb: 4.5 }}>
             <Typography
               variant="h6"
               sx={{
@@ -532,8 +620,9 @@ function Dashboard() {
                 gap: 1,
                 color: "text.secondary",
                 textTransform: "uppercase",
-                letterSpacing: 2,
-                fontSize: "0.85rem",
+                letterSpacing: { xs: 1.2, sm: 2 },
+                fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                whiteSpace: "nowrap",
               }}
             >
               <TrendingUpIcon fontSize="small" color="secondary" /> Trending
@@ -596,7 +685,7 @@ function Dashboard() {
             </AutoScrollCarousel>
           </Box>
 
-          <Box sx={{ mb: 8 }}>
+          <Box sx={{ mb: 4.5 }}>
             <Typography
               variant="h6"
               sx={{
@@ -607,8 +696,9 @@ function Dashboard() {
                 gap: 1,
                 color: "text.secondary",
                 textTransform: "uppercase",
-                letterSpacing: 2,
-                fontSize: "0.85rem",
+                letterSpacing: { xs: 1.2, sm: 2 },
+                fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                whiteSpace: "nowrap",
               }}
             >
               <ScienceIcon fontSize="small" sx={{ color: "#b388ff" }} /> Explore
@@ -679,138 +769,80 @@ function Dashboard() {
             </Box>
           </Box>
 
-          <Grid
-            container
-            spacing={4}
-            alignItems="stretch"
-            sx={{ flexWrap: { xs: "wrap", sm: "nowrap" } }}
+          <Box
+            sx={{ display: "flex", justifyContent: "center", width: "100%" }}
           >
-            <Grid item xs={12} sm={6} sx={{ width: "100%" }}>
-              <Card
-                sx={{
-                  bgcolor: "rgba(0, 229, 255, 0.03)",
-                  borderColor: "rgba(0, 229, 255, 0.2)",
-                  height: "100%",
-                  minHeight: 200,
-                  display: "flex",
-                  alignItems: "center",
-                  p: 2,
-                }}
+            <Card
+              sx={{
+                bgcolor: "rgba(0, 229, 255, 0.03)",
+                borderColor: "rgba(0, 229, 255, 0.2)",
+                width: "100%",
+                maxWidth: { xs: "100%", md: 650, lg: 750 },
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                p: { xs: 3, sm: 4 },
+                textAlign: "center",
+              }}
+            >
+              <CardContent
+                sx={{ width: "100%", p: 0, "&:last-child": { pb: 0 } }}
               >
-                <CardContent sx={{ width: "100%" }}>
-                  <Box
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 2,
+                    mb: 3,
+                  }}
+                >
+                  <Avatar
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 2,
-                      mb: 2,
+                      bgcolor: "primary.main",
+                      color: "#000",
+                      width: 40,
+                      height: 40,
                     }}
                   >
-                    <Avatar sx={{ bgcolor: "primary.main", color: "#000" }}>
-                      <EmojiObjectsIcon />
-                    </Avatar>
-                    <Typography variant="h6" color="primary.main">
-                      Did You Know?
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      minHeight: 80,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      textAlign: "center",
-                      px: 2,
-                    }}
-                  >
-                    <Fade in={true} key={factIndex} timeout={800}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          fontSize: "1.1rem",
-                          fontStyle: "italic",
-                          opacity: 0.9,
-                        }}
-                      >
-                        "{FACTS[factIndex]}"
-                      </Typography>
-                    </Fade>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} sx={{ width: "100%" }}>
-              <Card sx={{ height: "100%", width: "100%" }}>
-                <CardContent>
+                    <EmojiObjectsIcon />
+                  </Avatar>
                   <Typography
                     variant="h6"
-                    sx={{
-                      mb: 3,
-                      borderBottom: "1px solid rgba(255,255,255,0.1)",
-                      pb: 1,
-                      textAlign: "center",
-                    }}
+                    color="primary.main"
+                    sx={{ fontWeight: 700 }}
                   >
-                    Records Broken Last Year
+                    Did You Know?
                   </Typography>
-                  <Grid container spacing={2} sx={{ textAlign: "center" }}>
-                    <Grid item xs={12} sm={4}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ textTransform: "uppercase", letterSpacing: 1 }}
-                      >
-                        Record Auction Bid
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        fontWeight={800}
-                        color="success.main"
-                        sx={{ mt: 0.5 }}
-                      >
-                        ₹30.5 Cr
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ textTransform: "uppercase", letterSpacing: 1 }}
-                      >
-                        Highest Team Total
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        fontWeight={800}
-                        color="secondary.main"
-                        sx={{ mt: 0.5 }}
-                      >
-                        287/3
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ textTransform: "uppercase", letterSpacing: 1 }}
-                      >
-                        Highest Run Chase
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        fontWeight={800}
-                        color="primary.main"
-                        sx={{ mt: 0.5 }}
-                      >
-                        262
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
+                </Box>
+                <Box
+                  sx={{
+                    minHeight: { xs: 80, sm: 60 },
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    px: { xs: 1, sm: 3 },
+                  }}
+                >
+                  <Fade in={true} key={factIndex} timeout={800}>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        fontSize: { xs: "0.95rem", sm: "1.1rem" },
+                        fontStyle: "italic",
+                        lineHeight: 1.6,
+                        color: "rgba(255, 255, 255, 0.9)",
+                      }}
+                    >
+                      "{FACTS[factIndex]}"
+                    </Typography>
+                  </Fade>
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
         </Box>
       </Box>
     </ThemeProvider>
