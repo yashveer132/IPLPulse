@@ -330,7 +330,6 @@ function AuctionExplorer() {
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.05)",
         }}
       >
-        {/* Clickable Header Bar */}
         <Box
           onClick={() => setFiltersOpen(!filtersOpen)}
           sx={{
@@ -341,16 +340,27 @@ function AuctionExplorer() {
             p: 1.5,
             userSelect: "none",
             bgcolor: "rgba(255, 255, 255, 0.035)",
-            borderBottom: filtersOpen ? "1px solid rgba(255, 255, 255, 0.06)" : "none",
+            borderBottom: filtersOpen
+              ? "1px solid rgba(255, 255, 255, 0.06)"
+              : "none",
             transition: "all 0.2s ease-in-out",
             "&:hover": {
               bgcolor: "rgba(255, 255, 255, 0.06)",
-            }
+            },
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Chip
-              icon={<TuneIcon sx={{ fontSize: "1.1rem !important", color: hasActiveFilters ? "primary.contrastText" : "inherit" }} />}
+              icon={
+                <TuneIcon
+                  sx={{
+                    fontSize: "1.1rem !important",
+                    color: hasActiveFilters
+                      ? "primary.contrastText"
+                      : "inherit",
+                  }}
+                />
+              }
               label="Search & Filters"
               color={hasActiveFilters ? "primary" : "default"}
               variant={hasActiveFilters ? "filled" : "outlined"}
@@ -366,7 +376,12 @@ function AuctionExplorer() {
                 label={`${[params.season, params.team, params.role, params.nationality, params.minPrice, params.maxPrice, params.quickFilter].filter(Boolean).length + (searchInput ? 1 : 0)} Active`}
                 size="small"
                 color="secondary"
-                sx={{ fontWeight: 700, borderRadius: "6px", height: 22, fontSize: "0.75rem" }}
+                sx={{
+                  fontWeight: 700,
+                  borderRadius: "6px",
+                  height: 22,
+                  fontSize: "0.75rem",
+                }}
               />
             )}
           </Box>
@@ -427,12 +442,17 @@ function AuctionExplorer() {
                     onClick={() => {
                       setParams({
                         ...params,
-                        quickFilter: params.quickFilter === qf.key ? "" : qf.key,
+                        quickFilter:
+                          params.quickFilter === qf.key ? "" : qf.key,
                         page: 1,
                       });
                     }}
-                    color={params.quickFilter === qf.key ? "primary" : "default"}
-                    variant={params.quickFilter === qf.key ? "filled" : "outlined"}
+                    color={
+                      params.quickFilter === qf.key ? "primary" : "default"
+                    }
+                    variant={
+                      params.quickFilter === qf.key ? "filled" : "outlined"
+                    }
                     sx={{ fontWeight: 600, borderRadius: 2 }}
                   />
                 ))}
@@ -456,12 +476,17 @@ function AuctionExplorer() {
                     onClick={() => {
                       setParams({
                         ...params,
-                        quickFilter: params.quickFilter === qf.key ? "" : qf.key,
+                        quickFilter:
+                          params.quickFilter === qf.key ? "" : qf.key,
                         page: 1,
                       });
                     }}
-                    color={params.quickFilter === qf.key ? "primary" : "default"}
-                    variant={params.quickFilter === qf.key ? "filled" : "outlined"}
+                    color={
+                      params.quickFilter === qf.key ? "primary" : "default"
+                    }
+                    variant={
+                      params.quickFilter === qf.key ? "filled" : "outlined"
+                    }
                     sx={{ fontWeight: 600, borderRadius: 2 }}
                   />
                 ))}
@@ -478,7 +503,10 @@ function AuctionExplorer() {
               }}
             >
               {[
-                { key: "multiple_appearances", label: "Multiple Appearances (>1)" },
+                {
+                  key: "multiple_appearances",
+                  label: "Multiple Appearances (>1)",
+                },
                 { key: "counts>2", label: "Auctions > 2" },
                 { key: "counts>3", label: "Auctions > 3" },
                 { key: "high_rollers", label: "High Rollers (> ₹10Cr)" },
@@ -495,7 +523,9 @@ function AuctionExplorer() {
                     });
                   }}
                   color={params.quickFilter === qf.key ? "primary" : "default"}
-                  variant={params.quickFilter === qf.key ? "filled" : "outlined"}
+                  variant={
+                    params.quickFilter === qf.key ? "filled" : "outlined"
+                  }
                   sx={{ fontWeight: 600, borderRadius: 2 }}
                 />
               ))}
@@ -554,7 +584,11 @@ function AuctionExplorer() {
                   </MenuItem>
                   {Array.isArray(seasons) &&
                     seasons.map((s) => (
-                      <MenuItem key={s} value={s} sx={{ justifyContent: "center" }}>
+                      <MenuItem
+                        key={s}
+                        value={s}
+                        sx={{ justifyContent: "center" }}
+                      >
                         {s}
                       </MenuItem>
                     ))}
@@ -602,7 +636,11 @@ function AuctionExplorer() {
                     All Roles
                   </MenuItem>
                   {Object.values(PLAYER_ROLES).map((r) => (
-                    <MenuItem key={r} value={r} sx={{ justifyContent: "center" }}>
+                    <MenuItem
+                      key={r}
+                      value={r}
+                      sx={{ justifyContent: "center" }}
+                    >
                       {r}
                     </MenuItem>
                   ))}
@@ -624,7 +662,11 @@ function AuctionExplorer() {
                     All Origins
                   </MenuItem>
                   {Object.values(NATIONALITY).map((n) => (
-                    <MenuItem key={n} value={n} sx={{ justifyContent: "center" }}>
+                    <MenuItem
+                      key={n}
+                      value={n}
+                      sx={{ justifyContent: "center" }}
+                    >
                       {n}
                     </MenuItem>
                   ))}
@@ -632,7 +674,6 @@ function AuctionExplorer() {
               </Box>
             </Box>
 
-            {/* Centered Actions Row */}
             <Box
               sx={{
                 display: "flex",

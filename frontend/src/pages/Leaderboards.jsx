@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   Box,
   Typography,
-  Grid,
   Paper,
   Tabs,
   Tab,
@@ -371,11 +370,18 @@ function RecordModal({ open, onClose, categoryId, record }) {
           justifyContent: "space-between",
         }}
       >
-        <Box>
-          <Typography variant="h6" fontWeight={800}>
+        <Box sx={{ textAlign: "center", flex: 1 }}>
+          <Typography
+            variant="h6"
+            fontWeight={800}
+            sx={{ textAlign: "center" }}
+          >
             {record.icon} {record.title}
           </Typography>
-          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+          <Typography
+            variant="body2"
+            sx={{ opacity: 0.8, textAlign: "center" }}
+          >
             {record.desc}
           </Typography>
         </Box>
@@ -466,7 +472,7 @@ function Leaderboards() {
   const activeCategory = RECORDS_CONFIG[activeTab];
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: "auto", p: 2 }}>
+    <Box sx={{ mx: "auto", p: 2 }}>
       <PageHeader
         title="IPL Records Explorer"
         subtitle="Dive deep into the most comprehensive collection of IPL records ever assembled."
@@ -478,8 +484,11 @@ function Leaderboards() {
           onChange={(e, val) => setActiveTab(val)}
           variant="scrollable"
           scrollButtons="auto"
+          allowScrollButtonsMobile
+          centered={false}
           sx={{
             "& .MuiTab-root": { fontWeight: 700, fontSize: "1rem", py: 2 },
+            "& .MuiTabs-flexContainer": { justifyContent: "center" },
           }}
         >
           {RECORDS_CONFIG.map((cat, idx) => (
@@ -488,42 +497,58 @@ function Leaderboards() {
         </Tabs>
       </Paper>
 
-      <Grid container spacing={3}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "1fr 1fr",
+            md: "1fr 1fr 1fr",
+          },
+          gap: 3,
+          width: "100%",
+          maxWidth: "100%",
+          overflow: "hidden",
+          boxSizing: "border-box",
+          "& > *": { minWidth: 0 },
+        }}
+      >
         {activeCategory.records.map((record) => (
-          <Grid item xs={12} sm={6} md={4} key={record.id}>
-            <Paper
-              onClick={() =>
-                handleOpenRecord(activeCategory.categoryId, record)
-              }
-              sx={{
-                p: 3,
-                borderRadius: 4,
-                cursor: "pointer",
-                height: "100%",
-                transition: "all 0.2s",
-                border: "1px solid",
-                borderColor: "divider",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                  boxShadow: 4,
-                  borderColor: "primary.main",
-                  bgcolor: "rgba(0,0,0,0.02)",
-                },
-              }}
-            >
-              <Typography variant="h3" mb={2}>
-                {record.icon}
-              </Typography>
-              <Typography variant="h6" fontWeight={800} gutterBottom>
-                {record.title}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {record.desc}
-              </Typography>
-            </Paper>
-          </Grid>
+          <Paper
+            key={record.id}
+            onClick={() => handleOpenRecord(activeCategory.categoryId, record)}
+            sx={{
+              p: 3,
+              borderRadius: 4,
+              cursor: "pointer",
+              height: "100%",
+              transition: "all 0.2s",
+              border: "1px solid",
+              borderColor: "divider",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                boxShadow: 4,
+                borderColor: "primary.main",
+                bgcolor: "rgba(0,0,0,0.02)",
+              },
+            }}
+          >
+            <Typography variant="h3" mb={2}>
+              {record.icon}
+            </Typography>
+            <Typography variant="h6" fontWeight={800} gutterBottom>
+              {record.title}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {record.desc}
+            </Typography>
+          </Paper>
         ))}
-      </Grid>
+      </Box>
 
       <RecordModal
         open={Boolean(selectedRecord)}

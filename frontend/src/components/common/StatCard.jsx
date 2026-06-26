@@ -10,9 +10,11 @@ function StatCard({
   return (
     <Card
       sx={{
-        height: "100%",
+        width: { xs: 135, sm: 180, md: 190 },
+        height: { xs: 95, sm: 115, md: 125 },
         display: "flex",
         flexDirection: "column",
+        justifyContent: "center",
         boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
         transition: "transform 0.2s",
         "&:hover": {
@@ -30,36 +32,45 @@ function StatCard({
           justifyContent: "center",
           gap: 1,
           textAlign: "center",
-          py: 4,
+          p: { xs: 2, sm: 3 },
+          "&:last-child": { pb: { xs: 2, sm: 3 } },
         }}
       >
         {Icon && (
           <Box
             sx={{
-              p: 1.5,
+              p: 1,
               borderRadius: "50%",
               bgcolor: `${color}15`,
               color: color,
               display: "flex",
-              mb: 1,
+              mb: 0.5,
             }}
           >
-            <Icon fontSize="medium" />
+            <Icon fontSize="small" />
           </Box>
         )}
         <Typography
-          variant="body2"
+          variant="caption"
           color="text.secondary"
-          fontWeight={700}
-          sx={{ textTransform: "uppercase", letterSpacing: 1 }}
+          fontWeight={800}
+          sx={{
+            textTransform: "uppercase",
+            letterSpacing: 0.5,
+            fontSize: { xs: "0.65rem", sm: "0.75rem" },
+            lineHeight: 1.2,
+          }}
         >
           {title}
         </Typography>
         <Typography
-          variant="h3"
-          fontWeight={800}
+          fontWeight={900}
           color="text.primary"
-          sx={{ my: 0.5 }}
+          sx={{
+            my: 0.5,
+            fontSize: { xs: "1.1rem", sm: "1.5rem", md: "1.75rem" },
+            lineHeight: 1.1,
+          }}
         >
           {value}
         </Typography>
@@ -73,16 +84,17 @@ function StatCard({
                   : trend < 0
                     ? "error.main"
                     : "text.secondary",
-              fontWeight: 700,
+              fontWeight: 800,
               bgcolor:
                 trend > 0
                   ? "success.light"
                   : trend < 0
                     ? "error.light"
                     : "action.hover",
-              px: 1.5,
-              py: 0.5,
+              px: 1,
+              py: 0.2,
               borderRadius: 4,
+              fontSize: "0.65rem",
             }}
           >
             {trend > 0 ? "+" : ""}

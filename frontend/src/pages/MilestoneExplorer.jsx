@@ -13,7 +13,11 @@ import {
   IconButton,
   LinearProgress,
   Divider,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import {
   BarChart,
   Bar,
@@ -30,12 +34,43 @@ import {
   useFastestMilestone,
   useFastestMilestoneCurve,
 } from "../hooks/useAnalytics.js";
+import PageHeader from "../components/common/PageHeader.jsx";
+
+const getPlayerColor = (name) => {
+  if (!name) return "#4dabf5";
+  const colors = [
+    "#6366f1",
+    "#3b82f6",
+    "#10b981",
+    "#f59e0b",
+    "#ef4444",
+    "#ec4899",
+    "#8b5cf6",
+    "#14b8a6",
+    "#f97316",
+    "#0ea5e9",
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+};
 
 function MilestoneExplorer() {
   const [targetRuns, setTargetRuns] = useState(50);
   const [debouncedTarget, setDebouncedTarget] = useState(50);
   const [selectedCard, setSelectedCard] = useState(null);
   const scrollContainerRef = useRef(null);
+
+  const [fastestIndex, setFastestIndex] = useState(0);
+  const [slowestIndex, setSlowestIndex] = useState(0);
+
+  const theme = useTheme();
+  const isMd = useMediaQuery(theme.breakpoints.up("md"));
+  const isSm = useMediaQuery(theme.breakpoints.up("sm"));
+  const cardsPerPage = isMd ? 3 : isSm ? 2 : 1;
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -64,6 +99,55 @@ function MilestoneExplorer() {
   } = useFastestMilestone(debouncedTarget);
   const { data: curveData, isLoading: curveLoading } =
     useFastestMilestoneCurve();
+
+  useEffect(() => {
+    setFastestIndex(0);
+    setSlowestIndex(0);
+  }, [results]);
+
+  if (curveLoading || !curveData) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "70vh",
+          gap: 3,
+        }}
+      >
+        <CircularProgress
+          size={55}
+          thickness={4.5}
+          sx={{
+            color: "primary.main",
+            "& .MuiCircularProgress-circle": {
+              strokeLinecap: "round",
+            },
+            animation: "pulseGlow 1.5s infinite ease-in-out",
+            "@keyframes pulseGlow": {
+              "0%": { transform: "scale(0.95)", opacity: 0.8 },
+              "50%": { transform: "scale(1.05)", opacity: 1 },
+              "100%": { transform: "scale(0.95)", opacity: 0.8 },
+            },
+          }}
+        />
+        <Typography
+          variant="h6"
+          fontWeight={800}
+          sx={{
+            background: "linear-gradient(90deg, #6366f1, #0ea5e9)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            letterSpacing: 0.5,
+          }}
+        >
+          Loading Milestone Explorer...
+        </Typography>
+      </Box>
+    );
+  }
 
   const handleSliderChange = (event, newValue) => {
     setTargetRuns(newValue);
@@ -102,28 +186,14 @@ function MilestoneExplorer() {
 
   return (
     <Box sx={{ maxWidth: 1200, mx: "auto" }}>
-      <Box sx={{ mb: 4, textAlign: "center" }}>
-        <Typography
-          variant="h4"
-          fontWeight={900}
-          gutterBottom
-          sx={{ letterSpacing: "-0.02em" }}
-        >
-          Milestone Explorer
-        </Typography>
-        <Typography
-          variant="body1"
-          color="text.secondary"
-          sx={{ fontWeight: 400, maxWidth: 600, mx: "auto" }}
-        >
-          Real-time analysis. Select any exact target score to instantly find
-          out who reached it the fastest and the slowest
-        </Typography>
-      </Box>
+      <PageHeader
+        title="Milestone Explorer"
+        subtitle="Real-time analysis. Select any exact target score to instantly find out who reached it the fastest and the slowest."
+      />
 
       <Paper
         sx={{
-          p: { xs: 3, md: 5 },
+          p: { xs: 2, md: 2.5 },
           mb: 4,
           borderRadius: 4,
           border: "1px solid",
@@ -138,14 +208,14 @@ function MilestoneExplorer() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            mb: 2,
+            mb: 1,
           }}
         >
           <Typography
-            variant="h6"
+            variant="overline"
             fontWeight={800}
             color="text.secondary"
-            sx={{ mb: 1 }}
+            sx={{ mb: 0.5, letterSpacing: 1.2, fontSize: "0.75rem" }}
           >
             Target Milestone
           </Typography>
@@ -154,22 +224,22 @@ function MilestoneExplorer() {
               display: "flex",
               alignItems: "baseline",
               justifyContent: "center",
-              gap: 1,
+              gap: 0.5,
             }}
           >
             <Typography
-              variant="h1"
+              variant="h3"
               fontWeight={900}
               color="primary.main"
-              sx={{ lineHeight: 1, fontSize: { xs: "4rem", md: "5rem" } }}
+              sx={{ lineHeight: 1, fontSize: { xs: "2.5rem", md: "3rem" } }}
             >
               {targetRuns}
             </Typography>
             <Typography
-              variant="h6"
+              variant="caption"
               color="text.secondary"
               fontWeight={700}
-              sx={{ textTransform: "uppercase" }}
+              sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}
             >
               Runs
             </Typography>
@@ -181,17 +251,31 @@ function MilestoneExplorer() {
           sx={{
             width: "100%",
             overflowX: "auto",
-            mb: 3,
-            "&::-webkit-scrollbar": { height: 8 },
+            mb: 1,
+            border: "1px solid rgba(255, 255, 255, 0.05)",
+            borderRadius: 3,
+            p: 1.5,
+            bgcolor: "rgba(0, 0, 0, 0.15)",
+            "&::-webkit-scrollbar": {
+              height: "10px",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "rgba(0, 0, 0, 0.25)",
+              borderRadius: "5px",
+            },
             "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "rgba(255,255,255,0.2)",
-              borderRadius: 4,
+              background: "linear-gradient(90deg, #6366f1, #3b82f6, #0ea5e9)",
+              borderRadius: "5px",
+              boxShadow: "0 0 8px rgba(99, 102, 241, 0.5)",
+              "&:hover": {
+                background: "linear-gradient(90deg, #8b5cf6, #ec4899, #f97316)",
+              },
             },
           }}
         >
           <Box
             sx={{
-              height: 190,
+              height: 140,
               minWidth: curveData
                 ? Math.max(1200, curveData.length * 35)
                 : "100%",
@@ -204,13 +288,13 @@ function MilestoneExplorer() {
                 alignItems="center"
                 height="100%"
               >
-                <CircularProgress size={30} />
+                <CircularProgress size={25} />
               </Box>
             ) : curveData ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={curveData}
-                  margin={{ top: 60, right: 0, left: -20, bottom: 0 }}
+                  margin={{ top: 50, right: 0, left: -20, bottom: 0 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -221,7 +305,7 @@ function MilestoneExplorer() {
                     dataKey="runs"
                     tick={{
                       fill: "rgba(255,255,255,0.8)",
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: 700,
                     }}
                     interval={0}
@@ -229,67 +313,55 @@ function MilestoneExplorer() {
                   <YAxis hide domain={[0, "dataMax + 10"]} />
                   <Tooltip
                     content={<CustomTooltip />}
-                    cursor={{ fill: "rgba(255,255,255,0.1)" }}
+                    cursor={{ fill: "rgba(255,255,255,0.08)" }}
                   />
                   <ReferenceLine
                     x={targetRuns}
                     stroke="#ff4757"
                     strokeDasharray="3 3"
                   />
-                  <Bar dataKey="balls" radius={[4, 4, 0, 0]}>
-                    {curveData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={entry.runs === targetRuns ? "#ff4757" : "#4dabf5"}
-                      />
-                    ))}
+                  <Bar
+                    dataKey="balls"
+                    radius={[3, 3, 0, 0]}
+                    onClick={(data) => {
+                      if (data && data.runs) {
+                        setTargetRuns(data.runs);
+                      }
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {curveData.map((entry, index) => {
+                      const isSelected = entry.runs === targetRuns;
+                      const playerColor = getPlayerColor(entry.playerName);
+                      return (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={playerColor}
+                          stroke={isSelected ? "#ffffff" : "transparent"}
+                          strokeWidth={isSelected ? 2 : 0}
+                          opacity={isSelected ? 1 : 0.6}
+                          style={{
+                            filter: isSelected
+                              ? "drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.5))"
+                              : "none",
+                            transition: "all 0.3s ease",
+                          }}
+                        />
+                      );
+                    })}
                     <LabelList
                       dataKey="playerName"
                       position="top"
                       angle={-90}
                       fill="rgba(255,255,255,0.9)"
-                      fontSize={11}
+                      fontSize={10}
                       style={{ fontWeight: 800, textAnchor: "start" }}
-                      offset={10}
+                      offset={8}
                     />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             ) : null}
-          </Box>
-        </Box>
-
-        <Box sx={{ px: { xs: 2, md: 4 }, width: "100%" }}>
-          <Slider
-            value={targetRuns}
-            min={20}
-            max={175}
-            onChange={handleSliderChange}
-            valueLabelDisplay="auto"
-            sx={{
-              height: 10,
-              width: "100%",
-              "& .MuiSlider-thumb": {
-                width: 28,
-                height: 28,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-              },
-            }}
-          />
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              mt: 1,
-              width: "100%",
-            }}
-          >
-            <Typography variant="body2" color="text.secondary" fontWeight={600}>
-              20
-            </Typography>
-            <Typography variant="body2" color="text.secondary" fontWeight={600}>
-              175
-            </Typography>
           </Box>
         </Box>
       </Paper>
@@ -355,130 +427,303 @@ function MilestoneExplorer() {
                 >
                   Top 10 Fastest to Exactly {debouncedTarget} Runs
                 </Typography>
-                <Grid container spacing={2} justifyContent="center">
-                  {results.fastest.map((res, index) => (
-                    <Grid item xs={12} sm={4} key={`fastest-${res.id}`}>
-                      <Paper
-                        onClick={() =>
-                          setSelectedCard({ ...res, type: "Fastest" })
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "relative",
+                    width: "100%",
+                    maxWidth: 1200,
+                    mx: "auto",
+                    mb: 2,
+                    px: { xs: 3, sm: 8 },
+                  }}
+                >
+                  <IconButton
+                    onClick={() => {
+                      setFastestIndex((prev) => {
+                        if (prev === 0) {
+                          const remainder =
+                            results.fastest.length % cardsPerPage;
+                          return remainder === 0
+                            ? results.fastest.length - cardsPerPage
+                            : results.fastest.length - remainder;
                         }
+                        const prevIndex = prev - cardsPerPage;
+                        return prevIndex < 0 ? 0 : prevIndex;
+                      });
+                    }}
+                    sx={{
+                      display: "inline-flex",
+                      position: "absolute",
+                      left: { xs: -12, sm: 10 },
+                      zIndex: 10,
+                      bgcolor: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      color: "white",
+                      backdropFilter: "blur(4px)",
+                      "&:hover": {
+                        bgcolor: "primary.main",
+                        color: "white",
+                        boxShadow: "0 0 15px rgba(99, 102, 241, 0.5)",
+                      },
+                      width: { xs: 32, sm: 48 },
+                      height: { xs: 32, sm: 48 },
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    <ChevronLeftIcon sx={{ fontSize: { xs: 18, sm: 24 } }} />
+                  </IconButton>
+
+                  {(() => {
+                    const len = results.fastest.length;
+                    const visibleCards = [];
+                    for (let i = 0; i < cardsPerPage; i++) {
+                      const cardIndex = fastestIndex + i;
+                      if (cardIndex < len) {
+                        visibleCards.push({
+                          res: results.fastest[cardIndex],
+                          index: cardIndex,
+                        });
+                      }
+                    }
+
+                    return (
+                      <Box
                         sx={{
-                          p: 2,
-                          borderRadius: 3,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 2,
-                          border: "1px solid",
-                          cursor: "pointer",
-                          borderColor: index === 0 ? "success.main" : "divider",
-                          bgcolor:
-                            index === 0
-                              ? "rgba(16, 185, 129, 0.08)"
-                              : "background.paper",
-                          backgroundImage:
-                            index === 0
-                              ? "none"
-                              : "radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.04) 0px, transparent 50%)",
-                          transition:
-                            "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s",
-                          animation:
-                            index === 0 ? "pulseGlow 2s infinite" : "none",
-                          "@keyframes pulseGlow": {
-                            "0%": {
-                              boxShadow: "0 0 0 0 rgba(16, 185, 129, 0.4)",
-                            },
-                            "70%": {
-                              boxShadow: "0 0 0 10px rgba(16, 185, 129, 0)",
-                            },
-                            "100%": {
-                              boxShadow: "0 0 0 0 rgba(16, 185, 129, 0)",
-                            },
+                          width: "100%",
+                          display: "grid",
+                          gridTemplateColumns: {
+                            xs: "1fr",
+                            sm:
+                              visibleCards.length > 1
+                                ? "repeat(2, 1fr)"
+                                : "1fr",
+                            md:
+                              visibleCards.length > 2
+                                ? "repeat(3, 1fr)"
+                                : visibleCards.length > 1
+                                  ? "repeat(2, 1fr)"
+                                  : "1fr",
                           },
-                          "&:hover": {
-                            transform: "translateY(-4px)",
-                            boxShadow: "0 8px 24px rgba(99, 102, 241, 0.15)",
-                            borderColor:
-                              index === 0
-                                ? "success.main"
-                                : "rgba(99, 102, 241, 0.4)",
+                          gap: 2.5,
+                          transition: "all 0.5s ease",
+                          animation: "fadeInScale 0.4s ease-out",
+                          "@keyframes fadeInScale": {
+                            "0%": { opacity: 0, transform: "scale(0.96)" },
+                            "100%": { opacity: 1, transform: "scale(1)" },
                           },
                         }}
+                        key={fastestIndex}
                       >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            minWidth: 40,
-                          }}
-                        >
-                          <Typography
-                            variant="h5"
-                            fontWeight={900}
-                            color={
-                              index === 0 ? "success.main" : "text.secondary"
+                        {visibleCards.map(({ res, index }) => (
+                          <Paper
+                            key={`fastest-${res.id}`}
+                            onClick={() =>
+                              setSelectedCard({ ...res, type: "Fastest" })
                             }
-                          >
-                            #{index + 1}
-                          </Typography>
-                        </Box>
-
-                        <Box sx={{ flexGrow: 1 }}>
-                          <Typography variant="subtitle1" fontWeight={800}>
-                            {res.playerName}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            color="text.secondary"
-                            fontWeight={600}
-                            sx={{ display: "block", mb: 0.5 }}
-                          >
-                            {res.team} • {formatDate(res.matchDate)}
-                          </Typography>
-                          <Chip
-                            size="small"
-                            label={`${res.runsScored} runs scored`}
-                            variant="outlined"
-                            sx={{ height: 20, fontSize: "0.7rem" }}
-                          />
-                        </Box>
-
-                        <Box
-                          sx={{
-                            textAlign: "center",
-                            bgcolor:
-                              index === 0 ? "#2ecc71" : "background.default",
-                            color: index === 0 ? "white" : "text.primary",
-                            p: 1.5,
-                            borderRadius: 2,
-                            minWidth: 80,
-                            border: index === 0 ? "none" : "1px solid",
-                            borderColor: "divider",
-                          }}
-                        >
-                          <Typography
-                            variant="h5"
-                            fontWeight={900}
-                            lineHeight={1}
-                            color={index === 0 ? "success.main" : "inherit"}
-                          >
-                            {res.ballsFaced}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            fontWeight={700}
                             sx={{
-                              fontSize: "0.6rem",
-                              textTransform: "uppercase",
+                              p: 2,
+                              borderRadius: 3,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 2,
+                              border: "1px solid",
+                              cursor: "pointer",
+                              borderColor:
+                                index === 0 ? "success.main" : "divider",
+                              bgcolor:
+                                index === 0
+                                  ? "rgba(16, 185, 129, 0.08)"
+                                  : "background.paper",
+                              backgroundImage:
+                                index === 0
+                                  ? "none"
+                                  : "radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.04) 0px, transparent 50%)",
+                              transition:
+                                "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s",
+                              animation:
+                                index === 0 ? "pulseGlow 2s infinite" : "none",
+                              "@keyframes pulseGlow": {
+                                "0%": {
+                                  boxShadow: "0 0 0 0 rgba(16, 185, 129, 0.4)",
+                                },
+                                "70%": {
+                                  boxShadow: "0 0 0 10px rgba(16, 185, 129, 0)",
+                                },
+                                "100%": {
+                                  boxShadow: "0 0 0 0 rgba(16, 185, 129, 0)",
+                                },
+                              },
+                              "&:hover": {
+                                transform: "translateY(-4px)",
+                                boxShadow:
+                                  "0 8px 24px rgba(99, 102, 241, 0.15)",
+                                borderColor:
+                                  index === 0
+                                    ? "success.main"
+                                    : "rgba(99, 102, 241, 0.4)",
+                              },
                             }}
                           >
-                            Balls
-                          </Typography>
-                        </Box>
-                      </Paper>
-                    </Grid>
-                  ))}
-                </Grid>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                minWidth: 40,
+                              }}
+                            >
+                              <Typography
+                                variant="h5"
+                                fontWeight={900}
+                                color={
+                                  index === 0
+                                    ? "success.main"
+                                    : "text.secondary"
+                                }
+                              >
+                                #{index + 1}
+                              </Typography>
+                            </Box>
+
+                            <Box sx={{ flexGrow: 1 }}>
+                              <Typography variant="subtitle1" fontWeight={800}>
+                                {res.playerName}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={600}
+                                sx={{ display: "block", mb: 0.5 }}
+                              >
+                                {res.team} • {formatDate(res.matchDate)}
+                              </Typography>
+                              <Chip
+                                size="small"
+                                label={`${res.runsScored} runs scored`}
+                                variant="outlined"
+                                sx={{ height: 20, fontSize: "0.7rem" }}
+                              />
+                            </Box>
+
+                            <Box
+                              sx={{
+                                textAlign: "center",
+                                bgcolor:
+                                  index === 0
+                                    ? "#2ecc71"
+                                    : "background.default",
+                                color: index === 0 ? "white" : "text.primary",
+                                p: 1.5,
+                                borderRadius: 2,
+                                minWidth: 80,
+                                border: index === 0 ? "none" : "1px solid",
+                                borderColor: "divider",
+                              }}
+                            >
+                              <Typography
+                                variant="h5"
+                                fontWeight={900}
+                                lineHeight={1}
+                                color={index === 0 ? "success.main" : "inherit"}
+                              >
+                                {res.ballsFaced}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                fontWeight={700}
+                                sx={{
+                                  fontSize: "0.6rem",
+                                  textTransform: "uppercase",
+                                }}
+                              >
+                                Balls
+                              </Typography>
+                            </Box>
+                          </Paper>
+                        ))}
+                      </Box>
+                    );
+                  })()}
+
+                  <IconButton
+                    onClick={() => {
+                      setFastestIndex((prev) => {
+                        const nextIndex = prev + cardsPerPage;
+                        return nextIndex >= results.fastest.length
+                          ? 0
+                          : nextIndex;
+                      });
+                    }}
+                    sx={{
+                      display: "inline-flex",
+                      position: "absolute",
+                      right: { xs: -12, sm: 10 },
+                      zIndex: 10,
+                      bgcolor: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      color: "white",
+                      backdropFilter: "blur(4px)",
+                      "&:hover": {
+                        bgcolor: "primary.main",
+                        color: "white",
+                        boxShadow: "0 0 15px rgba(99, 102, 241, 0.5)",
+                      },
+                      width: { xs: 32, sm: 48 },
+                      height: { xs: 32, sm: 48 },
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    <ChevronRightIcon sx={{ fontSize: { xs: 18, sm: 24 } }} />
+                  </IconButton>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 1,
+                    mb: 4,
+                    flexWrap: "wrap",
+                    maxWidth: "90%",
+                    mx: "auto",
+                  }}
+                >
+                  {(() => {
+                    const numPages = Math.ceil(
+                      results.fastest.length / cardsPerPage,
+                    );
+                    const activePageIndex = Math.floor(
+                      fastestIndex / cardsPerPage,
+                    );
+                    return Array.from({ length: numPages }).map((_, idx) => (
+                      <Box
+                        key={idx}
+                        onClick={() => setFastestIndex(idx * cardsPerPage)}
+                        sx={{
+                          width: idx === activePageIndex ? 24 : 8,
+                          height: 8,
+                          borderRadius: 4,
+                          bgcolor:
+                            idx === activePageIndex
+                              ? "primary.main"
+                              : "rgba(255, 255, 255, 0.2)",
+                          cursor: "pointer",
+                          transition: "all 0.3s ease",
+                          "&:hover": {
+                            bgcolor:
+                              idx === activePageIndex
+                                ? "primary.main"
+                                : "rgba(255, 255, 255, 0.4)",
+                          },
+                        }}
+                      />
+                    ));
+                  })()}
+                </Box>
               </Box>
             )}
 
@@ -496,116 +741,287 @@ function MilestoneExplorer() {
                 >
                   Top 10 Slowest to Exactly {debouncedTarget} Runs
                 </Typography>
-                <Grid container spacing={2} justifyContent="center">
-                  {results.slowest.map((res, index) => (
-                    <Grid item xs={12} sm={4} key={`slowest-${res.id}`}>
-                      <Paper
-                        onClick={() =>
-                          setSelectedCard({ ...res, type: "Slowest" })
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "relative",
+                    width: "100%",
+                    maxWidth: 1200,
+                    mx: "auto",
+                    mb: 2,
+                    px: { xs: 3, sm: 8 },
+                  }}
+                >
+                  <IconButton
+                    onClick={() => {
+                      setSlowestIndex((prev) => {
+                        if (prev === 0) {
+                          const remainder =
+                            results.slowest.length % cardsPerPage;
+                          return remainder === 0
+                            ? results.slowest.length - cardsPerPage
+                            : results.slowest.length - remainder;
                         }
+                        const prevIndex = prev - cardsPerPage;
+                        return prevIndex < 0 ? 0 : prevIndex;
+                      });
+                    }}
+                    sx={{
+                      display: "inline-flex",
+                      position: "absolute",
+                      left: { xs: -12, sm: 10 },
+                      zIndex: 10,
+                      bgcolor: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      color: "white",
+                      backdropFilter: "blur(4px)",
+                      "&:hover": {
+                        bgcolor: "primary.main",
+                        color: "white",
+                        boxShadow: "0 0 15px rgba(99, 102, 241, 0.5)",
+                      },
+                      width: { xs: 32, sm: 48 },
+                      height: { xs: 32, sm: 48 },
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    <ChevronLeftIcon sx={{ fontSize: { xs: 18, sm: 24 } }} />
+                  </IconButton>
+
+                  {(() => {
+                    const len = results.slowest.length;
+                    const visibleCards = [];
+                    for (let i = 0; i < cardsPerPage; i++) {
+                      const cardIndex = slowestIndex + i;
+                      if (cardIndex < len) {
+                        visibleCards.push({
+                          res: results.slowest[cardIndex],
+                          index: cardIndex,
+                        });
+                      }
+                    }
+
+                    return (
+                      <Box
                         sx={{
-                          p: 2,
-                          borderRadius: 3,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 2,
-                          border: "1px solid",
-                          cursor: "pointer",
-                          borderColor: index === 0 ? "error.main" : "divider",
-                          bgcolor:
-                            index === 0
-                              ? "rgba(239, 68, 68, 0.06)"
-                              : "background.paper",
-                          backgroundImage:
-                            index === 0
-                              ? "none"
-                              : "radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.04) 0px, transparent 50%)",
-                          transition:
-                            "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s",
-                          "&:hover": {
-                            transform: "translateY(-4px)",
-                            boxShadow: "0 8px 24px rgba(99, 102, 241, 0.15)",
-                            borderColor:
-                              index === 0
-                                ? "error.main"
-                                : "rgba(99, 102, 241, 0.4)",
+                          width: "100%",
+                          display: "grid",
+                          gridTemplateColumns: {
+                            xs: "1fr",
+                            sm:
+                              visibleCards.length > 1
+                                ? "repeat(2, 1fr)"
+                                : "1fr",
+                            md:
+                              visibleCards.length > 2
+                                ? "repeat(3, 1fr)"
+                                : visibleCards.length > 1
+                                  ? "repeat(2, 1fr)"
+                                  : "1fr",
+                          },
+                          gap: 2.5,
+                          transition: "all 0.5s ease",
+                          animation: "fadeInScale 0.4s ease-out",
+                          "@keyframes fadeInScale": {
+                            "0%": { opacity: 0, transform: "scale(0.96)" },
+                            "100%": { opacity: 1, transform: "scale(1)" },
                           },
                         }}
+                        key={slowestIndex}
                       >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            minWidth: 40,
-                          }}
-                        >
-                          <Typography
-                            variant="h5"
-                            fontWeight={900}
-                            color={
-                              index === 0 ? "error.main" : "text.secondary"
+                        {visibleCards.map(({ res, index }) => (
+                          <Paper
+                            key={`slowest-${res.id}`}
+                            onClick={() =>
+                              setSelectedCard({ ...res, type: "Slowest" })
                             }
-                          >
-                            #{index + 1}
-                          </Typography>
-                        </Box>
-
-                        <Box sx={{ flexGrow: 1 }}>
-                          <Typography variant="subtitle1" fontWeight={800}>
-                            {res.playerName}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            color="text.secondary"
-                            fontWeight={600}
-                            sx={{ display: "block", mb: 0.5 }}
-                          >
-                            {res.team} • {formatDate(res.matchDate)}
-                          </Typography>
-                          <Chip
-                            size="small"
-                            label={`${res.runsScored} runs scored`}
-                            variant="outlined"
-                            sx={{ height: 20, fontSize: "0.7rem" }}
-                          />
-                        </Box>
-
-                        <Box
-                          sx={{
-                            textAlign: "center",
-                            bgcolor:
-                              index === 0 ? "#ff4757" : "background.default",
-                            color: index === 0 ? "white" : "text.primary",
-                            p: 1.5,
-                            borderRadius: 2,
-                            minWidth: 80,
-                            border: index === 0 ? "none" : "1px solid",
-                            borderColor: "divider",
-                          }}
-                        >
-                          <Typography
-                            variant="h5"
-                            fontWeight={900}
-                            lineHeight={1}
-                          >
-                            {res.ballsFaced}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            fontWeight={700}
                             sx={{
-                              fontSize: "0.6rem",
-                              textTransform: "uppercase",
+                              p: 2,
+                              borderRadius: 3,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 2,
+                              border: "1px solid",
+                              cursor: "pointer",
+                              borderColor:
+                                index === 0 ? "error.main" : "divider",
+                              bgcolor:
+                                index === 0
+                                  ? "rgba(239, 68, 68, 0.06)"
+                                  : "background.paper",
+                              backgroundImage:
+                                index === 0
+                                  ? "none"
+                                  : "radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.04) 0px, transparent 50%)",
+                              transition:
+                                "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s",
+                              "&:hover": {
+                                transform: "translateY(-4px)",
+                                boxShadow:
+                                  "0 8px 24px rgba(99, 102, 241, 0.15)",
+                                borderColor:
+                                  index === 0
+                                    ? "error.main"
+                                    : "rgba(99, 102, 241, 0.4)",
+                              },
                             }}
                           >
-                            Balls
-                          </Typography>
-                        </Box>
-                      </Paper>
-                    </Grid>
-                  ))}
-                </Grid>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                minWidth: 40,
+                              }}
+                            >
+                              <Typography
+                                variant="h5"
+                                fontWeight={900}
+                                color={
+                                  index === 0 ? "error.main" : "text.secondary"
+                                }
+                              >
+                                #{index + 1}
+                              </Typography>
+                            </Box>
+
+                            <Box sx={{ flexGrow: 1 }}>
+                              <Typography variant="subtitle1" fontWeight={800}>
+                                {res.playerName}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={600}
+                                sx={{ display: "block", mb: 0.5 }}
+                              >
+                                {res.team} • {formatDate(res.matchDate)}
+                              </Typography>
+                              <Chip
+                                size="small"
+                                label={`${res.runsScored} runs scored`}
+                                variant="outlined"
+                                sx={{ height: 20, fontSize: "0.7rem" }}
+                              />
+                            </Box>
+
+                            <Box
+                              sx={{
+                                textAlign: "center",
+                                bgcolor:
+                                  index === 0
+                                    ? "#ff4757"
+                                    : "background.default",
+                                color: index === 0 ? "white" : "text.primary",
+                                p: 1.5,
+                                borderRadius: 2,
+                                minWidth: 80,
+                                border: index === 0 ? "none" : "1px solid",
+                                borderColor: "divider",
+                              }}
+                            >
+                              <Typography
+                                variant="h5"
+                                fontWeight={900}
+                                lineHeight={1}
+                              >
+                                {res.ballsFaced}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                fontWeight={700}
+                                sx={{
+                                  fontSize: "0.6rem",
+                                  textTransform: "uppercase",
+                                }}
+                              >
+                                Balls
+                              </Typography>
+                            </Box>
+                          </Paper>
+                        ))}
+                      </Box>
+                    );
+                  })()}
+
+                  <IconButton
+                    onClick={() => {
+                      setSlowestIndex((prev) => {
+                        const nextIndex = prev + cardsPerPage;
+                        return nextIndex >= results.slowest.length
+                          ? 0
+                          : nextIndex;
+                      });
+                    }}
+                    sx={{
+                      display: "inline-flex",
+                      position: "absolute",
+                      right: { xs: -12, sm: 10 },
+                      zIndex: 10,
+                      bgcolor: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      color: "white",
+                      backdropFilter: "blur(4px)",
+                      "&:hover": {
+                        bgcolor: "primary.main",
+                        color: "white",
+                        boxShadow: "0 0 15px rgba(99, 102, 241, 0.5)",
+                      },
+                      width: { xs: 32, sm: 48 },
+                      height: { xs: 32, sm: 48 },
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    <ChevronRightIcon sx={{ fontSize: { xs: 18, sm: 24 } }} />
+                  </IconButton>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 1,
+                    mb: 4,
+                    flexWrap: "wrap",
+                    maxWidth: "90%",
+                    mx: "auto",
+                  }}
+                >
+                  {(() => {
+                    const numPages = Math.ceil(
+                      results.slowest.length / cardsPerPage,
+                    );
+                    const activePageIndex = Math.floor(
+                      slowestIndex / cardsPerPage,
+                    );
+                    return Array.from({ length: numPages }).map((_, idx) => (
+                      <Box
+                        key={idx}
+                        onClick={() => setSlowestIndex(idx * cardsPerPage)}
+                        sx={{
+                          width: idx === activePageIndex ? 24 : 8,
+                          height: 8,
+                          borderRadius: 4,
+                          bgcolor:
+                            idx === activePageIndex
+                              ? "primary.main"
+                              : "rgba(255, 255, 255, 0.2)",
+                          cursor: "pointer",
+                          transition: "all 0.3s ease",
+                          "&:hover": {
+                            bgcolor:
+                              idx === activePageIndex
+                                ? "primary.main"
+                                : "rgba(255, 255, 255, 0.4)",
+                          },
+                        }}
+                      />
+                    ));
+                  })()}
+                </Box>
               </Box>
             )}
           </>

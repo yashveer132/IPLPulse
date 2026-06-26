@@ -274,12 +274,13 @@ export async function getPlayerValueRankings(
   const skip = (page - 1) * limit;
 
   let roleFilter = {};
-  if (role === "batters")
-    {roleFilter = { role: { contains: "Bat", mode: "insensitive" } };}
-  else if (role === "bowlers")
-    {roleFilter = { role: { contains: "Bowl", mode: "insensitive" } };}
-  else if (role === "all-rounders")
-    {roleFilter = { role: { contains: "All", mode: "insensitive" } };}
+  if (role === "batters") {
+    roleFilter = { role: { contains: "Bat", mode: "insensitive" } };
+  } else if (role === "bowlers") {
+    roleFilter = { role: { contains: "Bowl", mode: "insensitive" } };
+  } else if (role === "all-rounders") {
+    roleFilter = { role: { contains: "All", mode: "insensitive" } };
+  }
 
   const [analytics, total] = await Promise.all([
     prisma.playerAnalytics.findMany({
@@ -691,7 +692,6 @@ export async function getVenueMastery(playerId) {
   return prisma.venueMasteryStat.findMany({
     where: { playerId },
     orderBy: [{ runsScored: "desc" }, { wickets: "desc" }],
-    take: 15,
   });
 }
 

@@ -20,6 +20,7 @@ import {
   Chip,
   useTheme,
   useMediaQuery,
+  IconButton,
 } from "@mui/material";
 import {
   LineChart,
@@ -31,6 +32,8 @@ import {
 } from "recharts";
 import { apiClient } from "../api/index.js";
 import PageHeader from "../components/common/PageHeader.jsx";
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import CloseIcon from "@mui/icons-material/Close";
 
 function HeadToHeadMatchups() {
   const theme = useTheme();
@@ -467,9 +470,16 @@ function HeadToHeadMatchups() {
                       {phaseLabel}
                     </Typography>
                     <Box
-                      display="flex"
-                      justifyContent="space-around"
-                      alignItems="center"
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: {
+                          xs: "repeat(2, 1fr)",
+                          sm: "repeat(4, 1fr)",
+                        },
+                        gap: 1.5,
+                        justifyItems: "center",
+                        alignItems: "center",
+                      }}
                     >
                       <Box>
                         <Typography
@@ -681,7 +691,15 @@ function HeadToHeadMatchups() {
   };
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: "auto", p: 3 }}>
+    <Box
+      sx={{
+        maxWidth: 1200,
+        mx: "auto",
+        px: { xs: 2, sm: 3 },
+        pt: { xs: 1, md: 2 },
+        pb: 6,
+      }}
+    >
       <PageHeader
         title="Head-to-Head Matchups"
         subtitle="Analyze every delivery between any two players in IPL history."
@@ -702,11 +720,15 @@ function HeadToHeadMatchups() {
           sx={{
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
-            gap: 3,
-            mb: 3,
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 2.5,
+            width: "100%",
           }}
         >
-          <Box sx={{ flex: 1 }}>
+          <Box
+            sx={{ flex: 1, width: "100%", maxWidth: { xs: "100%", md: 350 } }}
+          >
             <Autocomplete
               fullWidth
               options={players}
@@ -715,6 +737,25 @@ function HeadToHeadMatchups() {
               onChange={(e, val) => {
                 setPlayer1(val);
                 setSearched(false);
+              }}
+              renderOption={(props, option) => {
+                const { key, ...optionProps } = props;
+                return (
+                  <Box
+                    key={key}
+                    component="li"
+                    {...optionProps}
+                    sx={{
+                      justifyContent: "center !important",
+                      textAlign: "center !important",
+                      borderBottom: "1px solid",
+                      borderColor: "divider",
+                      py: 1,
+                    }}
+                  >
+                    {option.name}
+                  </Box>
+                );
               }}
               renderInput={(params) => (
                 <TextField
@@ -725,7 +766,9 @@ function HeadToHeadMatchups() {
               )}
             />
           </Box>
-          <Box sx={{ flex: 1 }}>
+          <Box
+            sx={{ flex: 1, width: "100%", maxWidth: { xs: "100%", md: 350 } }}
+          >
             <Autocomplete
               fullWidth
               options={players}
@@ -734,6 +777,25 @@ function HeadToHeadMatchups() {
               onChange={(e, val) => {
                 setPlayer2(val);
                 setSearched(false);
+              }}
+              renderOption={(props, option) => {
+                const { key, ...optionProps } = props;
+                return (
+                  <Box
+                    key={key}
+                    component="li"
+                    {...optionProps}
+                    sx={{
+                      justifyContent: "center !important",
+                      textAlign: "center !important",
+                      borderBottom: "1px solid",
+                      borderColor: "divider",
+                      py: 1,
+                    }}
+                  >
+                    {option.name}
+                  </Box>
+                );
               }}
               renderInput={(params) => (
                 <TextField
@@ -744,20 +806,18 @@ function HeadToHeadMatchups() {
               )}
             />
           </Box>
-        </Box>
-
-        <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
           <Button
             variant="contained"
-            size="large"
             onClick={handleSearch}
             disabled={!player1 || !player2 || loading}
             sx={{
-              px: { xs: 4, sm: 6 },
-              py: 1.5,
-              fontSize: "1.1rem",
+              height: 56,
+              px: 4,
+              fontSize: "1rem",
+              fontWeight: 700,
               borderRadius: 2,
-              width: { xs: "100%", sm: "auto" },
+              whiteSpace: "nowrap",
+              width: { xs: "100%", md: "auto" },
               bgcolor: "primary.main",
               "&:hover": {
                 bgcolor: "primary.dark",
@@ -767,71 +827,89 @@ function HeadToHeadMatchups() {
             {loading ? "Searching..." : "Analyze Matchup"}
           </Button>
         </Box>
-      </Paper>
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 1.5,
-          mb: 4,
-          flexWrap: "wrap",
-          width: "100%",
-          px: { xs: 1, sm: 3 },
-        }}
-      >
-        <Typography
-          variant="body2"
-          color="text.secondary"
+        <Box
           sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            mt: 3,
+            pt: 2.5,
+            borderTop: "1px solid",
+            borderColor: "divider",
             width: "100%",
-            textAlign: "center",
-            mb: 1.5,
-            fontWeight: 800,
-            letterSpacing: 1.5,
-            textTransform: "uppercase",
-            fontSize: "0.75rem",
+            overflowX: "auto",
+            scrollbarWidth: "none",
+            "&::-webkit-scrollbar": { display: "none" },
+            flexWrap: "nowrap",
+            whiteSpace: "nowrap",
           }}
         >
-          Iconic Rivalries
-        </Typography>
-        {[
-          { label: "Dhoni vs Bumrah", p1: "MS Dhoni", p2: "JJ Bumrah" },
-          { label: "Kohli vs Narine", p1: "V Kohli", p2: "SP Narine" },
-          { label: "ABD vs Rashid", p1: "AB de Villiers", p2: "Rashid Khan" },
-          { label: "Russell vs Bhuvi", p1: "AD Russell", p2: "B Kumar" },
-          { label: "Rohit vs Mishra", p1: "RG Sharma", p2: "A Mishra" },
-          { label: "Warner vs Ashwin", p1: "DA Warner", p2: "R Ashwin" },
-          {
-            label: "Gayle vs Harbhajan",
-            p1: "CH Gayle",
-            p2: "Harbhajan Singh",
-          },
-          { label: "Dhawan vs Chawla", p1: "S Dhawan", p2: "PP Chawla" },
-        ].map((rivalry) => (
-          <Chip
-            key={rivalry.label}
-            label={rivalry.label}
-            onClick={() => handleDefaultClick(rivalry.p1, rivalry.p2)}
-            clickable
+          <Typography
+            variant="body2"
+            color="text.secondary"
             sx={{
-              fontWeight: 750,
-              px: 1.5,
-              py: 2,
-              bgcolor: "rgba(99, 102, 241, 0.08)",
-              color: "#818cf8",
-              border: "1px solid rgba(99, 102, 241, 0.2)",
-              "&:hover": {
-                bgcolor: "primary.main",
-                color: "white",
-                transform: "translateY(-2px)",
-                boxShadow: "0 4px 12px rgba(99, 102, 241, 0.35)",
+              fontWeight: 800,
+              letterSpacing: 1.2,
+              textTransform: "uppercase",
+              fontSize: "0.75rem",
+              mr: 1,
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: 0.5,
+              "& .MuiSvgIcon-root": {
+                animation: "slideRight 1.5s infinite ease-in-out",
               },
-              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              "@keyframes slideRight": {
+                "0%": { transform: "translateX(0)" },
+                "50%": { transform: "translateX(4px)" },
+                "100%": { transform: "translateX(0)" },
+              },
             }}
-          />
-        ))}
-      </Box>
+          >
+            Iconic Rivalries
+            <KeyboardDoubleArrowRightIcon sx={{ fontSize: 15 }} />
+          </Typography>
+          {[
+            { label: "Dhoni vs Bumrah", p1: "MS Dhoni", p2: "JJ Bumrah" },
+            { label: "Kohli vs Narine", p1: "V Kohli", p2: "SP Narine" },
+            { label: "ABD vs Rashid", p1: "AB de Villiers", p2: "Rashid Khan" },
+            { label: "Russell vs Bhuvi", p1: "AD Russell", p2: "B Kumar" },
+            { label: "Rohit vs Mishra", p1: "RG Sharma", p2: "A Mishra" },
+            { label: "Warner vs Ashwin", p1: "DA Warner", p2: "R Ashwin" },
+            {
+              label: "Gayle vs Harbhajan",
+              p1: "CH Gayle",
+              p2: "Harbhajan Singh",
+            },
+            { label: "Dhawan vs Chawla", p1: "S Dhawan", p2: "PP Chawla" },
+          ].map((rivalry) => (
+            <Chip
+              key={rivalry.label}
+              label={rivalry.label}
+              onClick={() => handleDefaultClick(rivalry.p1, rivalry.p2)}
+              clickable
+              sx={{
+                fontWeight: 750,
+                px: 1.5,
+                height: 32,
+                bgcolor: "rgba(99, 102, 241, 0.08)",
+                color: "#818cf8",
+                border: "1px solid rgba(99, 102, 241, 0.2)",
+                flexShrink: 0,
+                "&:hover": {
+                  bgcolor: "primary.main",
+                  color: "white",
+                  transform: "translateY(-1.5px)",
+                  boxShadow: "0 4px 12px rgba(99, 102, 241, 0.35)",
+                },
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            />
+          ))}
+        </Box>
+      </Paper>
 
       {loading && (
         <Box
@@ -906,7 +984,12 @@ function HeadToHeadMatchups() {
         fullWidth
       >
         <DialogTitle
-          sx={{ fontWeight: 800, bgcolor: "primary.main", color: "white" }}
+          sx={{
+            fontWeight: 800,
+            bgcolor: "primary.main",
+            color: "white",
+            position: "relative",
+          }}
         >
           <Box
             sx={{
@@ -915,6 +998,8 @@ function HeadToHeadMatchups() {
               alignItems: "center",
               textAlign: "center",
               width: "100%",
+              pr: 6,
+              pl: 6,
             }}
           >
             <Typography
@@ -936,6 +1021,24 @@ function HeadToHeadMatchups() {
               </Typography>
             )}
           </Box>
+          <IconButton
+            aria-label="close"
+            onClick={() => setSelectedYear(null)}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: "white",
+              bgcolor: "#ef4444",
+              width: 30,
+              height: 30,
+              "&:hover": {
+                bgcolor: "#dc2626",
+              },
+            }}
+          >
+            <CloseIcon sx={{ fontSize: 18 }} />
+          </IconButton>
         </DialogTitle>
         <DialogContent sx={{ p: 0 }}>
           <TableContainer sx={{ overflowX: "auto" }}>

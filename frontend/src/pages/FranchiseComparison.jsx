@@ -36,7 +36,11 @@ function TabPanel(props) {
       aria-labelledby={`h2h-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ py: 4 }}>{children}</Box>}
+      {value === index && (
+        <Box sx={{ py: 4, overflow: "hidden", maxWidth: "100%" }}>
+          {children}
+        </Box>
+      )}
     </div>
   );
 }
@@ -51,33 +55,65 @@ const LeaderboardCard = ({
   <Paper
     elevation={0}
     sx={{
-      p: 3,
+      p: { xs: 2.5, sm: 3 },
       borderRadius: 4,
       height: "100%",
+      width: "100%",
       border: "1px solid",
       borderColor: "divider",
       bgcolor: "background.paper",
       transition: "transform 0.2s",
       "&:hover": { transform: "translateY(-4px)" },
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
     }}
   >
-    <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        mb: 3,
+        width: "100%",
+      }}
+    >
       <Box
         sx={{
-          p: 1,
+          p: 1.2,
           borderRadius: "50%",
           bgcolor: `${color}15`,
           color: color,
           display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          mb: 1.5,
+          width: 48,
+          height: 48,
         }}
       >
         {icon}
       </Box>
-      <Typography variant="h6" fontWeight={800} color="text.primary">
+      <Typography
+        variant="h6"
+        fontWeight={800}
+        color="text.primary"
+        sx={{ textAlign: "center", width: "100%" }}
+      >
         {title}
       </Typography>
     </Box>
-    <Box display="flex" flexDirection="column" gap={2}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 1.5,
+        flexGrow: 1,
+        width: "100%",
+      }}
+    >
       {data && data.length > 0 ? (
         data.map((item, idx) => (
           <Box
@@ -85,7 +121,8 @@ const LeaderboardCard = ({
             sx={{
               display: "flex",
               alignItems: "center",
-              p: 2,
+              px: 2.5,
+              py: 1.5,
               borderRadius: 2,
               bgcolor: "background.default",
               border: "1px solid",
@@ -96,12 +133,12 @@ const LeaderboardCard = ({
               variant="h6"
               fontWeight={900}
               color="text.disabled"
-              sx={{ width: 30 }}
+              sx={{ width: 36, flexShrink: 0 }}
             >
               #{idx + 1}
             </Typography>
-            <Box flexGrow={1} ml={1}>
-              <Typography variant="body1" fontWeight={700}>
+            <Box sx={{ flexGrow: 1, minWidth: 0, mx: 2 }}>
+              <Typography variant="body1" fontWeight={700} noWrap>
                 {item.name}
               </Typography>
               {item.team && (
@@ -109,13 +146,18 @@ const LeaderboardCard = ({
                   variant="caption"
                   color="text.secondary"
                   fontWeight={600}
-                  sx={{ textTransform: "uppercase" }}
+                  sx={{ textTransform: "uppercase", lineHeight: 1.6 }}
                 >
                   {item.team}
                 </Typography>
               )}
             </Box>
-            <Typography variant="h6" fontWeight={800} color={color}>
+            <Typography
+              variant="h6"
+              fontWeight={800}
+              color={color}
+              sx={{ flexShrink: 0 }}
+            >
               {renderItem(item)}
             </Typography>
           </Box>
@@ -131,12 +173,16 @@ const LeaderboardCard = ({
 
 const FormTimeline = ({ matches, f1, f2 }) => (
   <Box
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
-    gap={1}
-    mt={2}
-    mb={2}
+    sx={{
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 1,
+      mt: 2,
+      mb: 2,
+      width: "100%",
+    }}
   >
     {matches.map((m, i) => {
       const isF1Win = m.winner === f1.shortName;
@@ -209,6 +255,61 @@ const FlowBox = ({ title, subtitle, color, isMain }) => (
   </Box>
 );
 
+const CompactStat = ({ title, value, icon: Icon, color = "primary.main" }) => (
+  <Paper
+    elevation={0}
+    sx={{
+      p: 2,
+      borderRadius: 3,
+      border: "1px solid",
+      borderColor: "divider",
+      bgcolor: "background.default",
+      textAlign: "center",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100%",
+      transition: "transform 0.2s",
+      "&:hover": {
+        transform: "translateY(-2px)",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+      },
+    }}
+  >
+    {Icon && (
+      <Box
+        sx={{
+          p: 1,
+          borderRadius: "50%",
+          bgcolor: `${color}15`,
+          color: color,
+          display: "flex",
+          mb: 1,
+        }}
+      >
+        <Icon fontSize="small" />
+      </Box>
+    )}
+    <Typography
+      variant="caption"
+      color="text.secondary"
+      fontWeight={700}
+      sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+    >
+      {title}
+    </Typography>
+    <Typography
+      variant="h5"
+      fontWeight={800}
+      color="text.primary"
+      sx={{ mt: 0.5 }}
+    >
+      {value}
+    </Typography>
+  </Paper>
+);
+
 function FranchiseComparison() {
   const [team1, setTeam1] = useState("MI");
   const [team2, setTeam2] = useState("CSK");
@@ -246,11 +347,21 @@ function FranchiseComparison() {
           boxShadow: "0 8px 32px rgba(0,0,0,0.03)",
         }}
       >
-        <Grid container spacing={4} alignItems="center" justifyContent="center">
-          <Grid item xs={12} sm={4}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: "center",
+            justifyContent: "center",
+            gap: { xs: 2, sm: 4 },
+            width: "100%",
+          }}
+        >
+          <Box sx={{ width: { xs: "100%", sm: 280 } }}>
             <TextField
               select
               fullWidth
+              size="small"
               variant="outlined"
               label="Select Team 1"
               value={team1}
@@ -260,29 +371,59 @@ function FranchiseComparison() {
                   borderRadius: 3,
                   fontWeight: 700,
                 },
+                "& .MuiSelect-select": {
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                },
+              }}
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: {
+                    sx: {
+                      borderRadius: 2,
+                      mt: 1,
+                    },
+                  },
+                },
               }}
             >
-              {franchises?.map((f) => (
-                <MenuItem key={f.shortName} value={f.shortName}>
-                  {f.name}
-                </MenuItem>
-              ))}
+              {franchises
+                ?.filter((f) => f.shortName !== team2)
+                .map((f) => (
+                  <MenuItem
+                    key={f.shortName}
+                    value={f.shortName}
+                    sx={{
+                      justifyContent: "center",
+                      py: 1.5,
+                      borderBottom: "1px solid",
+                      borderColor: "divider",
+                      "&:last-child": {
+                        borderBottom: "none",
+                      },
+                    }}
+                  >
+                    {f.name}
+                  </MenuItem>
+                ))}
             </TextField>
-          </Grid>
-          <Grid item xs={12} sm={2} textAlign="center">
-            <Typography
-              variant="h4"
-              fontWeight={900}
-              color="text.disabled"
-              sx={{ fontStyle: "italic", letterSpacing: 2 }}
-            >
-              VS
-            </Typography>
-          </Grid>
-          <Grid item xs={12} sm={4}>
+          </Box>
+
+          <Typography
+            variant="h4"
+            fontWeight={900}
+            color="text.disabled"
+            sx={{ fontStyle: "italic", letterSpacing: 2, py: { xs: 1, sm: 0 } }}
+          >
+            VS
+          </Typography>
+
+          <Box sx={{ width: { xs: "100%", sm: 280 } }}>
             <TextField
               select
               fullWidth
+              size="small"
               variant="outlined"
               label="Select Team 2"
               value={team2}
@@ -292,16 +433,45 @@ function FranchiseComparison() {
                   borderRadius: 3,
                   fontWeight: 700,
                 },
+                "& .MuiSelect-select": {
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                },
+              }}
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: {
+                    sx: {
+                      borderRadius: 2,
+                      mt: 1,
+                    },
+                  },
+                },
               }}
             >
-              {franchises?.map((f) => (
-                <MenuItem key={f.shortName} value={f.shortName}>
-                  {f.name}
-                </MenuItem>
-              ))}
+              {franchises
+                ?.filter((f) => f.shortName !== team1)
+                .map((f) => (
+                  <MenuItem
+                    key={f.shortName}
+                    value={f.shortName}
+                    sx={{
+                      justifyContent: "center",
+                      py: 1.5,
+                      borderBottom: "1px solid",
+                      borderColor: "divider",
+                      "&:last-child": {
+                        borderBottom: "none",
+                      },
+                    }}
+                  >
+                    {f.name}
+                  </MenuItem>
+                ))}
             </TextField>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Paper>
 
       {isLoading ? (
@@ -320,15 +490,16 @@ function FranchiseComparison() {
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
-              variant="scrollable"
-              scrollButtons="auto"
+              centered
               textColor="primary"
               indicatorColor="primary"
               sx={{
+                width: "100%",
                 "& .MuiTab-root": {
                   fontSize: "1rem",
                   textTransform: "none",
                   px: 3,
+                  minWidth: "auto",
                 },
               }}
             >
@@ -348,41 +519,46 @@ function FranchiseComparison() {
                 label="Player Hall of Fame"
                 sx={{ fontWeight: tabValue === 3 ? 800 : 500 }}
               />
-              <Tab
-                label="Advanced Analytics"
-                sx={{ fontWeight: tabValue === 4 ? 800 : 500 }}
-              />
             </Tabs>
           </Box>
 
           <TabPanel value={tabValue} index={0}>
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={4}>
+            <Grid container spacing={4} justifyContent="center">
+              <Grid item xs={12} md={6}>
                 <Box
                   sx={{
-                    p: 4,
+                    p: 3,
                     bgcolor: `${f1.color}08`,
                     borderRadius: 4,
                     height: "100%",
                     borderTop: `6px solid ${f1.color}`,
                   }}
                 >
-                  <Box display="flex" alignItems="center" gap={2} mb={4}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 2,
+                      mb: 3,
+                      width: "100%",
+                    }}
+                  >
                     {f1.logoUrl && (
                       <Avatar
                         src={f1.logoUrl}
                         alt={f1.shortName}
                         sx={{
-                          width: 72,
-                          height: 72,
+                          width: 56,
+                          height: 56,
                           bgcolor: "white",
-                          p: 1,
+                          p: 0.8,
                           boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                         }}
                       />
                     )}
                     <Typography
-                      variant="h3"
+                      variant="h4"
                       fontWeight={900}
                       color={f1.color}
                       sx={{ letterSpacing: "-1px" }}
@@ -392,21 +568,20 @@ function FranchiseComparison() {
                   </Box>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
-                      <StatCard
+                      <CompactStat
                         title="Total Titles"
                         value={f1.titles}
-                        icon={EmojiEventsIcon}
                         color="#FFD700"
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <StatCard
+                      <CompactStat
                         title="Total Matches"
                         value={f1.lifetimeStats?.totalMatches}
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <StatCard
+                      <CompactStat
                         title="Overall Win %"
                         value={`${f1.lifetimeStats?.winPct}%`}
                       />
@@ -415,102 +590,10 @@ function FranchiseComparison() {
                 </Box>
               </Grid>
 
-              <Grid item xs={12} md={4}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 4,
-                    borderRadius: 4,
-                    height: "100%",
-                    border: "1px solid",
-                    borderColor: "divider",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Typography
-                    variant="h5"
-                    fontWeight={900}
-                    mb={1}
-                    color="text.primary"
-                  >
-                    Head to Head
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    mb={4}
-                    sx={{
-                      textTransform: "uppercase",
-                      letterSpacing: 2,
-                      fontWeight: 700,
-                    }}
-                  >
-                    {h2h.totalMatches} Encounters
-                  </Typography>
-
-                  <Box sx={{ width: "100%", mb: 5 }}>
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      mb={1.5}
-                      alignItems="flex-end"
-                    >
-                      <Typography
-                        variant="h4"
-                        fontWeight={900}
-                        color={f1.color}
-                      >
-                        {h2h[f1.shortName].wins}
-                      </Typography>
-                      <Chip
-                        label={`${h2h.ties} TIES`}
-                        size="small"
-                        sx={{ fontWeight: 800 }}
-                      />
-                      <Typography
-                        variant="h4"
-                        fontWeight={900}
-                        color={f2.color}
-                      >
-                        {h2h[f2.shortName].wins}
-                      </Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={
-                        (h2h[f1.shortName].wins / (h2h.totalMatches || 1)) * 100
-                      }
-                      sx={{
-                        height: 24,
-                        borderRadius: 12,
-                        bgcolor: `${f2.color}90`,
-                        "& .MuiLinearProgress-bar": { bgcolor: f1.color },
-                      }}
-                    />
-                  </Box>
-
-                  <Divider sx={{ width: "100%", mb: 3 }} />
-                  <Typography
-                    variant="subtitle2"
-                    fontWeight={800}
-                    color="text.secondary"
-                    sx={{ letterSpacing: 1 }}
-                  >
-                    RECENT FORM (LAST 5)
-                  </Typography>
-                  {h2h.last5Matches && (
-                    <FormTimeline matches={h2h.last5Matches} f1={f1} f2={f2} />
-                  )}
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={6}>
                 <Box
                   sx={{
-                    p: 4,
+                    p: 3,
                     bgcolor: `${f2.color}08`,
                     borderRadius: 4,
                     height: "100%",
@@ -518,51 +601,53 @@ function FranchiseComparison() {
                   }}
                 >
                   <Box
-                    display="flex"
-                    alignItems="center"
-                    gap={2}
-                    mb={4}
-                    justifyContent="flex-end"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 2,
+                      mb: 3,
+                      width: "100%",
+                    }}
                   >
+                    {f2.logoUrl && (
+                      <Avatar
+                        src={f2.logoUrl}
+                        alt={f2.shortName}
+                        sx={{
+                          width: 56,
+                          height: 56,
+                          bgcolor: "white",
+                          p: 0.8,
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                        }}
+                      />
+                    )}
                     <Typography
-                      variant="h3"
+                      variant="h4"
                       fontWeight={900}
                       color={f2.color}
                       sx={{ letterSpacing: "-1px" }}
                     >
                       {f2.shortName}
                     </Typography>
-                    {f2.logoUrl && (
-                      <Avatar
-                        src={f2.logoUrl}
-                        alt={f2.shortName}
-                        sx={{
-                          width: 72,
-                          height: 72,
-                          bgcolor: "white",
-                          p: 1,
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                        }}
-                      />
-                    )}
                   </Box>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
-                      <StatCard
+                      <CompactStat
                         title="Total Titles"
                         value={f2.titles}
-                        icon={EmojiEventsIcon}
                         color="#FFD700"
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <StatCard
+                      <CompactStat
                         title="Total Matches"
                         value={f2.lifetimeStats?.totalMatches}
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <StatCard
+                      <CompactStat
                         title="Overall Win %"
                         value={`${f2.lifetimeStats?.winPct}%`}
                       />
@@ -570,459 +655,805 @@ function FranchiseComparison() {
                   </Grid>
                 </Box>
               </Grid>
+
+              <Grid item xs={12} sx={{ width: "100%" }}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 4,
+                    borderRadius: 4,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    bgcolor: "background.paper",
+                    width: "100%",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: { xs: "column", md: "row" },
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: 4,
+                      width: "100%",
+                    }}
+                  >
+                    <Box
+                      sx={{ textAlign: { xs: "center", md: "left" }, flex: 1 }}
+                    >
+                      <Typography
+                        variant="h6"
+                        fontWeight={900}
+                        mb={0.5}
+                        color="text.primary"
+                      >
+                        Head to Head
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{
+                          textTransform: "uppercase",
+                          letterSpacing: 1.5,
+                          fontWeight: 700,
+                        }}
+                      >
+                        {h2h.totalMatches} Encounters
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ width: "100%", flex: 2, maxWidth: { md: 500 } }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1.5,
+                          alignItems: "flex-end",
+                        }}
+                      >
+                        <Typography
+                          variant="h5"
+                          fontWeight={900}
+                          color={f1.color}
+                        >
+                          {h2h[f1.shortName].wins} {f1.shortName}
+                        </Typography>
+                        <Chip
+                          label={`${h2h.ties} TIES`}
+                          size="small"
+                          sx={{ fontWeight: 800 }}
+                        />
+                        <Typography
+                          variant="h5"
+                          fontWeight={900}
+                          color={f2.color}
+                        >
+                          {f2.shortName} {h2h[f2.shortName].wins}
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={
+                          (h2h[f1.shortName].wins / (h2h.totalMatches || 1)) *
+                          100
+                        }
+                        sx={{
+                          height: 16,
+                          borderRadius: 8,
+                          bgcolor: `${f2.color}90`,
+                          "& .MuiLinearProgress-bar": { bgcolor: f1.color },
+                        }}
+                      />
+                    </Box>
+
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography
+                        variant="caption"
+                        fontWeight={800}
+                        color="text.secondary"
+                        sx={{
+                          letterSpacing: 1,
+                          display: "block",
+                          mb: 1,
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        RECENT FORM (LAST 5)
+                      </Typography>
+                      {h2h.last5Matches && (
+                        <FormTimeline
+                          matches={h2h.last5Matches}
+                          f1={f1}
+                          f2={f2}
+                        />
+                      )}
+                    </Box>
+                  </Box>
+                </Paper>
+              </Grid>
             </Grid>
           </TabPanel>
 
           <TabPanel value={tabValue} index={1}>
             {causality && (
-              <Grid container spacing={4}>
-                <Grid item xs={12}>
-                  <Box mb={2}>
-                    <Typography
-                      variant="h5"
-                      fontWeight={900}
-                      color="primary.main"
-                      display="flex"
-                      alignItems="center"
-                      gap={1}
-                    >
-                      <AccountTreeIcon /> The Toss Blueprint (Decision {"->"}{" "}
-                      Win Probability)
-                    </Typography>
-                  </Box>
-                  <Grid container spacing={2}>
-                    {[f1, f2].map((f) => {
-                      const t = causality[f.shortName].toss;
-                      if (!t) return null;
-                      return (
-                        <Grid item xs={12} md={6} key={f.shortName}>
-                          <Paper
-                            elevation={0}
-                            sx={{
-                              p: 3,
-                              borderRadius: 4,
-                              border: `2px solid ${f.color}40`,
-                              bgcolor: `${f.color}05`,
-                            }}
-                          >
-                            <Typography
-                              variant="h6"
-                              fontWeight={800}
-                              color={f.color}
-                              mb={3}
-                            >
-                              {f.name} Toss Matrix
-                            </Typography>
-                            <Box
-                              display="flex"
-                              alignItems="center"
-                              gap={2}
-                              flexWrap="wrap"
-                            >
-                              <FlowBox
-                                title={`${t.tossWins}`}
-                                subtitle="Tosses Won"
-                                color={f.color}
-                                isMain
-                              />
-                              <Box
-                                flexGrow={1}
-                                display="flex"
-                                flexDirection="column"
-                                gap={2}
-                              >
-                                <Box display="flex" alignItems="center" gap={2}>
-                                  <FlowBox
-                                    title={`${t.chooseBatPct}%`}
-                                    subtitle="Choose Bat"
-                                    color="#FF9800"
-                                  />
-                                  <Typography
-                                    variant="h6"
-                                    color="text.secondary"
-                                  >
-                                    →
-                                  </Typography>
-                                  <FlowBox
-                                    title={`${t.batWinProb}%`}
-                                    subtitle="Win Prob"
-                                    color="#4CAF50"
-                                  />
-                                </Box>
-                                <Box display="flex" alignItems="center" gap={2}>
-                                  <FlowBox
-                                    title={`${t.chooseFieldPct}%`}
-                                    subtitle="Choose Field"
-                                    color="#2196F3"
-                                  />
-                                  <Typography
-                                    variant="h6"
-                                    color="text.secondary"
-                                  >
-                                    →
-                                  </Typography>
-                                  <FlowBox
-                                    title={`${t.fieldWinProb}%`}
-                                    subtitle="Win Prob"
-                                    color="#4CAF50"
-                                  />
-                                </Box>
-                              </Box>
-                            </Box>
-                          </Paper>
-                        </Grid>
-                      );
-                    })}
-                  </Grid>
-                </Grid>
-
-                <Grid item xs={12} md={5}>
-                  <Box mb={2}>
-                    <Typography
-                      variant="h5"
-                      fontWeight={900}
-                      color="secondary.main"
-                      display="flex"
-                      alignItems="center"
-                      gap={1}
-                    >
-                      <ExploreIcon /> The Pitch Dictator
-                    </Typography>
-                  </Box>
-                  {causality.venue && (
-                    <Paper
-                      elevation={0}
+              <Box sx={{ width: "100%" }}>
+                <Grid container spacing={4} justifyContent="center">
+                  <Grid item xs={12} sx={{ mb: 6 }}>
+                    <Box
                       sx={{
-                        p: 4,
-                        borderRadius: 4,
-                        border: "1px solid",
-                        borderColor: "divider",
-                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        mb: 3,
+                        width: "100%",
                       }}
                     >
                       <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        fontWeight={800}
-                        sx={{ letterSpacing: 1, textTransform: "uppercase" }}
-                        mb={1}
-                      >
-                        Most Frequent Battleground
-                      </Typography>
-                      <Typography
                         variant="h5"
                         fontWeight={900}
-                        color="text.primary"
-                        mb={4}
+                        color="primary.main"
+                        sx={{ textAlign: "center" }}
                       >
-                        {causality.venue.name} ({causality.venue.matches}{" "}
-                        matches)
+                        The Toss Blueprint (Decision &rarr; Win Probability)
                       </Typography>
+                    </Box>
+                    <Grid container spacing={2}>
+                      {[f1, f2].map((f) => {
+                        const t = causality[f.shortName].toss;
+                        if (!t) return null;
+                        return (
+                          <Grid item xs={12} md={6} key={f.shortName}>
+                            <Paper
+                              elevation={0}
+                              sx={{
+                                p: 3,
+                                borderRadius: 4,
+                                border: `2px solid ${f.color}40`,
+                                bgcolor: `${f.color}05`,
+                                width: "100%",
+                              }}
+                            >
+                              <Typography
+                                variant="h6"
+                                fontWeight={800}
+                                color={f.color}
+                                mb={3}
+                                sx={{ textAlign: "center" }}
+                              >
+                                {f.name} Toss Matrix
+                              </Typography>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: { xs: "column", sm: "row" },
+                                  alignItems: "center",
+                                  gap: 2,
+                                  width: "100%",
+                                }}
+                              >
+                                <FlowBox
+                                  title={`${t.tossWins}`}
+                                  subtitle="Tosses Won"
+                                  color={f.color}
+                                  isMain
+                                />
+                                <Box
+                                  sx={{
+                                    flexGrow: 1,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 2,
+                                    width: "100%",
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      gap: 2,
+                                      width: "100%",
+                                    }}
+                                  >
+                                    <FlowBox
+                                      title={`${t.chooseBatPct}%`}
+                                      subtitle="Choose Bat"
+                                      color="#FF9800"
+                                    />
+                                    <Typography
+                                      variant="h6"
+                                      color="text.secondary"
+                                    >
+                                      &rarr;
+                                    </Typography>
+                                    <FlowBox
+                                      title={`${t.batWinProb}%`}
+                                      subtitle="Win Prob"
+                                      color="#4CAF50"
+                                    />
+                                  </Box>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      gap: 2,
+                                      width: "100%",
+                                    }}
+                                  >
+                                    <FlowBox
+                                      title={`${t.chooseFieldPct}%`}
+                                      subtitle="Choose Field"
+                                      color="#2196F3"
+                                    />
+                                    <Typography
+                                      variant="h6"
+                                      color="text.secondary"
+                                    >
+                                      &rarr;
+                                    </Typography>
+                                    <FlowBox
+                                      title={`${t.fieldWinProb}%`}
+                                      subtitle="Win Prob"
+                                      color="#4CAF50"
+                                    />
+                                  </Box>
+                                </Box>
+                              </Box>
+                            </Paper>
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
+                  </Grid>
+                </Grid>
 
-                      <Grid container spacing={3}>
-                        <Grid item xs={6}>
+                <Grid
+                  container
+                  spacing={4}
+                  justifyContent="center"
+                  sx={{ mt: 2, width: "100%" }}
+                >
+                  <Grid
+                    item
+                    xs={12}
+                    md={5.5}
+                    lg={5}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <Box sx={{ mb: 2, width: "100%", textAlign: "center" }}>
+                      <Typography
+                        variant="h6"
+                        fontWeight={900}
+                        color="secondary.main"
+                        sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
+                      >
+                        The Pitch Dictator
+                      </Typography>
+                    </Box>
+                    {causality.venue && (
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 2.5,
+                          borderRadius: 4,
+                          border: "1px solid",
+                          borderColor: "divider",
+                          bgcolor: "background.paper",
+                          width: "100%",
+                          flexGrow: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          textAlign: "center",
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          fontWeight={800}
+                          sx={{
+                            letterSpacing: 0.5,
+                            textTransform: "uppercase",
+                          }}
+                          mb={0.5}
+                        >
+                          Most Frequent Battleground
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight={900}
+                          color="text.primary"
+                          mb={2}
+                          sx={{ fontSize: { xs: "0.9rem", sm: "1.1rem" } }}
+                        >
+                          {causality.venue.name} ({causality.venue.matches}{" "}
+                          matches)
+                        </Typography>
+
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 2,
+                            width: "100%",
+                            justifyContent: "center",
+                          }}
+                        >
                           <Box
                             sx={{
-                              p: 2,
+                              p: 1.5,
                               borderRadius: 3,
                               bgcolor: "background.default",
                               border: "1px solid",
                               borderColor: "divider",
                               textAlign: "center",
+                              flex: 1,
                             }}
                           >
                             <Typography
-                              variant="h3"
+                              variant="h4"
                               fontWeight={900}
                               color="#FF9800"
+                              sx={{ fontSize: { xs: "1.5rem", sm: "2.2rem" } }}
                             >
                               {causality.venue.batFirstWinProb}%
                             </Typography>
                             <Typography
-                              variant="body2"
+                              variant="caption"
                               fontWeight={700}
                               color="text.secondary"
-                              mt={1}
+                              sx={{
+                                display: "block",
+                                mt: 0.5,
+                                lineHeight: 1.2,
+                              }}
                             >
-                              Bat First Win Prob
+                              Bat First Win
                             </Typography>
                           </Box>
-                        </Grid>
-                        <Grid item xs={6}>
                           <Box
                             sx={{
-                              p: 2,
+                              p: 1.5,
                               borderRadius: 3,
                               bgcolor: "background.default",
                               border: "1px solid",
                               borderColor: "divider",
                               textAlign: "center",
+                              flex: 1,
                             }}
                           >
                             <Typography
-                              variant="h3"
+                              variant="h4"
                               fontWeight={900}
                               color="#2196F3"
+                              sx={{ fontSize: { xs: "1.5rem", sm: "2.2rem" } }}
                             >
                               {causality.venue.fieldFirstWinProb}%
                             </Typography>
                             <Typography
-                              variant="body2"
+                              variant="caption"
                               fontWeight={700}
                               color="text.secondary"
-                              mt={1}
+                              sx={{
+                                display: "block",
+                                mt: 0.5,
+                                lineHeight: 1.2,
+                              }}
                             >
-                              Field First Win Prob
+                              Field First Win
                             </Typography>
                           </Box>
-                        </Grid>
-                      </Grid>
-                    </Paper>
-                  )}
-                </Grid>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
 
-                <Grid item xs={12} md={7}>
-                  <Box mb={2}>
-                    <Typography
-                      variant="h5"
-                      fontWeight={900}
-                      color="error.main"
-                      display="flex"
-                      alignItems="center"
-                      gap={1}
+                  <Grid
+                    item
+                    xs={12}
+                    md={6.5}
+                    lg={6}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <Box sx={{ mb: 2, width: "100%", textAlign: "center" }}>
+                      <Typography
+                        variant="h6"
+                        fontWeight={900}
+                        color="error.main"
+                        sx={{
+                          textAlign: "center",
+                          fontSize: { xs: "1rem", sm: "1.25rem" },
+                        }}
+                      >
+                        X-Factor Dependency
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        justifyContent: "center",
+                        alignItems: "stretch",
+                        gap: 2,
+                        width: "100%",
+                        flexGrow: 1,
+                      }}
                     >
-                      <AutoGraphIcon /> X-Factor Dependency
-                    </Typography>
-                  </Box>
-                  <Grid container spacing={2}>
-                    {[f1, f2].map((f) => {
-                      const x = causality[f.shortName].xFactor;
-                      if (!x) return null;
-                      return (
-                        <Grid item xs={12} sm={6} key={f.shortName}>
+                      {[f1, f2].map((f) => {
+                        const x = causality[f.shortName].xFactor;
+                        if (!x) return null;
+                        return (
                           <Paper
+                            key={f.shortName}
                             elevation={0}
                             sx={{
-                              p: 3,
+                              p: 2,
                               borderRadius: 4,
                               border: `2px solid ${f.color}40`,
-                              height: "100%",
+                              bgcolor: `${f.color}03`,
+                              flex: 1,
+                              width: "100%",
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "center",
+                              textAlign: "center",
                             }}
                           >
                             <Typography
                               variant="caption"
                               fontWeight={800}
                               color={f.color}
-                              sx={{ textTransform: "uppercase" }}
+                              sx={{
+                                textTransform: "uppercase",
+                                display: "block",
+                                fontSize: "0.7rem",
+                              }}
                             >
                               {f.shortName} Anchor
                             </Typography>
-                            <Typography variant="h6" fontWeight={900} mb={3}>
+                            <Typography
+                              variant="body1"
+                              fontWeight={900}
+                              mb={2}
+                              sx={{ fontSize: { xs: "0.85rem", sm: "1rem" } }}
+                            >
                               {x.name}
                             </Typography>
 
-                            <Box display="flex" flexDirection="column" gap={2}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 1,
+                                width: "100%",
+                              }}
+                            >
                               <Box
-                                display="flex"
-                                justifyContent="space-between"
-                                alignItems="center"
-                                p={1.5}
-                                bgcolor="#4CAF5015"
-                                borderRadius={2}
-                                border="1px solid #4CAF5040"
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  p: 1,
+                                  bgcolor: "#4CAF5015",
+                                  borderRadius: 2,
+                                  border: "1px solid #4CAF5040",
+                                  width: "100%",
+                                }}
                               >
-                                <Typography variant="body2" fontWeight={700}>
-                                  Scores 30+ Runs
+                                <Typography
+                                  variant="caption"
+                                  fontWeight={700}
+                                  sx={{
+                                    fontSize: { xs: "0.65rem", sm: "0.75rem" },
+                                  }}
+                                >
+                                  Scores 30+
                                 </Typography>
                                 <Typography
-                                  variant="h6"
+                                  variant="body2"
                                   fontWeight={900}
                                   color="#4CAF50"
+                                  sx={{
+                                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                  }}
                                 >
                                   {x.bigWinProb}% Win
                                 </Typography>
                               </Box>
                               <Box
-                                display="flex"
-                                justifyContent="space-between"
-                                alignItems="center"
-                                p={1.5}
-                                bgcolor="#F4433615"
-                                borderRadius={2}
-                                border="1px solid #F4433640"
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  p: 1,
+                                  bgcolor: "#F4433615",
+                                  borderRadius: 2,
+                                  border: "1px solid #F4433640",
+                                  width: "100%",
+                                }}
                               >
-                                <Typography variant="body2" fontWeight={700}>
-                                  Fails ({"<"}30 Runs)
+                                <Typography
+                                  variant="caption"
+                                  fontWeight={700}
+                                  sx={{
+                                    fontSize: { xs: "0.65rem", sm: "0.75rem" },
+                                  }}
+                                >
+                                  Fails (&lt;30)
                                 </Typography>
                                 <Typography
-                                  variant="h6"
+                                  variant="body2"
                                   fontWeight={900}
                                   color="#F44336"
+                                  sx={{
+                                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                  }}
                                 >
                                   {x.failWinProb}% Win
                                 </Typography>
                               </Box>
                             </Box>
                           </Paper>
-                        </Grid>
-                      );
-                    })}
+                        );
+                      })}
+                    </Box>
                   </Grid>
                 </Grid>
-              </Grid>
+              </Box>
             )}
           </TabPanel>
 
           <TabPanel value={tabValue} index={2}>
-            <Grid container spacing={4} mb={4}>
-              <Grid item xs={12} md={4}>
-                <Paper
-                  elevation={0}
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+                justifyContent: "center",
+                alignItems: { xs: "center", md: "stretch" },
+                gap: 4,
+                width: "100%",
+                mb: 6,
+              }}
+            >
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 4,
+                  borderRadius: 4,
+                  border: "2px solid #FF980040",
+                  bgcolor: "#FF980005",
+                  width: "100%",
+                  maxWidth: 360,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  textAlign: "center",
+                }}
+              >
+                <ExploreIcon
                   sx={{
-                    p: 4,
-                    borderRadius: 4,
-                    border: "1px solid",
-                    borderColor: "divider",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    fontSize: 48,
+                    color: "#FF9800",
+                    mb: 2,
+                    opacity: 0.9,
                   }}
+                />
+                <Typography variant="h3" fontWeight={900} color="#FF9800">
+                  {h2h.tossImpact}%
+                </Typography>
+                <Typography
+                  variant="body1"
+                  color="text.primary"
+                  fontWeight={800}
+                  mt={2}
                 >
-                  <ExploreIcon
-                    sx={{
-                      fontSize: 60,
-                      color: "text.secondary",
-                      mb: 2,
-                      opacity: 0.5,
-                    }}
-                  />
-                  <Typography variant="h4" fontWeight={900}>
-                    {h2h.tossImpact}%
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    fontWeight={600}
-                    mt={1}
-                  >
-                    Overall Toss Impact
-                  </Typography>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 4,
-                    borderRadius: 4,
-                    border: "1px solid",
-                    borderColor: "divider",
-                    height: "100%",
-                    textAlign: "center",
-                  }}
+                  Overall Toss Impact
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontWeight={600}
+                  mt={0.5}
+                  sx={{ maxWidth: 220 }}
                 >
-                  <Typography variant="h6" fontWeight={800} mb={3}>
-                    Home Dominance
-                  </Typography>
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Typography
-                        variant="h4"
-                        fontWeight={900}
-                        color={f1.color}
-                      >
-                        {h2h.f1HomeWins}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        fontWeight={600}
-                      >
-                        {f1.shortName} Home Wins
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography
-                        variant="h4"
-                        fontWeight={900}
-                        color={f2.color}
-                      >
-                        {h2h.f2HomeWins}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        fontWeight={600}
-                      >
-                        {f2.shortName} Home Wins
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 4,
-                    borderRadius: 4,
-                    border: "1px solid",
-                    borderColor: "divider",
-                    height: "100%",
-                    textAlign: "center",
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={800} mb={3}>
-                    Neutral Venues
-                  </Typography>
-                  <Typography variant="h3" fontWeight={900}>
-                    {h2h.totalMatches - h2h.f1HomeWins - h2h.f2HomeWins}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    fontWeight={600}
-                    mt={1}
-                  >
-                    Matches played at Neutral Venues
-                  </Typography>
-                </Paper>
-              </Grid>
-            </Grid>
+                  Influence of toss wins on match outcome
+                </Typography>
+              </Paper>
 
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={6}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 4,
+                  borderRadius: 4,
+                  border: "2px solid #9C27B040",
+                  bgcolor: "#9C27B005",
+                  width: "100%",
+                  maxWidth: 360,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  textAlign: "center",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  fontWeight={800}
+                  color="#9C27B0"
+                  mb={3}
+                >
+                  Home Dominance
+                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-around",
+                    alignItems: "center",
+                    width: "100%",
+                    gap: 2,
+                  }}
+                >
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="h3" fontWeight={900} color={f1.color}>
+                      {h2h.f1HomeWins}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      fontWeight={700}
+                      sx={{ display: "block", mt: 1, lineHeight: 1.2 }}
+                    >
+                      {f1.shortName} Home Wins
+                    </Typography>
+                  </Box>
+                  <Divider
+                    orientation="vertical"
+                    flexItem
+                    sx={{ borderRightWidth: 2, opacity: 0.5 }}
+                  />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="h3" fontWeight={900} color={f2.color}>
+                      {h2h.f2HomeWins}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      fontWeight={700}
+                      sx={{ display: "block", mt: 1, lineHeight: 1.2 }}
+                    >
+                      {f2.shortName} Home Wins
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
+
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 4,
+                  borderRadius: 4,
+                  border: "2px solid #2196F340",
+                  bgcolor: "#2196F305",
+                  width: "100%",
+                  maxWidth: 360,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  textAlign: "center",
+                }}
+              >
+                <ExploreIcon
+                  sx={{
+                    fontSize: 48,
+                    color: "#2196F3",
+                    mb: 2,
+                    opacity: 0.9,
+                    transform: "rotate(45deg)",
+                  }}
+                />
+                <Typography variant="h3" fontWeight={900} color="#2196F3">
+                  {h2h.totalMatches - h2h.f1HomeWins - h2h.f2HomeWins}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  color="text.primary"
+                  fontWeight={800}
+                  mt={2}
+                >
+                  Neutral Ground Battles
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontWeight={600}
+                  mt={0.5}
+                  sx={{ maxWidth: 220 }}
+                >
+                  Matches played at neutral stadiums
+                </Typography>
+              </Paper>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+                justifyContent: "center",
+                alignItems: "stretch",
+                gap: 4,
+                width: "100%",
+                mt: 4,
+              }}
+            >
+              <Box
+                sx={{
+                  flex: 1,
+                  maxWidth: { xs: "100%", md: 480 },
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 <Paper
                   elevation={0}
                   sx={{
-                    p: 4,
+                    p: { xs: 3, sm: 4 },
                     borderRadius: 4,
                     border: `2px solid ${f1.color}30`,
                     bgcolor: `${f1.color}05`,
+                    height: "100%",
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
                   }}
                 >
                   <Typography
                     variant="h5"
                     fontWeight={900}
                     color={f1.color}
-                    mb={4}
                     textAlign="center"
                   >
-                    {f1.name} Win Profile
+                    {f1.shortName} Win Profile
                   </Typography>
-                  <Grid container spacing={2}>
+                  <Box sx={{ height: { xs: 16, sm: 28 } }} />
+                  <Grid container spacing={2} justifyContent="center">
                     <Grid item xs={6}>
                       <StatCard
                         title="Bat First Wins"
                         value={h2h[f1.shortName].batFirstWins}
+                        color={f1.color}
                       />
                     </Grid>
                     <Grid item xs={6}>
                       <StatCard
                         title="Bat Second Wins"
                         value={h2h[f1.shortName].batSecondWins}
+                        color={f1.color}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -1033,6 +1464,7 @@ function FranchiseComparison() {
                             ? `${h2h[f1.shortName].largestRunWin} runs`
                             : "-"
                         }
+                        color={f1.color}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -1043,41 +1475,58 @@ function FranchiseComparison() {
                             ? `${h2h[f1.shortName].largestWicketWin} wkts`
                             : "-"
                         }
+                        color={f1.color}
                       />
                     </Grid>
                   </Grid>
                 </Paper>
-              </Grid>
-              <Grid item xs={12} md={6}>
+              </Box>
+
+              <Box
+                sx={{
+                  flex: 1,
+                  maxWidth: { xs: "100%", md: 480 },
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 <Paper
                   elevation={0}
                   sx={{
-                    p: 4,
+                    p: { xs: 3, sm: 4 },
                     borderRadius: 4,
                     border: `2px solid ${f2.color}30`,
                     bgcolor: `${f2.color}05`,
+                    height: "100%",
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
                   }}
                 >
                   <Typography
                     variant="h5"
                     fontWeight={900}
                     color={f2.color}
-                    mb={4}
                     textAlign="center"
                   >
-                    {f2.name} Win Profile
+                    {f2.shortName} Win Profile
                   </Typography>
-                  <Grid container spacing={2}>
+                  <Box sx={{ height: { xs: 16, sm: 28 } }} />
+                  <Grid container spacing={2} justifyContent="center">
                     <Grid item xs={6}>
                       <StatCard
                         title="Bat First Wins"
                         value={h2h[f2.shortName].batFirstWins}
+                        color={f2.color}
                       />
                     </Grid>
                     <Grid item xs={6}>
                       <StatCard
                         title="Bat Second Wins"
                         value={h2h[f2.shortName].batSecondWins}
+                        color={f2.color}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -1088,6 +1537,7 @@ function FranchiseComparison() {
                             ? `${h2h[f2.shortName].largestRunWin} runs`
                             : "-"
                         }
+                        color={f2.color}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -1098,151 +1548,138 @@ function FranchiseComparison() {
                             ? `${h2h[f2.shortName].largestWicketWin} wkts`
                             : "-"
                         }
+                        color={f2.color}
                       />
                     </Grid>
                   </Grid>
                 </Paper>
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           </TabPanel>
 
           <TabPanel value={tabValue} index={3}>
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="Most Runs"
-                  data={h2h.topRunScorers}
-                  icon={<SportsCricketIcon />}
-                  color="#2196F3"
-                  renderItem={(item) => item.runs}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="Most Wickets"
-                  data={h2h.topWicketTakers}
-                  icon={<Typography fontWeight={900}>W</Typography>}
-                  color="#F44336"
-                  renderItem={(item) => item.wickets}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="Most PoTM Awards"
-                  data={h2h.topPotm}
-                  icon={<EmojiEventsIcon />}
-                  color="#FFD700"
-                  renderItem={(item) => item.awards}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <LeaderboardCard
-                  title="Highest Scores"
-                  data={h2h.highestScores}
-                  icon={<StarIcon />}
-                  color="#FF9800"
-                  renderItem={(item) => `${item.runs} (${item.balls})`}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <LeaderboardCard
-                  title="Best Bowling"
-                  data={h2h.bestBowling}
-                  icon={<StarIcon />}
-                  color="#4CAF50"
-                  renderItem={(item) => `${item.wickets}/${item.runsConceded}`}
-                />
-              </Grid>
-            </Grid>
-          </TabPanel>
-
-          <TabPanel value={tabValue} index={4}>
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="Highest Strike Rate (min 50r)"
-                  data={h2h.topStrikeRates}
-                  icon={<ShowChartIcon />}
-                  color="#E91E63"
-                  renderItem={(item) => item.sr.toFixed(1)}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="Boundary Dependency (min 100r)"
-                  data={h2h.topBoundaryDep}
-                  icon={<Typography fontWeight={900}>%</Typography>}
-                  color="#FF5722"
-                  renderItem={(item) => `${item.boundPct.toFixed(1)}%`}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="The Ironmen (Matches)"
-                  data={h2h.topIronmen}
-                  icon={<SportsCricketIcon />}
-                  color="#607D8B"
-                  renderItem={(item) => item.matchesPlayed}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="Best Economy (min 8 overs)"
-                  data={h2h.topEconomyRates}
-                  icon={<SecurityIcon />}
-                  color="#009688"
-                  renderItem={(item) => item.eco.toFixed(2)}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="Bowling Strike Rate (min 5w)"
-                  data={h2h.topBowlingSr}
-                  icon={<Typography fontWeight={900}>W</Typography>}
-                  color="#795548"
-                  renderItem={(item) => item.bowlSr.toFixed(1)}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="Dot Ball Masters (min 60b)"
-                  data={h2h.topDotBallers}
-                  icon={<Typography fontWeight={900}>O</Typography>}
-                  color="#9E9E9E"
-                  renderItem={(item) => `${item.dotPct.toFixed(1)}%`}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="Most Fours"
-                  data={h2h.topFourHitters}
-                  icon={<Typography fontWeight={900}>4</Typography>}
-                  color="#3F51B5"
-                  renderItem={(item) => item.fours}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="Most Sixes"
-                  data={h2h.topSixHitters}
-                  icon={<Typography fontWeight={900}>6</Typography>}
-                  color="#9C27B0"
-                  renderItem={(item) => item.sixes}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <LeaderboardCard
-                  title="Fielding Supremacy (Catches)"
-                  data={h2h.topFielders}
-                  icon={<EmojiEventsIcon />}
-                  color="#FFC107"
-                  renderItem={(item) => item.catches}
-                />
-              </Grid>
-            </Grid>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "1fr 1fr",
+                  md: "1fr 1fr 1fr",
+                },
+                gap: 3,
+                width: "100%",
+                maxWidth: "100%",
+                overflow: "hidden",
+                boxSizing: "border-box",
+                "& > *": { minWidth: 0 },
+              }}
+            >
+              <LeaderboardCard
+                title="Most Runs"
+                data={h2h.topRunScorers}
+                icon={<SportsCricketIcon />}
+                color="#2196F3"
+                renderItem={(item) => item.runs}
+              />
+              <LeaderboardCard
+                title="Most Wickets"
+                data={h2h.topWicketTakers}
+                icon={<Typography fontWeight={900}>W</Typography>}
+                color="#F44336"
+                renderItem={(item) => item.wickets}
+              />
+              <LeaderboardCard
+                title="Most PoTM Awards"
+                data={h2h.topPotm}
+                icon={<EmojiEventsIcon />}
+                color="#FFD700"
+                renderItem={(item) => item.awards}
+              />
+              <LeaderboardCard
+                title="Highest Scores"
+                data={h2h.highestScores}
+                icon={<StarIcon />}
+                color="#FF9800"
+                renderItem={(item) => `${item.runs} (${item.balls})`}
+              />
+              <LeaderboardCard
+                title="Best Bowling"
+                data={h2h.bestBowling}
+                icon={<StarIcon />}
+                color="#4CAF50"
+                renderItem={(item) => `${item.wickets}/${item.runsConceded}`}
+              />
+              <LeaderboardCard
+                title="Fielding Supremacy"
+                data={h2h.topFielders}
+                icon={<EmojiEventsIcon />}
+                color="#FFC107"
+                renderItem={(item) => `${item.catches} catches`}
+              />
+              <LeaderboardCard
+                title="Highest Strike Rate (min 50r)"
+                data={h2h.topStrikeRates}
+                icon={<ShowChartIcon />}
+                color="#E91E63"
+                renderItem={(item) => item.sr.toFixed(1)}
+              />
+              <LeaderboardCard
+                title="Boundary Dependency (min 100r)"
+                data={h2h.topBoundaryDep}
+                icon={<Typography fontWeight={900}>%</Typography>}
+                color="#FF5722"
+                renderItem={(item) => `${item.boundPct.toFixed(1)}%`}
+              />
+              <LeaderboardCard
+                title="The Ironmen (Matches)"
+                data={h2h.topIronmen}
+                icon={<SportsCricketIcon />}
+                color="#607D8B"
+                renderItem={(item) => item.matchesPlayed}
+              />
+              <LeaderboardCard
+                title="Best Economy (min 8 overs)"
+                data={h2h.topEconomyRates}
+                icon={<SecurityIcon />}
+                color="#009688"
+                renderItem={(item) => item.eco.toFixed(2)}
+              />
+              <LeaderboardCard
+                title="Bowling Strike Rate (min 5w)"
+                data={h2h.topBowlingSr}
+                icon={<Typography fontWeight={900}>W</Typography>}
+                color="#795548"
+                renderItem={(item) => item.bowlSr.toFixed(1)}
+              />
+              <LeaderboardCard
+                title="Dot Ball Masters (min 60b)"
+                data={h2h.topDotBallers}
+                icon={<Typography fontWeight={900}>O</Typography>}
+                color="#9E9E9E"
+                renderItem={(item) => `${item.dotPct.toFixed(1)}%`}
+              />
+              <LeaderboardCard
+                title="Most Fours"
+                data={h2h.topFourHitters}
+                icon={<Typography fontWeight={900}>4</Typography>}
+                color="#3F51B5"
+                renderItem={(item) => item.fours}
+              />
+              <LeaderboardCard
+                title="Most Sixes"
+                data={h2h.topSixHitters}
+                icon={<Typography fontWeight={900}>6</Typography>}
+                color="#9C27B0"
+                renderItem={(item) => item.sixes}
+              />
+              <LeaderboardCard
+                title="Fielding Supremacy (Catches)"
+                data={h2h.topFielders}
+                icon={<EmojiEventsIcon />}
+                color="#FFC107"
+                renderItem={(item) => item.catches}
+              />
+            </Box>
           </TabPanel>
         </>
       ) : null}
