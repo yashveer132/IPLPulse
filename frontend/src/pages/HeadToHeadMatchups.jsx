@@ -6,7 +6,6 @@ import {
   Grid,
   Autocomplete,
   TextField,
-  CircularProgress,
   Button,
   Dialog,
   DialogTitle,
@@ -22,6 +21,7 @@ import {
   useMediaQuery,
   IconButton,
 } from "@mui/material";
+import LoadingCard from "../components/common/LoadingCard.jsx";
 import {
   LineChart,
   Line,
@@ -938,31 +938,11 @@ function HeadToHeadMatchups() {
       </Paper>
 
       {loading && (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            py: 8,
-            width: "100%",
-            color: "text.primary",
-          }}
-        >
-          <CircularProgress size={60} thickness={4} color="primary" />
-          <Typography
-            variant="h6"
-            sx={{
-              mt: 3,
-              fontWeight: 600,
-              background: "linear-gradient(90deg, #3b82f6, #8b5cf6)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Analyzing Matchup...
-          </Typography>
-        </Box>
+        <LoadingCard
+          title="Head-to-Head Analytics"
+          message="Running machine learning simulation & historical match breakdown..."
+          minHeight="350px"
+        />
       )}
 
       {!loading && stats && (

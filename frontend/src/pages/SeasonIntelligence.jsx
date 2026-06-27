@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 import { useSeasons, useSeasonIntelligence } from "../hooks/useSeason.js";
 import EmptyState from "../components/common/EmptyState.jsx";
 import PageHeader from "../components/common/PageHeader.jsx";
+import LoadingCard from "../components/common/LoadingCard.jsx";
 import {
   BarChart,
   Bar,
@@ -258,22 +259,11 @@ function SeasonIntelligence() {
   if (loadingSeasons || (isLoading && !isPlaceholderData)) {
     return (
       <Box sx={{ maxWidth: "100%", mx: "auto", px: 2 }}>
-        <Skeleton
-          variant="rectangular"
-          height={80}
-          sx={{ borderRadius: 4, mb: 3 }}
+        <LoadingCard
+          title="Season Intelligence Dashboard"
+          message="Loading season-by-season analytics, auction history, and historical records..."
+          minHeight="70vh"
         />
-        <Grid container spacing={3}>
-          {[...Array(4)].map((_, i) => (
-            <Grid size={{ xs: 6, md: 3 }} key={i}>
-              <Skeleton
-                variant="rectangular"
-                height={120}
-                sx={{ borderRadius: 3 }}
-              />
-            </Grid>
-          ))}
-        </Grid>
       </Box>
     );
   }

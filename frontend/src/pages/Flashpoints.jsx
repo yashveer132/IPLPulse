@@ -135,7 +135,14 @@ const Flashpoints = () => {
     fetchData();
   }, []);
 
-  if (loading) return <PageLoader />;
+  if (loading)
+    return (
+      <PageLoader
+        fullscreen={false}
+        title="Historical Archive"
+        message="Retrieving key milestones, eras, and defining moments..."
+      />
+    );
 
   const {
     definingMoment = null,

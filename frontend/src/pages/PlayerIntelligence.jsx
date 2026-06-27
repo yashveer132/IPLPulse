@@ -11,6 +11,7 @@ import {
   Chip,
   LinearProgress,
 } from "@mui/material";
+import LoadingCard from "../components/common/LoadingCard.jsx";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import { apiClient } from "../api/index.js";
@@ -174,40 +175,38 @@ export default function PlayerIntelligence() {
 
   if (loading || !playerInfo || !hof || !trajectory) {
     return (
-      <Box
-        sx={{
-          width: "100%",
-          height: "calc(100vh - 120px)",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 3,
-        }}
-      >
-        <CircularProgress
-          size={50}
-          thickness={4.5}
-          sx={{
-            color: "primary.main",
-            "& .MuiCircularProgress-circle": {
-              strokeLinecap: "round",
-            },
-          }}
+      <Container maxWidth="xl" sx={{ pt: 0, pb: { xs: 2, md: 4 } }}>
+        <Box sx={{ mb: { xs: 1, sm: 2 } }}>
+          <PageHeader
+            title="Player Intelligence Profile"
+            subtitle="Detailed stats overview and phase breakdown"
+          />
+        </Box>
+
+        <Box sx={{ mb: { xs: 1.5, md: 2 } }}>
+          <Autocomplete
+            options={players}
+            getOptionLabel={(option) => option.name}
+            onChange={(event, newValue) => {
+              if (newValue)
+                navigate(`/analytics/player-intelligence/${newValue.id}`);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Search Another Player (e.g., MS Dhoni)"
+                variant="outlined"
+              />
+            )}
+          />
+        </Box>
+
+        <LoadingCard
+          title="Player Intelligence"
+          message="Synthesizing player stats, value modeling, and career trajectories..."
+          minHeight="50vh"
         />
-        <Typography
-          variant="h6"
-          fontWeight={800}
-          color="text.secondary"
-          sx={{
-            background: "linear-gradient(90deg, #6366f1, #0ea5e9)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          Synthesizing Player DNA...
-        </Typography>
-      </Box>
+      </Container>
     );
   }
 

@@ -5,8 +5,8 @@ import {
   InputAdornment,
   Box,
   Typography,
-  CircularProgress,
 } from "@mui/material";
+import LoadingCard from "./LoadingCard.jsx";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
@@ -123,7 +123,7 @@ function SearchAutocomplete({
               endAdornment: (
                 <>
                   {isLoading ? (
-                    <CircularProgress color="inherit" size={20} />
+                    <LoadingCard compact size="small" transparent message="" />
                   ) : null}
                   {params.InputProps?.endAdornment}
                 </>

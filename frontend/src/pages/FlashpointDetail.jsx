@@ -80,7 +80,14 @@ const FlashpointDetail = () => {
     fetchDetail();
   }, [id]);
 
-  if (loading) return <PageLoader />;
+  if (loading)
+    return (
+      <PageLoader
+        fullscreen={false}
+        title="Historical Event Details"
+        message="Analyzing historical significance, causal connections, and timelines..."
+      />
+    );
   if (!fp)
     return (
       <Box sx={{ p: 4 }}>

@@ -7,7 +7,6 @@ import {
   Paper,
   Grid,
   Chip,
-  CircularProgress,
   Button,
   List,
   ListItem,
@@ -16,6 +15,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import apiClient from "../api/apiClient";
+import LoadingCard from "../components/common/LoadingCard.jsx";
 
 const EntityDetail = () => {
   const { id } = useParams();
@@ -38,9 +38,11 @@ const EntityDetail = () => {
 
   if (loading)
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", p: 10 }}>
-        <CircularProgress />
-      </Box>
+      <LoadingCard
+        title="Entity Profile"
+        message="Loading insights and relationship graphs..."
+        minHeight="60vh"
+      />
     );
   if (!entity)
     return (

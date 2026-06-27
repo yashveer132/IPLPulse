@@ -14,7 +14,10 @@ import { ChartSkeleton } from "../common/LoadingSkeleton.jsx";
 function SpendingChart({ data, isLoading }) {
   const theme = useTheme();
 
-  if (isLoading) return <ChartSkeleton />;
+  if (isLoading)
+    return (
+      <ChartSkeleton message="Generating franchise spending distribution charts..." />
+    );
 
   if (!data || data.length === 0) {
     return (

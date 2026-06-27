@@ -24,11 +24,12 @@ function DataTable({
   onLimitChange,
   onRowClick,
   minWidth = 650,
+  loadingMessage = "Retrieving database records...",
 }) {
   const tableRef = useRef(null);
 
   if (isLoading) {
-    return <TableSkeleton rows={limit || 5} />;
+    return <TableSkeleton rows={limit || 5} message={loadingMessage} />;
   }
 
   if (!data || data.length === 0) {

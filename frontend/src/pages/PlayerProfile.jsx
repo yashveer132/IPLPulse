@@ -22,7 +22,10 @@ function PlayerProfile() {
     }
   }, [id]);
 
-  if (loadingPlayer) return <CardSkeleton />;
+  if (loadingPlayer)
+    return (
+      <CardSkeleton message="Loading player profile and career stats..." />
+    );
   if (!player) return <Typography align="center">Player not found.</Typography>;
 
   const isBowler = player.role.includes("Bowl");

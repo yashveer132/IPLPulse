@@ -22,7 +22,13 @@ function PlayerValueDetail() {
 
   const { data, isLoading } = usePlayerValueBreakdown(id);
 
-  if (isLoading) return <PageSkeleton />;
+  if (isLoading)
+    return (
+      <PageSkeleton
+        title="Player Valuation Details"
+        message="Calculating fair value and historical auction listings..."
+      />
+    );
   if (!data) return <Typography>Player not found</Typography>;
 
   const { player, lifetimeAnalytics, seasons } = data;

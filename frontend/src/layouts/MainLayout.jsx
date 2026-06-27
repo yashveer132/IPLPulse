@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
 import Sidebar from "../components/common/Sidebar.jsx";
 import Topbar from "../components/common/Topbar.jsx";
+import PageLoader from "../components/common/PageLoader.jsx";
 
 function MainLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -37,7 +38,9 @@ function MainLayout() {
           component="main"
           sx={{ p: { xs: 2, md: 3 }, flexGrow: 1, overflowX: "hidden" }}
         >
-          <Outlet />
+          <Suspense fallback={<PageLoader fullscreen={false} />}>
+            <Outlet />
+          </Suspense>
         </Box>
       </Box>
     </Box>

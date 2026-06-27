@@ -150,7 +150,9 @@ export default function IntelligenceTab({ id, franchise }) {
     useAuctionIntelligence(id);
 
   if (loadingInt || loadingLeg || loadingRiv || loadingFort || loadingAuc)
-    return <CardSkeleton />;
+    return (
+      <CardSkeleton message="Analyzing franchise squad intelligence & auction behaviors..." />
+    );
 
   const intelligence = intelligenceRes?.data || intelligenceRes;
   const legends = legendsRes?.data || legendsRes;
@@ -160,7 +162,6 @@ export default function IntelligenceTab({ id, franchise }) {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-
       <Grid container spacing={4} justifyContent="center">
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper
@@ -190,7 +191,13 @@ export default function IntelligenceTab({ id, franchise }) {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: { xs: 2.5, sm: 3, md: 4 }, borderRadius: 3, height: "100%" }}>
+          <Paper
+            sx={{
+              p: { xs: 2.5, sm: 3, md: 4 },
+              borderRadius: 3,
+              height: "100%",
+            }}
+          >
             <Box
               sx={{
                 display: "flex",
@@ -411,7 +418,13 @@ export default function IntelligenceTab({ id, franchise }) {
         </Grid>
 
         <Grid size={{ xs: 12, md: 5 }}>
-          <Paper sx={{ p: { xs: 2.5, sm: 3, md: 4 }, borderRadius: 3, height: "100%" }}>
+          <Paper
+            sx={{
+              p: { xs: 2.5, sm: 3, md: 4 },
+              borderRadius: 3,
+              height: "100%",
+            }}
+          >
             <Typography variant="h6" fontWeight={800} align="center" mb={5}>
               Career GOAT Rankings
             </Typography>
@@ -696,7 +709,13 @@ export default function IntelligenceTab({ id, franchise }) {
       </Typography>
       <Grid container spacing={4} justifyContent="center">
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: { xs: 2.5, sm: 3, md: 4 }, borderRadius: 3, height: "100%" }}>
+          <Paper
+            sx={{
+              p: { xs: 2.5, sm: 3, md: 4 },
+              borderRadius: 3,
+              height: "100%",
+            }}
+          >
             <Typography
               variant="h6"
               fontWeight={800}
@@ -782,7 +801,13 @@ export default function IntelligenceTab({ id, franchise }) {
           </Paper>
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: { xs: 2.5, sm: 3, md: 4 }, borderRadius: 3, height: "100%" }}>
+          <Paper
+            sx={{
+              p: { xs: 2.5, sm: 3, md: 4 },
+              borderRadius: 3,
+              height: "100%",
+            }}
+          >
             <Box
               sx={{
                 display: "flex",

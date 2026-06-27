@@ -5,7 +5,6 @@ import {
   Paper,
   Grid,
   Slider,
-  CircularProgress,
   Chip,
   Dialog,
   DialogTitle,
@@ -16,6 +15,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
+import LoadingCard from "../components/common/LoadingCard.jsx";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import {
@@ -107,45 +107,11 @@ function MilestoneExplorer() {
 
   if (curveLoading || !curveData) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "70vh",
-          gap: 3,
-        }}
-      >
-        <CircularProgress
-          size={55}
-          thickness={4.5}
-          sx={{
-            color: "primary.main",
-            "& .MuiCircularProgress-circle": {
-              strokeLinecap: "round",
-            },
-            animation: "pulseGlow 1.5s infinite ease-in-out",
-            "@keyframes pulseGlow": {
-              "0%": { transform: "scale(0.95)", opacity: 0.8 },
-              "50%": { transform: "scale(1.05)", opacity: 1 },
-              "100%": { transform: "scale(0.95)", opacity: 0.8 },
-            },
-          }}
-        />
-        <Typography
-          variant="h6"
-          fontWeight={800}
-          sx={{
-            background: "linear-gradient(90deg, #6366f1, #0ea5e9)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            letterSpacing: 0.5,
-          }}
-        >
-          Loading Milestone Explorer...
-        </Typography>
-      </Box>
+      <LoadingCard
+        title="Milestone Explorer"
+        message="Loading milestones, curve distributions, and player histories..."
+        minHeight="70vh"
+      />
     );
   }
 
@@ -282,14 +248,13 @@ function MilestoneExplorer() {
             }}
           >
             {curveLoading ? (
-              <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                height="100%"
-              >
-                <CircularProgress size={25} />
-              </Box>
+              <LoadingCard
+                compact
+                transparent
+                size="small"
+                message="Generating distribution curve..."
+                minHeight="100%"
+              />
             ) : curveData ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
@@ -368,31 +333,11 @@ function MilestoneExplorer() {
 
       <Box sx={{ position: "relative", minHeight: 300 }}>
         {isLoading || isFetching ? (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              py: 8,
-              width: "100%",
-              color: "text.primary",
-            }}
-          >
-            <CircularProgress size={60} thickness={4} color="primary" />
-            <Typography
-              variant="h6"
-              sx={{
-                mt: 3,
-                fontWeight: 600,
-                background: "linear-gradient(90deg, #3b82f6, #8b5cf6)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Analyzing Milestones...
-            </Typography>
-          </Box>
+          <LoadingCard
+            title="Milestone Explorer"
+            message="Analyzing milestones & run curves..."
+            minHeight="300px"
+          />
         ) : (
           <>
             {(!results?.fastest || results.fastest.length === 0) && (

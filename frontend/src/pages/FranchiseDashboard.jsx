@@ -112,7 +112,10 @@ function FranchiseDashboard() {
       .filter((d) => d.value > 0);
   }, [squad]);
 
-  if (loadingFranchise) return <CardSkeleton />;
+  if (loadingFranchise)
+    return (
+      <CardSkeleton message="Loading franchise history and analytics..." />
+    );
   if (!franchise) return <Typography>Franchise not found.</Typography>;
 
   const stats = franchise.lifetimeStats || {};
@@ -541,7 +544,7 @@ function FranchiseDashboard() {
         </Box>
 
         {loadingSquad ? (
-          <CardSkeleton />
+          <CardSkeleton message="Loading squad roster and purchase data..." />
         ) : squad && squad.length > 0 ? (
           <Grid
             container

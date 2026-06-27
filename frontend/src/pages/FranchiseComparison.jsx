@@ -475,7 +475,7 @@ function FranchiseComparison() {
       </Paper>
 
       {isLoading ? (
-        <ChartSkeleton />
+        <ChartSkeleton message="Comparing franchise rosters and match histories..." />
       ) : f1 && f2 && h2h ? (
         <>
           <Box

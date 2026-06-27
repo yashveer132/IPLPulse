@@ -7,10 +7,10 @@ import {
   Paper,
   Chip,
   Button,
-  CircularProgress,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
+import LoadingCard from "../components/common/LoadingCard.jsx";
 import { useNavigate } from "react-router-dom";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { usePlayerValueRankings } from "../hooks/useAnalytics.js";
@@ -31,6 +31,22 @@ function PlayerValueRankings() {
 
   const role = ROLES[tab];
   const { data, isLoading } = usePlayerValueRankings({ role, ...params });
+
+  if (isLoading && !data) {
+    return (
+      <Box sx={{ mx: "auto", p: 2 }}>
+        <PageHeader
+          title="Player Value Rankings"
+          subtitle="Explore all-time and seasonal valuation scores for IPL players"
+        />
+        <LoadingCard
+          title="Calculating Value Rankings"
+          message="Analyzing historical salaries and player performance..."
+          minHeight="60vh"
+        />
+      </Box>
+    );
+  }
 
   const handleExport = async () => {
     try {
@@ -268,7 +284,7 @@ function PlayerValueRankings() {
           color="primary"
           startIcon={
             isExporting ? (
-              <CircularProgress size={16} color="inherit" />
+              <LoadingCard compact size="small" transparent message="" />
             ) : (
               <FileDownloadIcon />
             )
@@ -297,6 +313,7 @@ function PlayerValueRankings() {
         columns={columns}
         data={data?.players}
         isLoading={isLoading}
+        loadingMessage="Compiling player value score rankings..."
         onRowClick={(row) =>
           navigate(`/analytics/player-value/${row.playerId}`)
         }

@@ -14,10 +14,10 @@ import {
   Avatar,
   ListItemText,
   ListItemButton,
-  CircularProgress,
   IconButton,
   Chip,
 } from "@mui/material";
+import LoadingCard from "../components/common/LoadingCard.jsx";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import { useDynamicRecord } from "../hooks/useRecords.js";
@@ -357,17 +357,29 @@ function RecordModal({ open, onClose, categoryId, record }) {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="xs"
       fullWidth
-      PaperProps={{ sx: { borderRadius: 4 } }}
+      PaperProps={{
+        sx: {
+          borderRadius: "24px",
+          background:
+            "linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(10, 14, 26, 0.95) 100%)",
+          backdropFilter: "blur(20px)",
+          border: "1px solid rgba(255, 255, 255, 0.05)",
+          boxShadow: "0 20px 50px -12px rgba(0, 0, 0, 0.5)",
+        },
+      }}
     >
       <DialogTitle
         sx={{
-          bgcolor: "primary.main",
-          color: "white",
+          background:
+            "linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1))",
+          color: "text.primary",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+          p: 3,
         }}
       >
         <Box sx={{ textAlign: "center", flex: 1 }}>
@@ -391,9 +403,13 @@ function RecordModal({ open, onClose, categoryId, record }) {
       </DialogTitle>
       <DialogContent sx={{ p: 0, maxHeight: "60vh", overflowY: "auto" }}>
         {isLoading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", p: 8 }}>
-            <CircularProgress />
-          </Box>
+          <LoadingCard
+            size="medium"
+            transparent
+            title="Crunching Historical Stats"
+            message="Analyzing player statistics and career standouts..."
+            minHeight="250px"
+          />
         ) : !recordData || recordData.length === 0 ? (
           <Box sx={{ p: 4, textAlign: "center" }}>
             <Typography variant="body1" color="text.secondary">

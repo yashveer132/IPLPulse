@@ -15,7 +15,10 @@ import { ChartSkeleton } from "../common/LoadingSkeleton.jsx";
 function PerformanceChart({ data, isLoading, isBowler = false }) {
   const theme = useTheme();
 
-  if (isLoading) return <ChartSkeleton />;
+  if (isLoading)
+    return (
+      <ChartSkeleton message="Plotting player performance trendlines..." />
+    );
 
   if (!data || data.length === 0) {
     return (
