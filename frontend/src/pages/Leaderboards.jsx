@@ -389,7 +389,7 @@ function RecordModal({ open, onClose, categoryId, record }) {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ p: 0 }}>
+      <DialogContent sx={{ p: 0, maxHeight: "60vh", overflowY: "auto" }}>
         {isLoading ? (
           <Box sx={{ display: "flex", justifyContent: "center", p: 8 }}>
             <CircularProgress />
@@ -474,8 +474,8 @@ function Leaderboards() {
   return (
     <Box sx={{ mx: "auto", p: 2 }}>
       <PageHeader
-        title="IPL Records Explorer"
-        subtitle="Dive deep into the most comprehensive collection of IPL records ever assembled."
+        title="IPL Records Dashboard"
+        subtitle="Browse records and leading player standings in tournament history"
       />
 
       <Paper sx={{ mb: 4, borderRadius: 3, overflow: "hidden" }}>

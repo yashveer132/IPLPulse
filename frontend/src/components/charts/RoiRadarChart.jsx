@@ -74,7 +74,7 @@ function RoiRadarChart({ franchises }) {
             dataKey="subject"
             tick={{
               fill: theme.palette.text.primary,
-              fontSize: 12,
+              fontSize: window.innerWidth < 600 ? 10 : 12,
               fontWeight: 600,
             }}
           />

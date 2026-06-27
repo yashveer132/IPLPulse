@@ -1,3 +1,4 @@
+import React, { useRef } from "react";
 import {
   Table,
   TableBody,
@@ -24,6 +25,8 @@ function DataTable({
   onRowClick,
   minWidth = 650,
 }) {
+  const tableRef = useRef(null);
+
   if (isLoading) {
     return <TableSkeleton rows={limit || 5} />;
   }
@@ -33,13 +36,23 @@ function DataTable({
   }
 
   return (
-    <Box>
+    <Box ref={tableRef}>
       <TableContainer
         component={Paper}
         elevation={0}
-        sx={{ border: "1px solid", borderColor: "divider" }}
+        sx={{
+          border: "1px solid",
+          borderColor: "divider",
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch",
+          "&::-webkit-scrollbar": { height: 6 },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(255, 255, 255, 0.2)",
+            borderRadius: 3,
+          },
+        }}
       >
-        <Table sx={{ minWidth: minWidth }}>
+        <Table sx={{ minWidth: { xs: "auto", sm: minWidth } }}>
           <TableHead sx={{ bgcolor: "action.hover" }}>
             <TableRow>
               {columns.map((col) => (
@@ -89,7 +102,15 @@ function DataTable({
           component="div"
           count={total}
           page={page - 1}
-          onPageChange={(e, newPage) => onPageChange(newPage + 1)}
+          onPageChange={(e, newPage) => {
+            onPageChange(newPage + 1);
+            if (tableRef.current) {
+              tableRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }
+          }}
           rowsPerPage={limit}
           onRowsPerPageChange={(e) =>
             onLimitChange(parseInt(e.target.value, 10))

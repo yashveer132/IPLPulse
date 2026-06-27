@@ -16,20 +16,22 @@ async function applyManualAliases() {
   const configPath = path.join(__dirname, "config", "manual-aliases.json");
   const aliases = JSON.parse(fs.readFileSync(configPath, "utf8"));
 
+  try {
+    await prisma.$executeRawUnsafe(
+      `SELECT setval(pg_get_serial_sequence('\"PlayerAlias\"', 'id'), coalesce(max(id), 0) + 1, false) FROM \"PlayerAlias\";`,
+    );
+    console.log("✅ Reset PlayerAlias sequence successfully.");
+  } catch (e) {
+    console.error(
+      "⚠️ Failed to reset sequence (might not be postgres):",
+      e.message,
+    );
+  }
+
   let updatedEntries = 0;
   let skipped = 0;
 
   for (const [auctionName, cricsheetName] of Object.entries(aliases)) {
-    const auctionPlayer = await prisma.player.findFirst({
-      where: { name: auctionName },
-    });
-
-    if (!auctionPlayer) {
-      console.log(`⚠️ Auction player not found: ${auctionName}`);
-      skipped++;
-      continue;
-    }
-
     const cricsheetPlayer = await prisma.player.findFirst({
       where: { name: cricsheetName },
     });
@@ -55,30 +57,78 @@ async function applyManualAliases() {
           needsReview: false,
         },
       });
-    } catch (e) {}
+      console.log(`✅ Created alias: ${auctionName} ↔ ${cricsheetName}`);
+    } catch (e) {
+      console.error(`Error creating alias for ${auctionName}:`, e.message);
+    }
 
-    const entries = await prisma.auctionEntry.findMany({
-      where: { playerId: auctionPlayer.id },
+    const auctionPlayer = await prisma.player.findFirst({
+      where: { name: auctionName },
     });
 
-    for (const entry of entries) {
-      try {
-        await prisma.auctionEntry.update({
-          where: { id: entry.id },
-          data: { playerId: cricsheetPlayer.id },
-        });
-        updatedEntries++;
-        console.log(
-          `✅ Linked ${auctionName} ↔ ${cricsheetName} (Season ${entry.season})`,
-        );
-      } catch (e) {
-        if (e.code === "P2002") {
+    if (auctionPlayer && auctionPlayer.id !== cricsheetPlayer.id) {
+      const entries = await prisma.auctionEntry.findMany({
+        where: { playerId: auctionPlayer.id },
+      });
+
+      for (const entry of entries) {
+        try {
+          await prisma.auctionEntry.update({
+            where: { id: entry.id },
+            data: { playerId: cricsheetPlayer.id },
+          });
+          updatedEntries++;
           console.log(
-            `ℹ️ Link already exists for ${auctionName} in ${entry.season}`,
+            `✅ Linked Auction Entry: ${auctionName} ↔ ${cricsheetName} (Season ${entry.season})`,
           );
-        } else {
-          console.error(`Error linking ${auctionName}:`, e.message);
+        } catch (e) {
+          if (e.code === "P2002") {
+            console.log(
+              `ℹ️ Link already exists for ${auctionName} in ${entry.season}`,
+            );
+          } else {
+            console.error(`Error linking ${auctionName}:`, e.message);
+          }
         }
+      }
+
+      try {
+        await prisma.playerMatchStats.deleteMany({
+          where: { playerId: auctionPlayer.id },
+        });
+        await prisma.playerSeasonStats.deleteMany({
+          where: { playerId: auctionPlayer.id },
+        });
+        await prisma.venueMasteryStat.deleteMany({
+          where: { playerId: auctionPlayer.id },
+        });
+        await prisma.playerCrazyStats.deleteMany({
+          where: { playerId: auctionPlayer.id },
+        });
+        await prisma.headToHeadStat.deleteMany({
+          where: {
+            OR: [
+              { batterId: auctionPlayer.id },
+              { bowlerId: auctionPlayer.id },
+            ],
+          },
+        });
+
+        await prisma.playerAnalytics.deleteMany({
+          where: { playerId: auctionPlayer.id },
+        });
+        await prisma.playerAlias.deleteMany({
+          where: { playerId: auctionPlayer.id },
+        });
+        await prisma.player.delete({
+          where: { id: auctionPlayer.id },
+        });
+        console.log(`🗑️ Deleted duplicate player record: ${auctionName}`);
+      } catch (err) {
+        console.error(
+          `⚠️ Failed to delete duplicate player ${auctionName}:`,
+          err.message,
+        );
       }
     }
   }

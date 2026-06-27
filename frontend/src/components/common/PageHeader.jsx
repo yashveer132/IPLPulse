@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 
 const PageHeader = ({ title, subtitle }) => {
   return (
-    <Box sx={{ textAlign: "center", mb: { xs: 1, sm: 3, md: 5 }, mt: 2 }}>
+    <Box sx={{ textAlign: "center", mb: { xs: 1, sm: 3, md: 4 }, mt: 0 }}>
       <Typography
         variant="h3"
         fontWeight={900}
@@ -14,8 +14,10 @@ const PageHeader = ({ title, subtitle }) => {
           justifyContent: "center",
           gap: 1.5,
           background: "linear-gradient(90deg, #00c6ff 0%, #0072ff 100%)",
+          backgroundClip: "text",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
+          MozBackgroundClip: "text",
           fontSize: { xs: "1.8rem", sm: "2.4rem", md: "3rem" },
         }}
       >

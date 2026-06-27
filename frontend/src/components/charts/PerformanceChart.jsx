@@ -41,7 +41,7 @@ function PerformanceChart({ data, isLoading, isBowler = false }) {
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={sortedData}
-          margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+          margin={{ top: 10, right: 10, left: -25, bottom: 5 }}
         >
           <CartesianGrid
             strokeDasharray="3 3"

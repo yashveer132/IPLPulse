@@ -29,3 +29,4 @@ export const FRANCHISES = [
   { key: "GT", name: "Gujarat Titans", color: "#1c1c2b" },
   { key: "LSG", name: "Lucknow Super Giants", color: "#a72056" },
 ];
+

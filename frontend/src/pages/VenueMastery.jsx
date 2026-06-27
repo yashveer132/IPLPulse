@@ -31,6 +31,10 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { apiClient } from "../api/index.js";
 import PageHeader from "../components/common/PageHeader.jsx";
+import {
+  getPlayerDisplayName,
+  deduplicatePlayers,
+} from "../utils/playerHelpers.js";
 
 function VenueMastery() {
   const [players, setPlayers] = useState([]);
@@ -156,8 +160,8 @@ function VenueMastery() {
   return (
     <Box sx={{ maxWidth: 1200, mx: "auto", p: { xs: 2, md: 3 } }}>
       <PageHeader
-        title="The Ultimate Venue Mastery"
-        subtitle="Discover which players have turned specific stadiums into their fortresses."
+        title="Venue Mastery Analytics"
+        subtitle="Find which players perform best at specific stadiums"
       />
 
       <Paper
@@ -183,8 +187,19 @@ function VenueMastery() {
         >
           <Autocomplete
             fullWidth
-            options={players}
-            getOptionLabel={(option) => option.name}
+            options={deduplicatePlayers(players)}
+            getOptionLabel={(option) => getPlayerDisplayName(option)}
+            filterOptions={(options, state) => {
+              const query = (state.inputValue || "").trim().toLowerCase();
+              if (!query) return options;
+              return options.filter((option) => {
+                if (!option) return false;
+                const displayName = (
+                  getPlayerDisplayName(option) || ""
+                ).toLowerCase();
+                return displayName.includes(query);
+              });
+            }}
             value={player}
             onChange={(e, val) => setPlayer(val)}
             renderInput={(params) => (
@@ -360,31 +375,26 @@ function VenueMastery() {
                 ? venueStat.runsConceded / venueStat.wickets
                 : 999;
 
-            let score = 0;
-            if (hasBatting) {
-              const batScore = Math.min(
-                100,
-                (venueStat.runsScored / 200) * 40 +
-                  (sr / 150) * 30 +
-                  (trueAverage > 0 ? (trueAverage / 45) * 30 : 25),
-              );
-              score +=
-                batScore *
-                (venueStat.inningsBat /
-                  (venueStat.inningsBat + venueStat.inningsBowl || 1));
-            }
-            if (hasBowling) {
-              const bowlScore = Math.min(
-                100,
-                (venueStat.wickets / 10) * 45 +
-                  (economy > 0 ? (8 / economy) * 35 : 20) +
-                  (bowlingAvg < 999 ? (25 / bowlingAvg) * 20 : 15),
-              );
-              score +=
-                bowlScore *
-                (venueStat.inningsBowl /
-                  (venueStat.inningsBat + venueStat.inningsBowl || 1));
-            }
+            const batScore = hasBatting
+              ? Math.min(
+                  100,
+                  (venueStat.runsScored / 200) * 40 +
+                    (sr / 150) * 30 +
+                    (trueAverage > 0 ? (trueAverage / 45) * 30 : 25),
+                )
+              : 0;
+
+            const bowlScore = hasBowling
+              ? Math.min(
+                  100,
+                  (venueStat.wickets / 10) * 45 +
+                    (economy > 0 ? (8 / economy) * 35 : 20) +
+                    (bowlingAvg < 999 ? (25 / bowlingAvg) * 20 : 15),
+                )
+              : 0;
+
+            const score = Math.max(batScore, bowlScore);
+
             const experienceWeight =
               venueStat.matchesPlayed >= 5
                 ? 1.0
@@ -397,9 +407,18 @@ function VenueMastery() {
             return { ...venueStat, finalScore };
           });
 
-          const sortedStats = [...statsWithScores].sort(
-            (a, b) => b.finalScore - a.finalScore,
-          );
+          const isBatter = totalRuns > totalWickets * 15;
+
+          const sortedStats = [...statsWithScores].sort((a, b) => {
+            if (b.finalScore !== a.finalScore) {
+              return b.finalScore - a.finalScore;
+            }
+            if (isBatter) {
+              return b.runsScored - a.runsScored;
+            } else {
+              return b.wickets - a.wickets;
+            }
+          });
           const ultimateFortress = sortedStats[0];
 
           const isSingleCardMode =

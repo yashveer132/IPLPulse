@@ -16,8 +16,22 @@ function Topbar({ handleDrawerToggle }) {
         zIndex: (theme) => theme.zIndex.drawer - 1,
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between", gap: { xs: 1, sm: 2 } }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Toolbar
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          height: "64px",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            height: "100%",
+          }}
+        >
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -27,40 +41,19 @@ function Topbar({ handleDrawerToggle }) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            color="text.primary"
-            sx={{ display: { xs: "none", sm: "block" } }}
-          >
-            Overview
-          </Typography>
         </Box>
 
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
-            flexGrow: 1,
-            justifyContent: "flex-end",
-            maxWidth: { xs: "100%", md: "400px" },
+            flex: 1,
+            maxWidth: { xs: "100%", sm: 400 },
+            mx: { xs: 1, sm: 2 },
+            justifyContent: "center",
           }}
         >
-          <Box sx={{ width: "100%" }}>
-            <SearchAutocomplete />
-          </Box>
-        </Box>
-
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <IconButton
-            size="large"
-            color="inherit"
-            sx={{ display: { xs: "none", sm: "flex" } }}
-          >
-            <NotificationsNoneIcon />
-          </IconButton>
-          <IconButton size="large" color="inherit">
-            <AccountCircleIcon />
-          </IconButton>
+          <SearchAutocomplete sx={{ width: "100%" }} />
         </Box>
       </Toolbar>
     </AppBar>

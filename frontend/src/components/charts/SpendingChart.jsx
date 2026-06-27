@@ -35,10 +35,12 @@ function SpendingChart({ data, isLoading }) {
 
   const sortedData = [...data].sort((a, b) => a.season - b.season);
 
-  const chartData = sortedData.map((d) => ({
-    season: d.season,
-    spent: Math.round(d.totalSpent / 100),
-  }));
+  const chartData = sortedData
+    .filter((d) => d.season >= 2013 && d.season <= 2022)
+    .map((d) => ({
+      season: d.season,
+      spent: Math.round(d.totalSpent / 100),
+    }));
 
   return (
     <Box sx={{ height: 300, width: "100%" }}>

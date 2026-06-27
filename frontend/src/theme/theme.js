@@ -77,6 +77,23 @@ let theme = createTheme({
         },
       },
     },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          margin: 16,
+          maxHeight: "calc(100% - 32px)",
+          width: "calc(100% - 32px)",
+        },
+      },
+    },
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch",
+        },
+      },
+    },
   },
 });
 

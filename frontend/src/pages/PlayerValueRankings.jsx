@@ -214,8 +214,8 @@ function PlayerValueRankings() {
   return (
     <Box sx={{ pb: 6 }}>
       <PageHeader
-        title="Player Value Rankings"
-        subtitle="The ultimate proprietary index measuring IPL player impact. Standardized to a 100-point scale based on batting performance, bowling economy, match participation, and critical match-winning awards."
+        title="Player Valuation Index"
+        subtitle="Proprietary metric measuring overall player impact on a 100-point scale"
       />
 
       <Paper

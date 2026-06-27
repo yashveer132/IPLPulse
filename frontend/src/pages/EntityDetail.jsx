@@ -53,7 +53,7 @@ const EntityDetail = () => {
   const uniqueRoles = new Set(entity.flashpoints.map((fp) => fp.role)).size;
 
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
+    <Container maxWidth="xl" sx={{ py: 6 }}>
       <Button
         component={Link}
         to="/flashpoints"

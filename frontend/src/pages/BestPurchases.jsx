@@ -6,16 +6,18 @@ import {
   Tab,
   Paper,
   Chip,
-  CircularProgress,
-  Alert,
   Tooltip,
   Zoom,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  Stack,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {
@@ -28,10 +30,11 @@ import PageHeader from "../components/common/PageHeader.jsx";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import StarIcon from "@mui/icons-material/Star";
-import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ClearIcon from "@mui/icons-material/Clear";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 
 function CostDisplay({ cost }) {
   if (cost >= 100) {
@@ -59,6 +62,9 @@ function StatusChip({ status }) {
 export default function BestPurchases() {
   const navigate = useNavigate();
   const [tab, setTab] = useState(0);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [infoOpen, setInfoOpen] = useState(false);
   const [params, setParams] = useState({
     page: 1,
     limit: 25,
@@ -81,6 +87,8 @@ export default function BestPurchases() {
     {
       id: "rank",
       label: "Rank",
+      align: "center",
+      headerAlign: "center",
       render: (val) => (
         <Typography fontWeight={800} color="primary">
           #{val}
@@ -90,6 +98,8 @@ export default function BestPurchases() {
     {
       id: "player",
       label: "Player",
+      align: "center",
+      headerAlign: "center",
       render: (_, row) => (
         <Box>
           <Typography variant="body2" fontWeight={700}>
@@ -101,15 +111,19 @@ export default function BestPurchases() {
         </Box>
       ),
     },
-    { id: "season", label: "Season" },
+    { id: "season", label: "Season", align: "center", headerAlign: "center" },
     {
       id: "franchise",
       label: "Franchise",
+      align: "center",
+      headerAlign: "center",
       render: (_, row) => <Typography fontWeight={600}>{row.team}</Typography>,
     },
     {
       id: "cost",
       label: "Cost",
+      align: "center",
+      headerAlign: "center",
       render: (_, row) => (
         <Box>
           <CostDisplay cost={row.cost} />
@@ -126,24 +140,15 @@ export default function BestPurchases() {
     {
       id: "matches",
       label: "Matches",
+      align: "center",
+      headerAlign: "center",
       render: (val) => <Typography fontWeight={500}>{val}</Typography>,
-    },
-    {
-      id: "confidence",
-      label: "Confidence",
-      render: (val) => (
-        <Chip
-          label={val}
-          size="small"
-          color={val === "High" ? "success" : "warning"}
-          variant="outlined"
-          sx={{ fontWeight: 600, fontSize: "0.7rem" }}
-        />
-      ),
     },
     {
       id: "performanceScore",
       label: "Role-Adjusted Perf",
+      align: "center",
+      headerAlign: "center",
       render: (val, row) => (
         <Tooltip
           title={
@@ -174,6 +179,8 @@ export default function BestPurchases() {
     {
       id: "valueScore",
       label: "True Value Score",
+      align: "center",
+      headerAlign: "center",
       render: (val) => (
         <Typography fontWeight={800} color="success.main">
           {val}
@@ -187,6 +194,8 @@ export default function BestPurchases() {
     {
       id: "greatestScore",
       label: "Auction Impact Score",
+      align: "center",
+      headerAlign: "center",
       render: (val, row) => (
         <Tooltip
           title={`Includes ${row.longevityBonus} Longevity Bonus`}
@@ -202,6 +211,8 @@ export default function BestPurchases() {
     {
       id: "why",
       label: "Summary",
+      align: "center",
+      headerAlign: "center",
       render: (val) => (
         <Typography variant="caption" color="text.secondary">
           {val}
@@ -215,6 +226,8 @@ export default function BestPurchases() {
     {
       id: "why",
       label: "Summary",
+      align: "center",
+      headerAlign: "center",
       render: (val) => (
         <Typography variant="caption" color="text.secondary">
           {val}
@@ -227,6 +240,8 @@ export default function BestPurchases() {
     {
       id: "rank",
       label: "Rank",
+      align: "center",
+      headerAlign: "center",
       render: (val) => (
         <Typography fontWeight={800} color="error">
           #{val}
@@ -236,6 +251,8 @@ export default function BestPurchases() {
     {
       id: "player",
       label: "Player",
+      align: "center",
+      headerAlign: "center",
       render: (_, row) => (
         <Box>
           <Typography variant="body2" fontWeight={700}>
@@ -247,27 +264,46 @@ export default function BestPurchases() {
         </Box>
       ),
     },
-    { id: "season", label: "Season" },
+    { id: "season", label: "Season", align: "center", headerAlign: "center" },
     {
       id: "franchise",
       label: "Franchise",
+      align: "center",
+      headerAlign: "center",
       render: (_, row) => <Typography fontWeight={600}>{row.team}</Typography>,
     },
-    { id: "cost", label: "Cost", render: (val) => <CostDisplay cost={val} /> },
+    {
+      id: "cost",
+      label: "Cost",
+      align: "center",
+      headerAlign: "center",
+      render: (val) => <CostDisplay cost={val} />,
+    },
     {
       id: "status",
       label: "Status",
+      align: "center",
+      headerAlign: "center",
       render: (val) => <StatusChip status={val} />,
     },
     {
       id: "matches",
       label: "Matches",
+      align: "center",
+      headerAlign: "center",
       render: (val) => <Typography fontWeight={500}>{val}</Typography>,
     },
-    { id: "performanceScore", label: "Role-Adjusted Perf" },
+    {
+      id: "performanceScore",
+      label: "Role-Adjusted Perf",
+      align: "center",
+      headerAlign: "center",
+    },
     {
       id: "valueScore",
       label: "True Value Score",
+      align: "center",
+      headerAlign: "center",
       render: (val) => (
         <Typography fontWeight={800} color="error.main">
           {val}
@@ -277,6 +313,8 @@ export default function BestPurchases() {
     {
       id: "why",
       label: "Summary",
+      align: "center",
+      headerAlign: "center",
       render: (val) => (
         <Typography variant="caption" color="text.secondary">
           {val}
@@ -286,55 +324,136 @@ export default function BestPurchases() {
   ];
 
   return (
-    <Box>
-      <Box mb={4}>
-        <PageHeader title="FranchiseIQ Auction Analytics" />
+    <Box sx={{ mx: "auto", p: 2 }}>
+      <PageHeader
+        title="True Value Analysis"
+        subtitle="Analyze player performance relative to their auction price"
+      />
 
-        <Alert
-          severity="success"
+      <Dialog
+        open={infoOpen}
+        onClose={() => setInfoOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 4 } }}
+      >
+        <DialogTitle
           sx={{
-            mb: 2,
-            "& .MuiAlert-message": { width: "100%" },
-            borderRadius: 2,
+            bgcolor: "primary.main",
+            color: "white",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography variant="body2" fontWeight={700}>
-              True Auction Value Engine v2.0
-            </Typography>
-            <Typography variant="caption" fontWeight={600}>
-              Data Scope: 2013–2022
+          <Box sx={{ textAlign: "center", flex: 1 }}>
+            <Typography
+              variant="h6"
+              fontWeight={800}
+              sx={{ textAlign: "center" }}
+            >
+              ⚙️ True Auction Value Engine v2.0
             </Typography>
           </Box>
-          <Typography
-            variant="caption"
-            sx={{ mt: 0.5, display: "block", color: "text.secondary" }}
+          <IconButton
+            onClick={() => setInfoOpen(false)}
+            sx={{ color: "white" }}
           >
-            Powered by the True Value Score algorithm. Costs are strictly
-            inflation-adjusted to 2022 equivalence. Performance is normalized
-            against era-specific Role Baselines. Multipliers applied for
-            Championship-winning seasons and Longevity retention. Retentions and
-            direct signings are excluded.
-          </Typography>
-        </Alert>
-      </Box>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ p: 4 }}>
+          <Box sx={{ textAlign: "center" }}>
+            <Chip
+              label="Data Scope: 2013 – 2022"
+              color="primary"
+              variant="outlined"
+              sx={{ mt: 2, mb: 3, fontWeight: 700, fontSize: "0.85rem" }}
+            />
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ lineHeight: 1.8, textAlign: "center" }}
+            >
+              Powered by the <strong>True Value Score</strong> algorithm. Costs
+              are strictly inflation-adjusted to 2022 equivalence. Performance
+              is normalized against era-specific Role Baselines. Multipliers
+              applied for Championship-winning seasons and Longevity retention.
+              Retentions and direct signings are excluded.
+            </Typography>
+            <Box
+              sx={{
+                mt: 3,
+                display: "flex",
+                flexDirection: "column",
+                gap: 1.5,
+              }}
+            >
+              {[
+                {
+                  label: "Inflation-Adjusted Costs",
+                  desc: "All prices normalized to 2022 cap equivalence",
+                },
+                {
+                  label: "Role-Based Baselines",
+                  desc: "Season-specific medians for batting & bowling impact",
+                },
+                {
+                  label: "Championship Multiplier",
+                  desc: "1.15x bonus for title-winning season contributions",
+                },
+                {
+                  label: "Longevity Bonus",
+                  desc: "Up to 1.25x for multi-season franchise retention",
+                },
+              ].map((item) => (
+                <Paper
+                  key={item.label}
+                  elevation={0}
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography variant="subtitle2" fontWeight={700}>
+                    {item.label}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {item.desc}
+                  </Typography>
+                </Paper>
+              ))}
+            </Box>
+          </Box>
+        </DialogContent>
+      </Dialog>
 
-      <Paper sx={{ mb: 4, borderRadius: 2, overflow: "hidden", boxShadow: 3 }}>
+      <Paper
+        sx={{
+          mb: 4,
+          borderRadius: 3,
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
         <Tabs
           value={tab}
           onChange={(e, v) => {
             setTab(v);
             setParams({ ...params, page: 1, limit: 25 });
           }}
-          variant="scrollable"
-          scrollButtons="auto"
+          variant={isMobile ? "scrollable" : "standard"}
+          scrollButtons={isMobile ? "auto" : undefined}
+          allowScrollButtonsMobile={isMobile}
+          centered={!isMobile}
           sx={{
-            "& .MuiTab-root": { py: 2, fontWeight: 700, fontSize: "0.95rem" },
-            "& .Mui-selected": { color: "primary.main" },
+            width: "100%",
+            "& .MuiTab-root": { py: 2, fontWeight: 700, fontSize: "1rem" },
+            "& .MuiTabs-flexContainer": { justifyContent: isMobile ? "flex-start" : "center" },
           }}
         >
           <Tab
@@ -358,16 +477,49 @@ export default function BestPurchases() {
             iconPosition="start"
           />
         </Tabs>
+        <Tooltip title="How it works — Methodology & Data Scope" arrow>
+          <IconButton
+            onClick={() => setInfoOpen(true)}
+            size="small"
+            sx={{
+              mr: 2,
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: 2,
+              px: { xs: 1, sm: 1.5 },
+              py: 0.5,
+              gap: 0.5,
+              color: "text.secondary",
+              "&:hover": {
+                bgcolor: "primary.main",
+                color: "white",
+                borderColor: "primary.main",
+              },
+            }}
+          >
+            <InfoOutlinedIcon sx={{ fontSize: 18 }} />
+            <Typography
+              variant="caption"
+              fontWeight={700}
+              sx={{ display: { xs: "none", sm: "inline" } }}
+            >
+              Methodology
+            </Typography>
+          </IconButton>
+        </Tooltip>
       </Paper>
 
-      <Stack direction="row" spacing={2} sx={{ mb: 3 }} alignItems="center">
-        <Typography
-          variant="subtitle2"
-          color="text.secondary"
-          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-        >
-          <FilterListIcon fontSize="small" /> Filters:
-        </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: { xs: 1.5, sm: 2 },
+          mb: 3,
+        }}
+      >
         <FormControl size="small" sx={{ minWidth: 120 }}>
           <InputLabel>Season</InputLabel>
           <Select
@@ -376,11 +528,34 @@ export default function BestPurchases() {
             onChange={(e) =>
               setParams({ ...params, season: e.target.value, page: 1 })
             }
+            MenuProps={{
+              PaperProps: {
+                sx: { borderRadius: 2, mt: 1 },
+              },
+            }}
           >
-            <MenuItem value="">All Seasons</MenuItem>
+            <MenuItem
+              value=""
+              sx={{
+                justifyContent: "center",
+                borderBottom: "1px solid",
+                borderColor: "divider",
+              }}
+            >
+              All Seasons
+            </MenuItem>
             {[2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022].map(
               (y) => (
-                <MenuItem key={y} value={y}>
+                <MenuItem
+                  key={y}
+                  value={y}
+                  sx={{
+                    justifyContent: "center",
+                    borderBottom: "1px solid",
+                    borderColor: "divider",
+                    "&:last-child": { borderBottom: "none" },
+                  }}
+                >
                   {y}
                 </MenuItem>
               ),
@@ -395,8 +570,22 @@ export default function BestPurchases() {
             onChange={(e) =>
               setParams({ ...params, team: e.target.value, page: 1 })
             }
+            MenuProps={{
+              PaperProps: {
+                sx: { borderRadius: 2, mt: 1 },
+              },
+            }}
           >
-            <MenuItem value="">All Franchises</MenuItem>
+            <MenuItem
+              value=""
+              sx={{
+                justifyContent: "center",
+                borderBottom: "1px solid",
+                borderColor: "divider",
+              }}
+            >
+              All Franchises
+            </MenuItem>
             {[
               "CSK",
               "MI",
@@ -411,7 +600,16 @@ export default function BestPurchases() {
               "RPSG",
               "GL",
             ].map((t) => (
-              <MenuItem key={t} value={t}>
+              <MenuItem
+                key={t}
+                value={t}
+                sx={{
+                  justifyContent: "center",
+                  borderBottom: "1px solid",
+                  borderColor: "divider",
+                  "&:last-child": { borderBottom: "none" },
+                }}
+              >
                 {t}
               </MenuItem>
             ))}
@@ -428,10 +626,15 @@ export default function BestPurchases() {
             <ClearIcon fontSize="small" />
           </IconButton>
         )}
-      </Stack>
+      </Box>
 
       <Box
         sx={{
+          width: "100%",
+          maxWidth: "100%",
+          overflow: "hidden",
+          boxSizing: "border-box",
+          "& > *": { minWidth: 0 },
           animation: "fadeIn 0.5s ease-in",
           "@keyframes fadeIn": {
             from: { opacity: 0, transform: "translateY(10px)" },

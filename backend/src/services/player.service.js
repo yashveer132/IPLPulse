@@ -29,6 +29,9 @@ export async function getPlayers({
       take: limit,
       orderBy: { name: "asc" },
       include: {
+        aliases: {
+          select: { alias: true },
+        },
         _count: {
           select: { auctionEntries: true, matchStats: true },
         },

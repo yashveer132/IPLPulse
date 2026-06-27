@@ -635,7 +635,7 @@ function SeasonIntelligence() {
             <Box>
               <PageHeader
                 title="Season Intelligence"
-                subtitle="Elite analytics and storylines for every IPL season"
+                subtitle="Key stats, results, and insights for every IPL season"
               />
             </Box>
             {compareMode && (
@@ -728,8 +728,32 @@ function SeasonIntelligence() {
                 flexShrink: 1,
                 width: { xs: "100%", md: 0 },
                 minWidth: 0,
+                position: "relative",
               }}
             >
+              <Box
+                sx={{
+                  display: { xs: "flex", md: "none" },
+                  justifyContent: "center",
+                  px: 2,
+                  mb: -0.5,
+                  opacity: 0.8,
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    fontWeight: 700,
+                    color: "text.secondary",
+                  }}
+                >
+                  ← Swipe to Scroll Years →
+                </Typography>
+              </Box>
+
               <Box
                 sx={{
                   display: "flex",

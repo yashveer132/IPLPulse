@@ -16,6 +16,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { apiClient } from "../api/index.js";
 import { usePlayerPhoto } from "../hooks/usePlayerPhoto.js";
 import {
+  getPlayerDisplayName,
+  deduplicatePlayers,
+} from "../utils/playerHelpers.js";
+import {
   LineChart,
   Line,
   XAxis,
@@ -30,7 +34,7 @@ const GlassCard = ({ children, sx = {}, ...props }) => (
   <Paper
     elevation={0}
     sx={{
-      p: 4,
+      p: { xs: 2, sm: 3, md: 4 },
       borderRadius: 4,
       border: "1px solid rgba(148, 163, 184, 0.08)",
       bgcolor: "rgba(17, 24, 39, 0.6)",
@@ -135,11 +139,22 @@ export default function PlayerIntelligence() {
       >
         <PageHeader
           title="Player Intelligence Hub"
-          subtitle="Search for any IPL player to generate a deep-dive analytics dossier."
+          subtitle="Search for any player to generate their stats profile."
         />
         <Autocomplete
-          options={players}
-          getOptionLabel={(option) => option.name}
+          options={deduplicatePlayers(players)}
+          getOptionLabel={(option) => getPlayerDisplayName(option)}
+          filterOptions={(options, state) => {
+            const query = (state.inputValue || "").trim().toLowerCase();
+            if (!query) return options;
+            return options.filter((option) => {
+              if (!option) return false;
+              const displayName = (
+                getPlayerDisplayName(option) || ""
+              ).toLowerCase();
+              return displayName.includes(query);
+            });
+          }}
           onChange={(event, newValue) => {
             if (newValue)
               navigate(`/analytics/player-intelligence/${newValue.id}`);
@@ -160,12 +175,15 @@ export default function PlayerIntelligence() {
   if (loading || !playerInfo || !hof || !trajectory) {
     return (
       <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="70vh"
-        gap={3}
+        sx={{
+          width: "100%",
+          height: "calc(100vh - 120px)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 3,
+        }}
       >
         <CircularProgress
           size={50}
@@ -289,8 +307,8 @@ export default function PlayerIntelligence() {
     <Container maxWidth="xl" sx={{ pt: 0, pb: { xs: 2, md: 4 } }}>
       <Box sx={{ mb: { xs: 1, sm: 2 } }}>
         <PageHeader
-          title="Player Intelligence"
-          subtitle={`Deep-dive analytics dossier for ${playerInfo.name}`}
+          title="Player Intelligence Profile"
+          subtitle={`Detailed stats overview and phase breakdown for ${playerInfo.name}`}
         />
       </Box>
 
@@ -333,14 +351,14 @@ export default function PlayerIntelligence() {
             <Box
               display="flex"
               justifyContent="center"
-              gap={2}
-              mb={3.5}
+              gap={1.5}
+              mb={2}
               flexWrap="wrap"
             >
               <Chip
                 label={derivedRole}
                 color="primary"
-                sx={{ fontWeight: 800, fontSize: "0.9rem" }}
+                sx={{ fontWeight: 800, fontSize: "0.85rem" }}
               />
               <Chip
                 label={`All-Time Rank: #${hof.hallOfFame.rank}`}
@@ -348,7 +366,7 @@ export default function PlayerIntelligence() {
                   bgcolor: "white",
                   color: "black",
                   fontWeight: 950,
-                  fontSize: "0.9rem",
+                  fontSize: "0.85rem",
                 }}
               />
             </Box>
@@ -356,13 +374,14 @@ export default function PlayerIntelligence() {
             <Typography
               variant="h3"
               fontWeight={900}
-              mb={3.5}
+              mb={2}
               sx={{
                 letterSpacing: "-0.02em",
                 textAlign: "center",
                 background: "linear-gradient(90deg, #ffffff 0%, #cbd5e1 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
+                fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
               }}
             >
               {playerInfo.name}
@@ -371,8 +390,8 @@ export default function PlayerIntelligence() {
             <Box
               display="flex"
               justifyContent="center"
-              gap={1.5}
-              mb={4.5}
+              gap={1}
+              mb={3}
               flexWrap="wrap"
             >
               {badges.map((b, i) => (
@@ -406,141 +425,169 @@ export default function PlayerIntelligence() {
           </GlassCard>
         </Box>
 
-        <Grid container spacing={4} alignItems="stretch">
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: primeDetails
+              ? { xs: "1fr", md: "1fr 2fr" }
+              : "1fr",
+            gap: 4,
+            width: "100%",
+          }}
+        >
           {primeDetails && (
-            <Grid item xs={12} md={4}>
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={itemVariants}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                style={{ height: "100%" }}
+            <Box
+              component={motion.div}
+              initial="hidden"
+              animate="visible"
+              variants={itemVariants}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              style={{ height: "100%" }}
+            >
+              <GlassCard
+                sx={{
+                  height: "100%",
+                  justifyContent: "space-between",
+                  background:
+                    "linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(17, 24, 39, 0.9) 100%)",
+                  borderLeft: "4px solid #6366f1",
+                  p: 4,
+                }}
               >
-                <GlassCard
+                <Box sx={{ width: "100%" }}>
+                  <Typography
+                    variant="overline"
+                    sx={{
+                      fontWeight: 800,
+                      letterSpacing: 1.5,
+                      color: "#818cf8",
+                      display: "block",
+                      mb: 1,
+                    }}
+                  >
+                    PRIME ERA
+                  </Typography>
+                  <Typography
+                    variant="h3"
+                    fontWeight={900}
+                    mb={1}
+                    color="white"
+                  >
+                    {primeDetails.start}–{primeDetails.end}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "text.secondary", mb: 4 }}
+                  >
+                    Highest 3-year peak in career
+                  </Typography>
+                </Box>
+                <Box
                   sx={{
-                    height: "100%",
-                    justifyContent: "space-between",
-                    background:
-                      "linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(17, 24, 39, 0.9) 100%)",
-                    borderLeft: "4px solid #6366f1",
-                    p: 4,
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr 1fr",
+                    gap: 2,
+                    width: "100%",
+                    mt: "auto",
                   }}
                 >
-                  <Box sx={{ width: "100%" }}>
-                    <Typography
-                      variant="overline"
-                      sx={{
-                        fontWeight: 800,
-                        letterSpacing: 1.5,
-                        color: "#818cf8",
-                        display: "block",
-                        mb: 1,
-                      }}
-                    >
-                      PRIME ERA
+                  <Box>
+                    <Typography variant="h4" fontWeight={900} color="#f59e0b">
+                      {primeDetails.metric1}
                     </Typography>
                     <Typography
-                      variant="h3"
-                      fontWeight={900}
-                      mb={1}
-                      color="white"
+                      variant="caption"
+                      sx={{ color: "text.secondary", fontWeight: 800 }}
                     >
-                      {primeDetails.start}–{primeDetails.end}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "text.secondary", mb: 4 }}
-                    >
-                      Highest 3-year peak in career
+                      {primeDetails.label1}
                     </Typography>
                   </Box>
-                  <Grid
-                    container
-                    spacing={2}
-                    sx={{ width: "100%", mt: "auto" }}
-                  >
-                    <Grid item xs={4}>
-                      <Typography variant="h4" fontWeight={900} color="#f59e0b">
-                        {primeDetails.metric1}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{ color: "text.secondary", fontWeight: 800 }}
-                      >
-                        {primeDetails.label1}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Typography variant="h4" fontWeight={900} color="#10b981">
-                        {primeDetails.metric2}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{ color: "text.secondary", fontWeight: 800 }}
-                      >
-                        {primeDetails.label2}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Typography variant="h4" fontWeight={900} color="#0ea5e9">
-                        {primeDetails.metric3}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{ color: "text.secondary", fontWeight: 800 }}
-                      >
-                        {primeDetails.label3}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </GlassCard>
-              </motion.div>
-            </Grid>
+                  <Box>
+                    <Typography variant="h4" fontWeight={900} color="#10b981">
+                      {primeDetails.metric2}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: "text.secondary", fontWeight: 800 }}
+                    >
+                      {primeDetails.label2}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="h4" fontWeight={900} color="#0ea5e9">
+                      {primeDetails.metric3}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: "text.secondary", fontWeight: 800 }}
+                    >
+                      {primeDetails.label3}
+                    </Typography>
+                  </Box>
+                </Box>
+              </GlassCard>
+            </Box>
           )}
 
           {playerDna && (
-            <Grid item xs={12} md={primeDetails ? 8 : 12}>
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={itemVariants}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                style={{ height: "100%" }}
+            <Box
+              component={motion.div}
+              initial="hidden"
+              animate="visible"
+              variants={itemVariants}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              style={{ height: "100%" }}
+            >
+              <GlassCard
+                sx={{
+                  p: 4,
+                  height: "100%",
+                  borderLeft: "4px solid #10b981",
+                  background:
+                    "linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
+                }}
               >
-                <GlassCard
+                <Typography
+                  variant="h5"
+                  fontWeight={800}
+                  mb={3}
                   sx={{
-                    p: 4,
-                    height: "100%",
-                    borderLeft: "4px solid #10b981",
-                    background:
-                      "linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
+                    color: "#10b981",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
                   }}
                 >
-                  <Typography
-                    variant="h5"
-                    fontWeight={800}
-                    mb={3}
+                  🧬 Player DNA
+                </Typography>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                    gap: 4,
+                    width: "100%",
+                  }}
+                >
+                  <Box
                     sx={{
-                      color: "#10b981",
                       display: "flex",
-                      alignItems: "center",
-                      gap: 1,
+                      flexDirection: "column",
+                      gap: 2,
+                      height: "100%",
                     }}
                   >
-                    🧬 Player DNA
-                  </Typography>
-                  <Grid container spacing={4} sx={{ width: "100%" }}>
-                    <Grid item xs={12} sm={6}>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        fontWeight={800}
-                        mb={2.5}
-                        sx={{ letterSpacing: 1 }}
-                      >
-                        RUN DISTRIBUTION
-                      </Typography>
-                      <Box display="flex" alignItems="center" mb={2}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      fontWeight={800}
+                      sx={{ letterSpacing: 1 }}
+                    >
+                      RUN DISTRIBUTION
+                    </Typography>
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    >
+                      <Box display="flex" alignItems="center">
                         <Typography
                           variant="body2"
                           sx={{
@@ -573,7 +620,7 @@ export default function PlayerIntelligence() {
                           {Math.round(playerDna.distribution.boundaryPct)}%
                         </Typography>
                       </Box>
-                      <Box display="flex" alignItems="center" mb={3}>
+                      <Box display="flex" alignItems="center">
                         <Typography
                           variant="body2"
                           sx={{
@@ -606,48 +653,59 @@ export default function PlayerIntelligence() {
                           {Math.round(playerDna.distribution.runningPct)}%
                         </Typography>
                       </Box>
-                      <Box
-                        sx={{
-                          p: 2,
-                          bgcolor: "rgba(16, 185, 129, 0.08)",
-                          borderRadius: 3,
-                          border: "1px solid rgba(16, 185, 129, 0.15)",
-                          textAlign: "center",
-                        }}
-                      >
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          display="block"
-                          fontWeight={750}
-                          sx={{ mb: 0.5 }}
-                        >
-                          IDENTIFIED PLAYSTYLE
-                        </Typography>
-                        <Typography
-                          variant="h6"
-                          fontWeight={900}
-                          color="#10b981"
-                        >
-                          {playerDna.playstyle}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
+                    </Box>
+                    <Box
+                      sx={{
+                        p: 2,
+                        bgcolor: "rgba(16, 185, 129, 0.08)",
+                        borderRadius: 3,
+                        border: "1px solid rgba(16, 185, 129, 0.15)",
+                        textAlign: "center",
+                        mt: "auto",
+                      }}
+                    >
                       <Typography
-                        variant="body2"
+                        variant="caption"
                         color="text.secondary"
-                        fontWeight={800}
-                        mb={2.5}
-                        sx={{ letterSpacing: 1 }}
+                        display="block"
+                        fontWeight={750}
+                        sx={{ mb: 0.5 }}
                       >
-                        PHASE IMPACT SCORE
+                        IDENTIFIED PLAYSTYLE
                       </Typography>
+                      <Typography variant="h6" fontWeight={900} color="#10b981">
+                        {playerDna.playstyle}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 2,
+                      height: "100%",
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      fontWeight={800}
+                      sx={{ letterSpacing: 1 }}
+                    >
+                      PHASE IMPACT SCORE
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                        mt: "auto",
+                      }}
+                    >
                       <Box
                         display="flex"
                         justifyContent="space-between"
                         alignItems="center"
-                        mb={2}
                         sx={{
                           p: 1.5,
                           bgcolor: "rgba(255,255,255,0.02)",
@@ -671,7 +729,6 @@ export default function PlayerIntelligence() {
                         display="flex"
                         justifyContent="space-between"
                         alignItems="center"
-                        mb={2}
                         sx={{
                           p: 1.5,
                           bgcolor: "rgba(255,255,255,0.02)",
@@ -714,13 +771,13 @@ export default function PlayerIntelligence() {
                           }}
                         />
                       </Box>
-                    </Grid>
-                  </Grid>
-                </GlassCard>
-              </motion.div>
-            </Grid>
+                    </Box>
+                  </Box>
+                </Box>
+              </GlassCard>
+            </Box>
           )}
-        </Grid>
+        </Box>
 
         <Box
           component={motion.div}
@@ -814,285 +871,219 @@ export default function PlayerIntelligence() {
           </GlassCard>
         </Box>
 
-        <Box width="100%">
-          <Grid container spacing={4} alignItems="stretch">
-            {similarPlayers?.similarPlayers && (
-              <Grid item xs={12} md={4}>
-                <motion.div
-                  initial="hidden"
-                  animate="visible"
-                  variants={itemVariants}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  style={{ height: "100%" }}
-                >
-                  <GlassCard
-                    sx={{
-                      p: 4,
-                      height: "100%",
-                      borderLeft: "4px solid #6366f1",
-                      background:
-                        "linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
-                    }}
-                  >
-                    <Typography
-                      variant="h5"
-                      fontWeight={800}
-                      mb={4}
-                      sx={{ color: "#818cf8" }}
-                    >
-                      👥 Similar Players
-                    </Typography>
-                    <Box
-                      display="flex"
-                      flexDirection="column"
-                      gap={3}
-                      sx={{ width: "100%" }}
-                    >
-                      {similarPlayers.similarPlayers
-                        .slice(0, 2)
-                        .map((sim, idx) => (
-                          <Box
-                            key={idx}
-                            sx={{
-                              p: 2.5,
-                              borderRadius: 3,
-                              bgcolor: "rgba(255,255,255,0.02)",
-                              border: "1px solid rgba(148, 163, 184, 0.05)",
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              textAlign: "center",
-                            }}
-                          >
-                            <Box
-                              display="flex"
-                              flexDirection="column"
-                              alignItems="center"
-                              gap={1.5}
-                              mb={2}
-                            >
-                              <Box
-                                sx={{
-                                  position: "relative",
-                                  display: "inline-flex",
-                                }}
-                              >
-                                <CircularProgress
-                                  variant="determinate"
-                                  value={sim.matchPercentage}
-                                  size={55}
-                                  thickness={4.5}
-                                  sx={{ color: "#6366f1" }}
-                                />
-                                <Box
-                                  sx={{
-                                    top: 0,
-                                    left: 0,
-                                    bottom: 0,
-                                    right: 0,
-                                    position: "absolute",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <Typography
-                                    variant="caption"
-                                    fontWeight={900}
-                                    color="white"
-                                  >
-                                    {sim.matchPercentage}%
-                                  </Typography>
-                                </Box>
-                              </Box>
-                              <Box>
-                                <Typography
-                                  variant="subtitle1"
-                                  fontWeight={800}
-                                  color="white"
-                                >
-                                  {sim.name}
-                                </Typography>
-                                <Typography
-                                  variant="caption"
-                                  color="text.secondary"
-                                  fontWeight={700}
-                                >
-                                  {sim.role}
-                                </Typography>
-                              </Box>
-                            </Box>
-                            <Box
-                              display="flex"
-                              flexDirection="column"
-                              gap={0.75}
-                              alignItems="center"
-                            >
-                              {sim.reasons?.map((reason, i) => (
-                                <Typography
-                                  key={i}
-                                  variant="caption"
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1,
-                                    color: "rgba(255,255,255,0.7)",
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  <span style={{ color: "#10b981" }}>✓</span>{" "}
-                                  {reason}
-                                </Typography>
-                              ))}
-                            </Box>
-                          </Box>
-                        ))}
-                    </Box>
-                  </GlassCard>
-                </motion.div>
-              </Grid>
-            )}
-
-            <Grid item xs={12} md={similarPlayers?.similarPlayers ? 4 : 6}>
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={itemVariants}
-                transition={{ duration: 0.5, delay: 0.45 }}
-                style={{ height: "100%" }}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: similarPlayers?.similarPlayers
+              ? { xs: "1fr", md: "1fr 1fr" }
+              : "1fr",
+            gap: 4,
+            width: "100%",
+          }}
+        >
+          {similarPlayers?.similarPlayers && (
+            <Box
+              component={motion.div}
+              initial="hidden"
+              animate="visible"
+              variants={itemVariants}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              style={{ height: "100%" }}
+            >
+              <GlassCard
+                sx={{
+                  p: 4,
+                  height: "100%",
+                  borderLeft: "4px solid #6366f1",
+                  background:
+                    "linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
+                }}
               >
-                <GlassCard
-                  sx={{
-                    p: 4,
-                    height: "100%",
-                    borderLeft: "4px solid #f59e0b",
-                    background:
-                      "linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
-                    justifyContent: "center",
-                  }}
+                <Typography
+                  variant="h5"
+                  fontWeight={800}
+                  mb={4}
+                  sx={{ color: "#818cf8" }}
                 >
-                  <Typography
-                    variant="h5"
-                    fontWeight={800}
-                    mb={5}
-                    sx={{ color: "#f59e0b" }}
-                  >
-                    📊 Historical Context
-                  </Typography>
-                  <Box mb={4} sx={{ width: "100%" }}>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "text.secondary", fontWeight: 700, mb: 1 }}
-                    >
-                      Career Average
-                    </Typography>
-                    <Typography variant="h2" fontWeight={900} color="white">
-                      {hof.contextRankings?.careerAverage}
-                    </Typography>
-                    <Chip
-                      label={`${hof.contextRankings?.averagePercentile}th Percentile`}
-                      size="small"
-                      sx={{
-                        mt: 1.5,
-                        bgcolor: "rgba(16, 185, 129, 0.15)",
-                        color: "#10b981",
-                        fontWeight: 800,
-                      }}
-                    />
-                  </Box>
-                  <Box sx={{ width: "100%" }}>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "text.secondary", fontWeight: 700, mb: 1 }}
-                    >
-                      Career Strike Rate
-                    </Typography>
-                    <Typography variant="h2" fontWeight={900} color="white">
-                      {hof.contextRankings?.careerStrikeRate}
-                    </Typography>
-                    <Chip
-                      label={`${hof.contextRankings?.strikeRatePercentile}th Percentile`}
-                      size="small"
-                      sx={{
-                        mt: 1.5,
-                        bgcolor: "rgba(16, 185, 129, 0.15)",
-                        color: "#10b981",
-                        fontWeight: 800,
-                      }}
-                    />
-                  </Box>
-                </GlassCard>
-              </motion.div>
-            </Grid>
-
-            <Grid item xs={12} md={similarPlayers?.similarPlayers ? 4 : 6}>
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={itemVariants}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                style={{ height: "100%" }}
-              >
-                <GlassCard
-                  sx={{
-                    p: 4,
-                    height: "100%",
-                    borderLeft: "4px solid #f59e0b",
-                    background:
-                      "linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
-                  }}
+                  👥 Similar Players
+                </Typography>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  gap={3}
+                  sx={{ width: "100%" }}
                 >
-                  <Typography
-                    variant="h5"
-                    fontWeight={800}
-                    mb={3}
-                    sx={{ color: "#f59e0b" }}
-                  >
-                    🏆 Records Held
-                  </Typography>
-                  {recordsHeld.length > 0 ? (
+                  {similarPlayers.similarPlayers.slice(0, 2).map((sim, idx) => (
                     <Box
-                      display="flex"
-                      flexDirection="column"
-                      gap={2}
-                      sx={{ width: "100%" }}
+                      key={idx}
+                      sx={{
+                        p: 2.5,
+                        borderRadius: 3,
+                        bgcolor: "rgba(255,255,255,0.02)",
+                        border: "1px solid rgba(148, 163, 184, 0.05)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        textAlign: "center",
+                      }}
                     >
-                      {recordsHeld.map((rec, i) => (
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        gap={1.5}
+                        mb={2}
+                      >
                         <Box
-                          key={i}
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          gap={2}
-                          p={2}
                           sx={{
-                            bgcolor: "rgba(255,255,255,0.02)",
-                            border: "1px solid rgba(148, 163, 184, 0.05)",
-                            borderRadius: 3,
+                            position: "relative",
+                            display: "inline-flex",
                           }}
                         >
-                          <Typography variant="h6" sx={{ fontSize: "1.3rem" }}>
-                            🏅
-                          </Typography>
+                          <CircularProgress
+                            variant="determinate"
+                            value={sim.matchPercentage}
+                            size={55}
+                            thickness={4.5}
+                            sx={{ color: "#6366f1" }}
+                          />
+                          <Box
+                            sx={{
+                              top: 0,
+                              left: 0,
+                              bottom: 0,
+                              right: 0,
+                              position: "absolute",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              fontWeight={900}
+                              color="white"
+                            >
+                              {sim.matchPercentage}%
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Box>
                           <Typography
                             variant="subtitle1"
-                            fontWeight={850}
+                            fontWeight={800}
                             color="white"
                           >
-                            {rec}
+                            {sim.name}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            fontWeight={700}
+                          >
+                            {sim.role}
                           </Typography>
                         </Box>
-                      ))}
+                      </Box>
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        gap={0.75}
+                        alignItems="center"
+                      >
+                        {sim.reasons?.map((reason, i) => (
+                          <Typography
+                            key={i}
+                            variant="caption"
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                              color: "rgba(255,255,255,0.7)",
+                              fontWeight: 600,
+                            }}
+                          >
+                            <span style={{ color: "#10b981" }}>✓</span> {reason}
+                          </Typography>
+                        ))}
+                      </Box>
                     </Box>
-                  ) : (
-                    <Typography variant="body1" color="text.secondary">
-                      No all-time IPL records held currently.
-                    </Typography>
-                  )}
-                </GlassCard>
-              </motion.div>
-            </Grid>
-          </Grid>
+                  ))}
+                </Box>
+              </GlassCard>
+            </Box>
+          )}
+
+          <Box
+            component={motion.div}
+            initial="hidden"
+            animate="visible"
+            variants={itemVariants}
+            transition={{ duration: 0.5, delay: 0.45 }}
+            style={{ height: "100%" }}
+          >
+            <GlassCard
+              sx={{
+                p: 4,
+                height: "100%",
+                borderLeft: "4px solid #f59e0b",
+                background:
+                  "linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(17, 24, 39, 0.9) 100%)",
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                variant="h5"
+                fontWeight={800}
+                mb={5}
+                sx={{ color: "#f59e0b" }}
+              >
+                📊 Historical Context
+              </Typography>
+              <Box mb={4} sx={{ width: "100%" }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "text.secondary", fontWeight: 700, mb: 1 }}
+                >
+                  Career Average
+                </Typography>
+                <Typography variant="h2" fontWeight={900} color="white">
+                  {hof.contextRankings?.careerAverage}
+                </Typography>
+                <Chip
+                  label={`${hof.contextRankings?.averagePercentile}th Percentile`}
+                  size="small"
+                  sx={{
+                    mt: 1.5,
+                    bgcolor: "rgba(16, 185, 129, 0.15)",
+                    color: "#10b981",
+                    fontWeight: 800,
+                  }}
+                />
+              </Box>
+              <Box sx={{ width: "100%" }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "text.secondary", fontWeight: 700, mb: 1 }}
+                >
+                  Career Strike Rate
+                </Typography>
+                <Typography variant="h2" fontWeight={900} color="white">
+                  {hof.contextRankings?.careerStrikeRate}
+                </Typography>
+                <Chip
+                  label={`${hof.contextRankings?.strikeRatePercentile}th Percentile`}
+                  size="small"
+                  sx={{
+                    mt: 1.5,
+                    bgcolor: "rgba(16, 185, 129, 0.15)",
+                    color: "#10b981",
+                    fontWeight: 800,
+                  }}
+                />
+              </Box>
+            </GlassCard>
+          </Box>
         </Box>
 
         {rivalries && (
@@ -1107,7 +1098,6 @@ export default function PlayerIntelligence() {
             <GlassCard
               sx={{
                 p: 4,
-                maxWidth: { xs: "100%", md: "85%", lg: "75%" },
                 width: "100%",
                 borderLeft: "4px solid #6366f1",
                 background:
@@ -1122,268 +1112,267 @@ export default function PlayerIntelligence() {
               >
                 ⚔️ Rivalry Matrix
               </Typography>
-              <Grid
-                container
-                spacing={4}
-                sx={{ width: "100%" }}
-                justifyContent="center"
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    rivalries.nemesis && rivalries.favorite
+                      ? { xs: "1fr", md: "1fr 1fr" }
+                      : "1fr",
+                  gap: 4,
+                  width: "100%",
+                }}
               >
                 {rivalries.nemesis && (
-                  <Grid item xs={12} md={6}>
-                    <Box
+                  <Box
+                    sx={{
+                      p: 3.5,
+                      borderRadius: 4,
+                      bgcolor: "rgba(239, 68, 68, 0.05)",
+                      border: "1px solid rgba(239, 68, 68, 0.15)",
+                      textAlign: "center",
+                      height: "100%",
+                    }}
+                  >
+                    <Typography
+                      variant="overline"
                       sx={{
-                        p: 3.5,
-                        borderRadius: 4,
-                        bgcolor: "rgba(239, 68, 68, 0.05)",
-                        border: "1px solid rgba(239, 68, 68, 0.15)",
-                        textAlign: "center",
-                        height: "100%",
+                        color: "#ef4444",
+                        fontWeight: 900,
+                        letterSpacing: 1.5,
+                        display: "block",
+                        mb: 1,
                       }}
                     >
-                      <Typography
-                        variant="overline"
-                        sx={{
-                          color: "#ef4444",
-                          fontWeight: 900,
-                          letterSpacing: 1.5,
-                          display: "block",
-                          mb: 1,
-                        }}
-                      >
-                        STRUGGLES AGAINST
-                      </Typography>
-                      <Typography
-                        variant="h4"
-                        fontWeight={900}
-                        mb={3}
-                        color="white"
-                      >
-                        {rivalries.nemesis.opponent}
-                      </Typography>
-                      <Grid container spacing={2} sx={{ mb: 3 }}>
-                        <Grid item xs={4}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                              fontWeight: 700,
-                              display: "block",
-                            }}
-                          >
-                            Dismissals
-                          </Typography>
-                          <Typography
-                            variant="h5"
-                            fontWeight={900}
-                            color="#ef4444"
-                          >
-                            {rivalries.nemesis.dismissals}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={4}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                              fontWeight: 700,
-                              display: "block",
-                            }}
-                          >
-                            Average
-                          </Typography>
-                          <Typography
-                            variant="h5"
-                            fontWeight={900}
-                            color="white"
-                          >
-                            {rivalries.nemesis.dismissals === 0 ||
-                            String(rivalries.nemesis.average).includes("∞") ||
-                            String(rivalries.nemesis.average).includes(
-                              "Infinity",
-                            )
-                              ? "—"
-                              : rivalries.nemesis.average}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={4}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                              fontWeight: 700,
-                              display: "block",
-                            }}
-                          >
-                            Strike Rate
-                          </Typography>
-                          <Typography
-                            variant="h5"
-                            fontWeight={900}
-                            color="white"
-                          >
-                            {rivalries.nemesis.sr.toFixed(1)}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontStyle: "italic",
-                          color: "text.secondary",
-                          fontWeight: 700,
-                        }}
-                      >
-                        {rivalries.nemesis.dismissals === 0 ||
-                        String(rivalries.nemesis.ballsPerDismissal).includes(
-                          "∞",
-                        ) ||
-                        String(rivalries.nemesis.ballsPerDismissal).includes(
-                          "Infinity",
-                        ) ? (
-                          <span style={{ color: "#ef4444", fontWeight: 800 }}>
-                            Never Dismissed
-                          </span>
-                        ) : (
-                          <>
-                            Dismissed every{" "}
-                            <span style={{ color: "#ef4444", fontWeight: 800 }}>
-                              {rivalries.nemesis.ballsPerDismissal}
-                            </span>{" "}
-                            balls
-                          </>
-                        )}
-                      </Typography>
+                      STRUGGLES AGAINST
+                    </Typography>
+                    <Typography
+                      variant="h4"
+                      fontWeight={900}
+                      mb={3}
+                      color="white"
+                    >
+                      {rivalries.nemesis.opponent}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr 1fr",
+                        gap: 2,
+                        mb: 3,
+                        width: "100%",
+                      }}
+                    >
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                            fontWeight: 700,
+                            display: "block",
+                          }}
+                        >
+                          Dismissals
+                        </Typography>
+                        <Typography
+                          variant="h5"
+                          fontWeight={900}
+                          color="#ef4444"
+                        >
+                          {rivalries.nemesis.dismissals}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                            fontWeight: 700,
+                            display: "block",
+                          }}
+                        >
+                          Average
+                        </Typography>
+                        <Typography variant="h5" fontWeight={900} color="white">
+                          {rivalries.nemesis.dismissals === 0 ||
+                          String(rivalries.nemesis.average).includes("∞") ||
+                          String(rivalries.nemesis.average).includes("Infinity")
+                            ? "—"
+                            : rivalries.nemesis.average}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                            fontWeight: 700,
+                            display: "block",
+                          }}
+                        >
+                          Strike Rate
+                        </Typography>
+                        <Typography variant="h5" fontWeight={900} color="white">
+                          {rivalries.nemesis.sr.toFixed(1)}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Grid>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontStyle: "italic",
+                        color: "text.secondary",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {rivalries.nemesis.dismissals === 0 ||
+                      String(rivalries.nemesis.ballsPerDismissal).includes(
+                        "∞",
+                      ) ||
+                      String(rivalries.nemesis.ballsPerDismissal).includes(
+                        "Infinity",
+                      ) ? (
+                        <span style={{ color: "#ef4444", fontWeight: 800 }}>
+                          Never Dismissed
+                        </span>
+                      ) : (
+                        <>
+                          Dismissed every{" "}
+                          <span style={{ color: "#ef4444", fontWeight: 800 }}>
+                            {rivalries.nemesis.ballsPerDismissal}
+                          </span>{" "}
+                          balls
+                        </>
+                      )}
+                    </Typography>
+                  </Box>
                 )}
                 {rivalries.favorite && (
-                  <Grid item xs={12} md={6}>
-                    <Box
+                  <Box
+                    sx={{
+                      p: 3.5,
+                      borderRadius: 4,
+                      bgcolor: "rgba(16, 185, 129, 0.05)",
+                      border: "1px solid rgba(16, 185, 129, 0.15)",
+                      textAlign: "center",
+                      height: "100%",
+                    }}
+                  >
+                    <Typography
+                      variant="overline"
                       sx={{
-                        p: 3.5,
-                        borderRadius: 4,
-                        bgcolor: "rgba(16, 185, 129, 0.05)",
-                        border: "1px solid rgba(16, 185, 129, 0.15)",
-                        textAlign: "center",
-                        height: "100%",
+                        color: "#10b981",
+                        fontWeight: 900,
+                        letterSpacing: 1.5,
+                        display: "block",
+                        mb: 1,
                       }}
                     >
-                      <Typography
-                        variant="overline"
-                        sx={{
-                          color: "#10b981",
-                          fontWeight: 900,
-                          letterSpacing: 1.5,
-                          display: "block",
-                          mb: 1,
-                        }}
-                      >
-                        DOMINATES
-                      </Typography>
-                      <Typography
-                        variant="h4"
-                        fontWeight={900}
-                        mb={3}
-                        color="white"
-                      >
-                        {rivalries.favorite.opponent}
-                      </Typography>
-                      <Grid container spacing={2} sx={{ mb: 3 }}>
-                        <Grid item xs={4}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                              fontWeight: 700,
-                              display: "block",
-                            }}
-                          >
-                            Runs Scored
-                          </Typography>
-                          <Typography
-                            variant="h5"
-                            fontWeight={900}
-                            color="#10b981"
-                          >
-                            {rivalries.favorite.runs}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={4}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                              fontWeight: 700,
-                              display: "block",
-                            }}
-                          >
-                            Average
-                          </Typography>
-                          <Typography
-                            variant="h5"
-                            fontWeight={900}
-                            color="white"
-                          >
-                            {rivalries.favorite.average === "∞" ||
-                            String(rivalries.favorite.average).includes("∞") ||
-                            String(rivalries.favorite.average).includes(
-                              "Infinity",
-                            )
-                              ? "—"
-                              : rivalries.favorite.average}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={4}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                              fontWeight: 700,
-                              display: "block",
-                            }}
-                          >
-                            Strike Rate
-                          </Typography>
-                          <Typography
-                            variant="h5"
-                            fontWeight={900}
-                            color="white"
-                          >
-                            {rivalries.favorite.sr.toFixed(1)}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontStyle: "italic",
-                          color: "text.secondary",
-                          fontWeight: 700,
-                        }}
-                      >
-                        {String(rivalries.favorite.ballsPerDismissal).includes(
-                          "∞",
-                        ) ||
-                        String(rivalries.favorite.ballsPerDismissal).includes(
-                          "Infinity",
-                        ) ? (
-                          <span style={{ color: "#10b981", fontWeight: 800 }}>
-                            Never Dismissed
-                          </span>
-                        ) : (
-                          <>
-                            Dismissed every{" "}
-                            <span style={{ color: "#10b981", fontWeight: 800 }}>
-                              {rivalries.favorite.ballsPerDismissal}
-                            </span>{" "}
-                            balls
-                          </>
-                        )}
-                      </Typography>
+                      DOMINATES
+                    </Typography>
+                    <Typography
+                      variant="h4"
+                      fontWeight={900}
+                      mb={3}
+                      color="white"
+                    >
+                      {rivalries.favorite.opponent}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr 1fr",
+                        gap: 2,
+                        mb: 3,
+                        width: "100%",
+                      }}
+                    >
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                            fontWeight: 700,
+                            display: "block",
+                          }}
+                        >
+                          Runs Scored
+                        </Typography>
+                        <Typography
+                          variant="h5"
+                          fontWeight={900}
+                          color="#10b981"
+                        >
+                          {rivalries.favorite.runs}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                            fontWeight: 700,
+                            display: "block",
+                          }}
+                        >
+                          Average
+                        </Typography>
+                        <Typography variant="h5" fontWeight={900} color="white">
+                          {rivalries.favorite.average === "∞" ||
+                          String(rivalries.favorite.average).includes("∞") ||
+                          String(rivalries.favorite.average).includes(
+                            "Infinity",
+                          )
+                            ? "—"
+                            : rivalries.favorite.average}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                            fontWeight: 700,
+                            display: "block",
+                          }}
+                        >
+                          Strike Rate
+                        </Typography>
+                        <Typography variant="h5" fontWeight={900} color="white">
+                          {rivalries.favorite.sr.toFixed(1)}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Grid>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontStyle: "italic",
+                        color: "text.secondary",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {String(rivalries.favorite.ballsPerDismissal).includes(
+                        "∞",
+                      ) ||
+                      String(rivalries.favorite.ballsPerDismissal).includes(
+                        "Infinity",
+                      ) ? (
+                        <span style={{ color: "#10b981", fontWeight: 800 }}>
+                          Never Dismissed
+                        </span>
+                      ) : (
+                        <>
+                          Dismissed every{" "}
+                          <span style={{ color: "#10b981", fontWeight: 800 }}>
+                            {rivalries.favorite.ballsPerDismissal}
+                          </span>{" "}
+                          balls
+                        </>
+                      )}
+                    </Typography>
+                  </Box>
                 )}
-              </Grid>
+              </Box>
             </GlassCard>
           </Box>
         )}
@@ -1399,7 +1388,6 @@ export default function PlayerIntelligence() {
           <GlassCard
             sx={{
               p: 4,
-              maxWidth: { xs: "100%", md: "85%", lg: "75%" },
               width: "100%",
               borderLeft: "4px solid #a855f7",
               background:

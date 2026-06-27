@@ -32,6 +32,10 @@ import {
 } from "recharts";
 import { apiClient } from "../api/index.js";
 import PageHeader from "../components/common/PageHeader.jsx";
+import {
+  getPlayerDisplayName,
+  deduplicatePlayers,
+} from "../utils/playerHelpers.js";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -701,8 +705,8 @@ function HeadToHeadMatchups() {
       }}
     >
       <PageHeader
-        title="Head-to-Head Matchups"
-        subtitle="Analyze every delivery between any two players in IPL history."
+        title="Player Matchups"
+        subtitle="Analyze delivery-by-delivery stats between any batsman and bowler"
       />
 
       <Paper
@@ -731,8 +735,19 @@ function HeadToHeadMatchups() {
           >
             <Autocomplete
               fullWidth
-              options={players}
-              getOptionLabel={(option) => option.name}
+              options={deduplicatePlayers(players)}
+              getOptionLabel={(option) => getPlayerDisplayName(option)}
+              filterOptions={(options, state) => {
+                const query = (state.inputValue || "").trim().toLowerCase();
+                if (!query) return options;
+                return options.filter((option) => {
+                  if (!option) return false;
+                  const displayName = (
+                    getPlayerDisplayName(option) || ""
+                  ).toLowerCase();
+                  return displayName.includes(query);
+                });
+              }}
               value={player1}
               onChange={(e, val) => {
                 setPlayer1(val);
@@ -753,7 +768,7 @@ function HeadToHeadMatchups() {
                       py: 1,
                     }}
                   >
-                    {option.name}
+                    {getPlayerDisplayName(option)}
                   </Box>
                 );
               }}
@@ -771,8 +786,19 @@ function HeadToHeadMatchups() {
           >
             <Autocomplete
               fullWidth
-              options={players}
-              getOptionLabel={(option) => option.name}
+              options={deduplicatePlayers(players)}
+              getOptionLabel={(option) => getPlayerDisplayName(option)}
+              filterOptions={(options, state) => {
+                const query = (state.inputValue || "").trim().toLowerCase();
+                if (!query) return options;
+                return options.filter((option) => {
+                  if (!option) return false;
+                  const displayName = (
+                    getPlayerDisplayName(option) || ""
+                  ).toLowerCase();
+                  return displayName.includes(query);
+                });
+              }}
               value={player2}
               onChange={(e, val) => {
                 setPlayer2(val);
@@ -793,7 +819,7 @@ function HeadToHeadMatchups() {
                       py: 1,
                     }}
                   >
-                    {option.name}
+                    {getPlayerDisplayName(option)}
                   </Box>
                 );
               }}
@@ -1041,7 +1067,17 @@ function HeadToHeadMatchups() {
           </IconButton>
         </DialogTitle>
         <DialogContent sx={{ p: 0 }}>
-          <TableContainer sx={{ overflowX: "auto" }}>
+          <TableContainer
+            sx={{
+              overflowX: "auto",
+              WebkitOverflowScrolling: "touch",
+              "&::-webkit-scrollbar": { height: 6 },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                borderRadius: 3,
+              },
+            }}
+          >
             <Table size="small">
               <TableHead sx={{ bgcolor: "rgba(0,0,0,0.05)" }}>
                 <TableRow>

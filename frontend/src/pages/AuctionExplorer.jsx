@@ -313,7 +313,7 @@ function AuctionExplorer() {
     >
       <PageHeader
         title="Auction Explorer"
-        subtitle={`Dive into comprehensive historical IPL auction data${yearsCount > 0 ? ` across (${minYear} - ${maxYear})` : ""}`}
+        subtitle={`View historical player auction prices and franchise spending${yearsCount > 0 ? ` (${minYear} - ${maxYear})` : ""}`}
       />
 
       <Paper
@@ -539,7 +539,7 @@ function AuctionExplorer() {
                 alignItems: "center",
               }}
             >
-              <Box sx={{ flex: "2 1 200px" }}>
+              <Box sx={{ flex: { xs: "1 1 100%", md: "2 1 200px" } }}>
                 <Autocomplete
                   freeSolo
                   options={searchOptions}
@@ -567,7 +567,7 @@ function AuctionExplorer() {
                   )}
                 />
               </Box>
-              <Box sx={{ flex: "1 1 120px" }}>
+              <Box sx={{ flex: { xs: "1 1 100%", sm: "1 1 120px" } }}>
                 <TextField
                   select
                   fullWidth
@@ -594,7 +594,7 @@ function AuctionExplorer() {
                     ))}
                 </TextField>
               </Box>
-              <Box sx={{ flex: "1 1 120px" }}>
+              <Box sx={{ flex: { xs: "1 1 100%", sm: "1 1 120px" } }}>
                 <TextField
                   select
                   fullWidth
@@ -620,7 +620,7 @@ function AuctionExplorer() {
                   ))}
                 </TextField>
               </Box>
-              <Box sx={{ flex: "1 1 120px" }}>
+              <Box sx={{ flex: { xs: "1 1 100%", sm: "1 1 120px" } }}>
                 <TextField
                   select
                   fullWidth
@@ -646,7 +646,7 @@ function AuctionExplorer() {
                   ))}
                 </TextField>
               </Box>
-              <Box sx={{ flex: "1 1 120px" }}>
+              <Box sx={{ flex: { xs: "1 1 100%", sm: "1 1 120px" } }}>
                 <TextField
                   select
                   fullWidth

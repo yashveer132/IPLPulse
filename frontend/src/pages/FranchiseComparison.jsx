@@ -37,7 +37,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ py: 4, overflow: "hidden", maxWidth: "100%" }}>
+        <Box sx={{ py: 4, overflowX: "auto", maxWidth: "100%" }}>
           {children}
         </Box>
       )}
@@ -331,8 +331,8 @@ function FranchiseComparison() {
   return (
     <Box>
       <PageHeader
-        title="Clash of the Titans"
-        subtitle="The ultimate, world-class analytical breakdown of legendary rivalries"
+        title="Franchise Rivalry Matrix"
+        subtitle="Compare head-to-head records and stats between franchises"
       />
 
       <Paper

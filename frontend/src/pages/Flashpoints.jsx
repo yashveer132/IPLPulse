@@ -185,7 +185,7 @@ const Flashpoints = () => {
     >
       <PageHeader
         title="Historical Archive"
-        subtitle="Cricket's Most Comprehensive Knowledge Graph of Scandals & Flashpoints"
+        subtitle="Chronology of key events and milestone moments in IPL history"
       />
 
       <Grid container spacing={4} sx={{ mb: 6 }}>

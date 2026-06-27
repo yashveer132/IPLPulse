@@ -154,21 +154,25 @@ export async function getAuctionSeasons() {
 export async function getSearchSuggestions(query) {
   if (!query || query.length < 2) return [];
 
-  if (!allPlayerNamesCache) {
-    const prisma = await getPrisma();
-    const suggestions = await prisma.player.findMany({
-      where: {
-        auctionEntries: { some: {} },
-      },
-      select: { name: true },
-      distinct: ["name"],
-      orderBy: { name: "asc" },
-    });
-    allPlayerNamesCache = suggestions.map((s) => s.name);
-  }
+  const prisma = await getPrisma();
+  const queryLower = query.toLowerCase().trim();
+  const suggestions = await prisma.player.findMany({
+    where: {
+      auctionEntries: { some: {} },
+      OR: [
+        { name: { contains: queryLower, mode: "insensitive" } },
+        {
+          aliases: {
+            some: { alias: { contains: queryLower, mode: "insensitive" } },
+          },
+        },
+      ],
+    },
+    select: { name: true },
+    distinct: ["name"],
+    take: 10,
+    orderBy: { name: "asc" },
+  });
 
-  const queryLower = query.toLowerCase();
-  return allPlayerNamesCache
-    .filter((name) => name.toLowerCase().includes(queryLower))
-    .slice(0, 10);
+  return suggestions.map((s) => s.name);
 }

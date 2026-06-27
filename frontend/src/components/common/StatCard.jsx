@@ -10,8 +10,8 @@ function StatCard({
   return (
     <Card
       sx={{
-        width: { xs: 135, sm: 180, md: 190 },
-        height: { xs: 95, sm: 115, md: 125 },
+        width: "100%",
+        minHeight: { xs: 100, sm: 115, md: 125 },
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",

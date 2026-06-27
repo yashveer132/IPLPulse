@@ -125,21 +125,47 @@ export async function getFranchiseSquad(id, season) {
 
   if (!franchise) return [];
 
-  const entries = await prisma.auctionEntry.findMany({
+  const parsedSeason = parseInt(season);
+
+  const stats = await prisma.playerSeasonStats.findMany({
     where: {
-      franchiseId: franchise.id,
-      season,
-      status: { in: ["Sold", "Retained", "RTM"] },
+      team: franchise.shortName,
+      season: parsedSeason,
     },
     include: {
       player: {
         select: { id: true, name: true, role: true, nationality: true },
       },
     },
-    orderBy: { soldPrice: "desc" },
   });
 
-  return entries;
+  const auctionEntries = await prisma.auctionEntry.findMany({
+    where: {
+      franchiseId: franchise.id,
+      season: parsedSeason,
+      status: { in: ["Sold", "Retained", "RTM"] },
+    },
+  });
+
+  const auctionMap = new Map(
+    auctionEntries.map((e) => [e.playerId, e.soldPrice]),
+  );
+
+  const squad = stats.map((s) => ({
+    id: s.id,
+    playerId: s.playerId,
+    player: s.player,
+    soldPrice: auctionMap.get(s.playerId) || 0,
+  }));
+
+  squad.sort((a, b) => {
+    if (b.soldPrice !== a.soldPrice) {
+      return b.soldPrice - a.soldPrice;
+    }
+    return a.player.name.localeCompare(b.player.name);
+  });
+
+  return squad;
 }
 
 export async function compareFranchises(ids) {

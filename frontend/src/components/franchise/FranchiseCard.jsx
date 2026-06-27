@@ -39,8 +39,9 @@ function FranchiseCard({ franchise }) {
           </Box>
           <Box
             sx={{
-              width: 40,
+              minWidth: 40,
               height: 40,
+              px: 1,
               borderRadius: "8px",
               bgcolor: franchise.color || "primary.main",
               display: "flex",
@@ -48,7 +49,7 @@ function FranchiseCard({ franchise }) {
               justifyContent: "center",
               color: "#fff",
               fontWeight: 800,
-              fontSize: "1.2rem",
+              fontSize: franchise.shortName.length > 3 ? "0.95rem" : "1.1rem",
             }}
           >
             {franchise.shortName}

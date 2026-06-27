@@ -102,7 +102,7 @@ const CausalHistoryEngine = ({ graphData }) => {
                   flexDirection: "column",
                   alignItems: "center",
                   flex: "1 1 0px",
-                  minWidth: 200,
+                  minWidth: { xs: 140, sm: 200 },
                 }}
               >
                 {hasParents && renderUpstreamChain(edge.parents)}
@@ -199,7 +199,7 @@ const CausalHistoryEngine = ({ graphData }) => {
                   flexDirection: "column",
                   alignItems: "center",
                   flex: "1 1 0px",
-                  minWidth: 200,
+                  minWidth: { xs: 140, sm: 200 },
                 }}
               >
                 {renderNode(edge.node, false)}

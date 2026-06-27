@@ -22,13 +22,14 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: { xs: "90%", md: 800 },
+  width: { xs: "92%", sm: "85%", md: 800 },
+  maxWidth: "95vw",
   maxHeight: "90vh",
   overflowY: "auto",
   bgcolor: "background.paper",
   border: "1px solid rgba(255,255,255,0.1)",
   boxShadow: 24,
-  p: 4,
+  p: { xs: 2.5, sm: 4 },
   borderRadius: 4,
 };
 

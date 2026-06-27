@@ -32,7 +32,6 @@ import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import { FRANCHISES } from "../../constants/index.js";
 
 const DRAWER_WIDTH = 220;
-const COLLAPSED_WIDTH = 220;
 
 const NAV_SECTIONS = [
   {
@@ -95,11 +94,11 @@ const NAV_SECTIONS = [
   {
     title: "Records & History",
     items: [
-      {
-        text: "Best Purchases",
-        icon: <SportsCricketIcon />,
-        path: "/rankings/best-purchases",
-      },
+      // {
+      //   text: "Best Purchases",
+      //   icon: <SportsCricketIcon />,
+      //   path: "/rankings/best-purchases",
+      // },
       {
         text: "All-Time Records",
         icon: <EmojiEventsIcon />,
@@ -108,6 +107,43 @@ const NAV_SECTIONS = [
     ],
   },
 ];
+
+const getHeaderCardStyles = (title) => {
+  const styles = {
+    Core: {
+      bg: "rgba(0, 229, 255, 0.05)",
+      color: "#00e5ff",
+      border: "1px solid rgba(0, 229, 255, 0.15)",
+    },
+    "Intelligence Hub": {
+      bg: "rgba(168, 85, 247, 0.05)",
+      color: "#c084fc",
+      border: "1px solid rgba(168, 85, 247, 0.15)",
+    },
+    "Advanced Analytics": {
+      bg: "rgba(16, 185, 129, 0.05)",
+      color: "#10b981",
+      border: "1px solid rgba(16, 185, 129, 0.15)",
+    },
+    "Records & History": {
+      bg: "rgba(245, 158, 11, 0.05)",
+      color: "#f59e0b",
+      border: "1px solid rgba(245, 158, 11, 0.15)",
+    },
+    Teams: {
+      bg: "rgba(244, 63, 94, 0.05)",
+      color: "#fb7185",
+      border: "1px solid rgba(244, 63, 94, 0.15)",
+    },
+  };
+  return (
+    styles[title] || {
+      bg: "rgba(255,255,255,0.05)",
+      color: "#fff",
+      border: "1px solid rgba(255,255,255,0.1)",
+    }
+  );
+};
 
 function Sidebar({ mobileOpen, handleDrawerToggle }) {
   const collapsed = false;
@@ -120,14 +156,29 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
     <>
       <Box
         sx={{
-          p: 2,
+          py: 1,
+          px: 2,
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "center",
+          width: "100%",
+          height: "80px",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <SportsBaseballIcon sx={{ color: "primary.main" }} />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1.5,
+            height: "100%",
+          }}
+        >
+          <img
+            src="/logo.svg"
+            alt="IPLPulse Logo"
+            style={{ height: "100%", maxHeight: "60px", width: "auto" }}
+          />
           <Typography variant="h6" fontWeight={800} color="primary.main">
             IPLPulse
           </Typography>
@@ -150,28 +201,52 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
         {NAV_SECTIONS.map((section, idx) => (
           <Box key={section.title} sx={{ mb: 1 }}>
             {!collapsed && (
-              <Typography
-                variant="overline"
+              <Box
                 sx={{
-                  px: 3,
-                  pt: 1.5,
-                  pb: 0.5,
-                  color: "text.secondary",
-                  fontWeight: 700,
-                  display: "block",
-                  fontSize: "0.7rem",
-                  letterSpacing: 1,
+                  mx: 1.5,
+                  mt: 2,
+                  mb: 1,
+                  py: 0.75,
+                  px: 1.5,
+                  borderRadius: 2,
+                  bgcolor: getHeaderCardStyles(section.title).bg,
+                  border: getHeaderCardStyles(section.title).border,
+                  textAlign: "center",
                 }}
               >
-                {section.title}
-              </Typography>
+                <Typography
+                  variant="overline"
+                  sx={{
+                    color: getHeaderCardStyles(section.title).color,
+                    fontWeight: 800,
+                    display: "block",
+                    fontSize: "0.72rem",
+                    letterSpacing: 1.2,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {section.title}
+                </Typography>
+              </Box>
             )}
             {collapsed && idx !== 0 && <Divider sx={{ my: 1, mx: 2 }} />}
             <List sx={{ px: 1, py: 0 }}>
               {section.items.map((item) => {
-                const isActive = location.pathname === item.path;
+                const isActive =
+                  item.path === "/"
+                    ? location.pathname === "/"
+                    : location.pathname === item.path ||
+                      location.pathname.startsWith(item.path + "/");
                 return (
-                  <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+                  <ListItem
+                    key={item.text}
+                    disablePadding
+                    sx={{
+                      mb: 0.5,
+                      borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
+                      pb: 0.5,
+                    }}
+                  >
                     <Tooltip
                       title={collapsed ? item.text : ""}
                       placement="right"
@@ -187,9 +262,10 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
                         selected={isActive}
                         sx={{
                           borderRadius: 2,
-                          justifyContent: collapsed ? "center" : "flex-start",
-                          px: collapsed ? 0 : 2,
-                          minHeight: 40,
+                          justifyContent: "center",
+                          px: 2,
+                          minHeight: { xs: 44, md: 40 },
+                          textAlign: "center",
                           "&.Mui-selected": {
                             bgcolor: "primary.main",
                             color: "primary.contrastText",
@@ -203,7 +279,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
                         <ListItemIcon
                           sx={{
                             minWidth: 0,
-                            mr: collapsed ? 0 : 2,
+                            mr: 1.5,
                             justifyContent: "center",
                             color: isActive ? "inherit" : "text.secondary",
                           }}
@@ -217,6 +293,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
                                 sx={{
                                   fontSize: "0.85rem",
                                   fontWeight: isActive ? 600 : 500,
+                                  textAlign: "center",
                                 }}
                               >
                                 {item.text}
@@ -236,71 +313,115 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
         <Divider sx={{ my: 1 }} />
 
         {!collapsed && (
-          <Typography
-            variant="overline"
-            sx={{ px: 3, pt: 1, color: "text.secondary", fontWeight: 600 }}
+          <Box
+            sx={{
+              mx: 1.5,
+              mt: 2,
+              mb: 1,
+              py: 0.75,
+              px: 1.5,
+              borderRadius: 2,
+              bgcolor: getHeaderCardStyles("Teams").bg,
+              border: getHeaderCardStyles("Teams").border,
+              textAlign: "center",
+            }}
           >
-            Teams
-          </Typography>
+            <Typography
+              variant="overline"
+              sx={{
+                color: getHeaderCardStyles("Teams").color,
+                fontWeight: 800,
+                display: "block",
+                fontSize: "0.72rem",
+                letterSpacing: 1.2,
+                lineHeight: 1.2,
+              }}
+            >
+              Teams
+            </Typography>
+          </Box>
         )}
 
         <List sx={{ px: 1 }}>
-          {FRANCHISES.map((team) => (
-            <ListItem key={team.key} disablePadding sx={{ mb: 0.5 }}>
-              <Tooltip
-                title={collapsed ? team.name : ""}
-                placement="right"
-                arrow
-                disableInteractive
+          {FRANCHISES.map((team) => {
+            const isTeamActive =
+              location.pathname === `/franchises/${team.key}`;
+            return (
+              <ListItem
+                key={team.key}
+                disablePadding
+                sx={{
+                  mb: 0.5,
+                  borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
+                  pb: 0.5,
+                }}
               >
-                <ListItemButton
-                  onClick={() => {
-                    navigate(`/franchises/${team.key}`);
-                    if (mobileOpen && handleDrawerToggle) handleDrawerToggle();
-                  }}
-                  sx={{
-                    borderRadius: 2,
-                    justifyContent: collapsed ? "center" : "flex-start",
-                    px: collapsed ? 0 : 2,
-                  }}
+                <Tooltip
+                  title={collapsed ? team.name : ""}
+                  placement="right"
+                  arrow
+                  disableInteractive
                 >
-                  <ListItemIcon
+                  <ListItemButton
+                    onClick={() => {
+                      navigate(`/franchises/${team.key}`);
+                      if (mobileOpen && handleDrawerToggle)
+                        handleDrawerToggle();
+                    }}
+                    selected={isTeamActive}
                     sx={{
-                      minWidth: 0,
-                      mr: collapsed ? 0 : 2,
+                      borderRadius: 2,
                       justifyContent: "center",
+                      px: 2,
+                      minHeight: { xs: 44, md: 40 },
+                      textAlign: "center",
+                      "&.Mui-selected": {
+                        bgcolor: "primary.main",
+                        color: "primary.contrastText",
+                        "&:hover": { bgcolor: "primary.dark" },
+                      },
                     }}
                   >
-                    <Box
+                    <ListItemIcon
                       sx={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: "4px",
-                        bgcolor: team.color,
-                        display: "flex",
-                        alignItems: "center",
+                        minWidth: 0,
+                        mr: 1.5,
                         justifyContent: "center",
-                        color: "#fff",
-                        fontSize: "0.65rem",
-                        fontWeight: "bold",
                       }}
                     >
-                      {team.key[0]}
-                    </Box>
-                  </ListItemIcon>
-                  {!collapsed && (
-                    <ListItemText
-                      primary={
-                        <Typography sx={{ fontSize: "0.875rem" }}>
-                          {team.name}
-                        </Typography>
-                      }
-                    />
-                  )}
-                </ListItemButton>
-              </Tooltip>
-            </ListItem>
-          ))}
+                      <Box
+                        sx={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: "4px",
+                          bgcolor: team.color,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "#fff",
+                          fontSize: "0.65rem",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {team.key[0]}
+                      </Box>
+                    </ListItemIcon>
+                    {!collapsed && (
+                      <ListItemText
+                        primary={
+                          <Typography
+                            sx={{ fontSize: "0.875rem", textAlign: "center" }}
+                          >
+                            {team.name}
+                          </Typography>
+                        }
+                      />
+                    )}
+                  </ListItemButton>
+                </Tooltip>
+              </ListItem>
+            );
+          })}
         </List>
       </Box>
     </>

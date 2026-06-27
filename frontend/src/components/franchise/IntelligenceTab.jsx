@@ -13,7 +13,6 @@ import CastleIcon from "@mui/icons-material/Castle";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import ShieldIcon from "@mui/icons-material/Shield";
 import StarIcon from "@mui/icons-material/Star";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import {
@@ -105,122 +104,35 @@ const RoleRow = ({ title, players, color }) => {
       </Typography>
       <Box sx={{ display: "flex", gap: 2, mt: 1, flexWrap: "wrap" }}>
         {players.map((p) => (
-          <Tooltip
+          <Box
             key={p.player.id}
-            placement="top"
-            componentsProps={{
-              tooltip: {
-                sx: {
-                  bgcolor: "#0f172a",
-                  border: "1px solid #1e293b",
-                  p: 0,
-                  boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-                },
-              },
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              bgcolor: "background.paper",
+              px: 2,
+              py: 1,
+              borderRadius: 2,
+              border: `1px solid ${color}40`,
+              transition: "all 0.2s",
+              "&:hover": { bgcolor: `${color}20`, borderColor: color },
             }}
-            title={
-              <Box sx={{ p: 1.5, minWidth: 200 }}>
-                <Typography variant="subtitle2" fontWeight={900} color="white">
-                  {p.player.name}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="success.main"
-                  fontWeight={800}
-                  display="block"
-                  mb={1.5}
-                >
-                  Selection Confidence: {p.selectionConfidence}%
-                </Typography>
-                <Typography
-                  variant="caption"
-                  fontWeight={800}
-                  color="text.secondary"
-                  display="block"
-                  mb={0.5}
-                >
-                  WHY SELECTED
-                </Typography>
-                {p.whySelected?.map((reason, i) => (
-                  <Typography
-                    key={i}
-                    variant="caption"
-                    display="block"
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 0.5,
-                      mt: 0.5,
-                      color: "#e2e8f0",
-                      fontWeight: 600,
-                    }}
-                  >
-                    <span style={{ color: "#4ade80" }}>✓</span> {reason}
-                  </Typography>
-                ))}
-                <Box
-                  sx={{
-                    mt: 1.5,
-                    pt: 1,
-                    borderTop: "1px solid rgba(255,255,255,0.1)",
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    fontWeight={700}
-                  >
-                    Selection Score:{" "}
-                    <span style={{ color: "#fff", fontWeight: 900 }}>
-                      {p.selectionScore}
-                    </span>
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    fontWeight={700}
-                  >
-                    GOAT:{" "}
-                    <span style={{ color: "#fff", fontWeight: 900 }}>
-                      {Math.round(p.franchiseScore)}
-                    </span>
-                  </Typography>
-                </Box>
-              </Box>
-            }
           >
-            <Box
+            <Avatar
               sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                bgcolor: "background.paper",
-                px: 2,
-                py: 1,
-                borderRadius: 2,
-                border: `1px solid ${color}40`,
-                cursor: "help",
-                transition: "all 0.2s",
-                "&:hover": { bgcolor: `${color}20`, borderColor: color },
+                width: 24,
+                height: 24,
+                bgcolor: color,
+                fontSize: "0.8rem",
               }}
             >
-              <Avatar
-                sx={{
-                  width: 24,
-                  height: 24,
-                  bgcolor: color,
-                  fontSize: "0.8rem",
-                }}
-              >
-                {p.player.name.charAt(0)}
-              </Avatar>
-              <Typography variant="body2" fontWeight={800}>
-                {p.player.name}
-              </Typography>
-            </Box>
-          </Tooltip>
+              {p.player.name.charAt(0)}
+            </Avatar>
+            <Typography variant="body2" fontWeight={800}>
+              {p.player.name}
+            </Typography>
+          </Box>
         ))}
       </Box>
     </Box>
@@ -248,59 +160,17 @@ export default function IntelligenceTab({ id, franchise }) {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {intelligence?.archetype && (
-        <Paper
-          sx={{
-            p: 4,
-            borderRadius: 4,
-            background: `linear-gradient(135deg, ${franchise.color}20 0%, #0f172a 100%)`,
-            border: `1px solid ${franchise.color}40`,
-            textAlign: "center",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 2,
-              mb: 1,
-            }}
-          >
-            <ShieldIcon sx={{ color: franchise.color, fontSize: 32 }} />
-            <Typography variant="h4" fontWeight={900}>
-              Archetype: {intelligence.archetype.name}
-            </Typography>
-          </Box>
-          <Typography
-            variant="body1"
-            fontSize="1.1rem"
-            color="text.secondary"
-            sx={{ maxWidth: 800, mx: "auto" }}
-          >
-            {intelligence.archetype.description}
-          </Typography>
-          <Divider sx={{ my: 3, borderColor: "rgba(255,255,255,0.1)" }} />
-          <Typography
-            variant="body1"
-            lineHeight={1.8}
-            sx={{ maxWidth: 900, mx: "auto", textAlign: "center" }}
-          >
-            {intelligence.narrative}
-          </Typography>
-        </Paper>
-      )}
 
       <Grid container spacing={4} justifyContent="center">
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper
             sx={{
-              p: 4,
+              p: { xs: 2.5, sm: 3, md: 4 },
               borderRadius: 3,
               bgcolor: "rgba(255,255,255,0.02)",
             }}
           >
-            <Typography variant="h5" fontWeight={900} align="center" mb={10}>
+            <Typography variant="h5" fontWeight={900} align="center" mb={6}>
               What Makes Them Unique?
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -320,7 +190,7 @@ export default function IntelligenceTab({ id, franchise }) {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: 4, borderRadius: 3, height: "100%" }}>
+          <Paper sx={{ p: { xs: 2.5, sm: 3, md: 4 }, borderRadius: 3, height: "100%" }}>
             <Box
               sx={{
                 display: "flex",
@@ -369,8 +239,8 @@ export default function IntelligenceTab({ id, franchise }) {
                     <Box
                       sx={{
                         position: "absolute",
-                        left: isPeak ? -41 : -25,
-                        top: 4,
+                        left: isPeak ? -27 : -21,
+                        top: isPeak ? 12 : 10,
                         width: 12,
                         height: 12,
                         borderRadius: "50%",
@@ -490,7 +360,7 @@ export default function IntelligenceTab({ id, franchise }) {
         <Grid size={{ xs: 12, md: 7 }}>
           <Paper
             sx={{
-              p: 4,
+              p: { xs: 2.5, sm: 3, md: 4 },
               borderRadius: 4,
               background: "linear-gradient(180deg, #1e293b 0%, #0f172a 100%)",
               border: "1px solid rgba(255,255,255,0.05)",
@@ -541,7 +411,7 @@ export default function IntelligenceTab({ id, franchise }) {
         </Grid>
 
         <Grid size={{ xs: 12, md: 5 }}>
-          <Paper sx={{ p: 4, borderRadius: 3, height: "100%" }}>
+          <Paper sx={{ p: { xs: 2.5, sm: 3, md: 4 }, borderRadius: 3, height: "100%" }}>
             <Typography variant="h6" fontWeight={800} align="center" mb={5}>
               Career GOAT Rankings
             </Typography>
@@ -622,6 +492,8 @@ export default function IntelligenceTab({ id, franchise }) {
       <Box
         sx={{
           display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           justifyContent: "center",
           width: "100%",
           mt: 2,
@@ -637,12 +509,20 @@ export default function IntelligenceTab({ id, franchise }) {
         >
           <MonetizationOnIcon sx={{ color: "#10b981" }} /> Auction Intelligence
         </Typography>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          fontWeight={700}
+          sx={{ mt: 0.5, letterSpacing: 1 }}
+        >
+          (Auction data considered from 2013-2022)
+        </Typography>
       </Box>
       <Grid container spacing={4} justifyContent="center">
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper
             sx={{
-              p: 4,
+              p: { xs: 2.5, sm: 3, md: 4 },
               borderRadius: 3,
               borderTop: "4px solid #10b981",
               bgcolor: "rgba(16, 185, 129, 0.05)",
@@ -727,7 +607,7 @@ export default function IntelligenceTab({ id, franchise }) {
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper
             sx={{
-              p: 4,
+              p: { xs: 2.5, sm: 3, md: 4 },
               borderRadius: 3,
               borderTop: "4px solid #ef4444",
               bgcolor: "rgba(239, 68, 68, 0.05)",
@@ -816,7 +696,7 @@ export default function IntelligenceTab({ id, franchise }) {
       </Typography>
       <Grid container spacing={4} justifyContent="center">
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: 4, borderRadius: 3, height: "100%" }}>
+          <Paper sx={{ p: { xs: 2.5, sm: 3, md: 4 }, borderRadius: 3, height: "100%" }}>
             <Typography
               variant="h6"
               fontWeight={800}
@@ -893,22 +773,6 @@ export default function IntelligenceTab({ id, franchise }) {
                     </Typography>
                   </Grid>
                 </Grid>
-                <Box
-                  sx={{
-                    mt: 4,
-                    p: 2,
-                    bgcolor: "background.default",
-                    borderRadius: 2,
-                    textAlign: "center",
-                  }}
-                >
-                  <Typography variant="body2" fontWeight={800}>
-                    Intensity Score:{" "}
-                    <span style={{ color: "#f59e0b" }}>
-                      {rivalries[0].intensity}
-                    </span>
-                  </Typography>
-                </Box>
               </Box>
             ) : (
               <Typography color="text.secondary">
@@ -918,7 +782,7 @@ export default function IntelligenceTab({ id, franchise }) {
           </Paper>
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: 4, borderRadius: 3, height: "100%" }}>
+          <Paper sx={{ p: { xs: 2.5, sm: 3, md: 4 }, borderRadius: 3, height: "100%" }}>
             <Box
               sx={{
                 display: "flex",

@@ -13,6 +13,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import { useNavigate } from "react-router-dom";
 import { usePlayers } from "../../hooks/usePlayer.js";
 import { useFranchises } from "../../hooks/useFranchise.js";
+import { getPlayerDisplayName } from "../../utils/playerHelpers.js";
 
 function SearchAutocomplete({
   sx = {},
@@ -31,14 +32,14 @@ function SearchAutocomplete({
   }, [inputValue]);
 
   const { data: playersData, isLoading: isLoadingPlayers } = usePlayers(
-    { search: debouncedValue, limit: 5 },
-    { enabled: debouncedValue.length > 1 },
+    { search: debouncedValue, limit: 10 },
+    { enabled: debouncedValue.length > 0 },
   );
 
   const { data: franchises } = useFranchises();
 
   useEffect(() => {
-    if (debouncedValue.length <= 1) {
+    if (debouncedValue.length === 0) {
       setOptions([]);
       return;
     }
@@ -67,7 +68,7 @@ function SearchAutocomplete({
         ...playersData.players.map((p) => ({
           type: "Player",
           id: p.id,
-          label: p.name,
+          label: getPlayerDisplayName(p),
           subtitle: p.role,
         })),
       );
@@ -76,7 +77,7 @@ function SearchAutocomplete({
     setOptions(newOptions);
   }, [debouncedValue, playersData, franchises]);
 
-  const isLoading = debouncedValue.length > 1 && isLoadingPlayers;
+  const isLoading = debouncedValue.length > 0 && isLoadingPlayers;
 
   return (
     <Autocomplete
@@ -104,7 +105,7 @@ function SearchAutocomplete({
       loading={isLoading}
       filterOptions={(x) => x}
       noOptionsText={
-        debouncedValue.length > 1 ? "No results found" : "Type to search..."
+        debouncedValue.length > 0 ? "No results found" : "Type to search..."
       }
       renderInput={(params) => (
         <TextField
@@ -134,13 +135,22 @@ function SearchAutocomplete({
               },
             },
           }}
+          inputProps={{
+            ...params.inputProps,
+            "aria-label": "Search players and franchises",
+          }}
         />
       )}
       renderOption={(props, option) => (
         <Box
           component="li"
           {...props}
-          sx={{ display: "flex", alignItems: "center", gap: 2 }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            width: "100%",
+          }}
         >
           {option.type === "Player" ? (
             <PersonIcon color="action" />

@@ -28,7 +28,8 @@ function MainLayout() {
           display: "flex",
           flexDirection: "column",
           flexGrow: 1,
-          width: { xs: "100%", md: `calc(100% - 220px)` },
+          minWidth: 0,
+          overflow: "hidden",
         }}
       >
         <Topbar handleDrawerToggle={handleDrawerToggle} />

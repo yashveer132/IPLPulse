@@ -187,8 +187,8 @@ function MilestoneExplorer() {
   return (
     <Box sx={{ maxWidth: 1200, mx: "auto" }}>
       <PageHeader
-        title="Milestone Explorer"
-        subtitle="Real-time analysis. Select any exact target score to instantly find out who reached it the fastest and the slowest."
+        title="Milestone Tracker"
+        subtitle="Compare which players reached specific run or wicket thresholds fastest"
       />
 
       <Paper
