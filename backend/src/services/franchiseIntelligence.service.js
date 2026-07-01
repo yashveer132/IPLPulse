@@ -6,20 +6,16 @@ export async function getFranchiseHistoricalProfile(franchiseId) {
   const franchise = await getFranchiseById(franchiseId);
   if (!franchise) return null;
 
-  const allMatchesDesc = await prisma.match.findMany({
-    select: { season: true, date: true, winner: true },
-    orderBy: [{ season: "asc" }, { date: "asc" }],
+  const championSeasons = await prisma.franchiseSeasonStats.findMany({
+    where: {
+      franchiseId: franchise.id,
+      isChampion: true,
+    },
+    select: { season: true },
+    orderBy: { season: "asc" },
   });
 
-  const seasonChampions = new Map();
-  allMatchesDesc.forEach((m) => {
-    seasonChampions.set(m.season, m.winner);
-  });
-
-  const titleYears = [];
-  seasonChampions.forEach((winner, season) => {
-    if (winner === franchise.shortName) titleYears.push(season);
-  });
+  const titleYears = championSeasons.map((s) => s.season);
 
   return {
     ...franchise,
@@ -706,10 +702,10 @@ export async function getFranchiseLegends(id) {
       wkProb = 99;
     } else if (name === "Suresh Raina") {
       batterProb = 99;
-      openerProb = 0; 
+      openerProb = 0;
     } else if (name === "Ravindra Jadeja") {
       arProb = 99;
-      openerProb = 0; 
+      openerProb = 0;
     } else if (
       name === "Faf du Plessis" ||
       name === "Matthew Hayden" ||
@@ -842,7 +838,7 @@ export async function getFranchiseLegends(id) {
         "Career vs Selection split applied",
       ],
     },
-        teamStrengthAdvantage: 88,
+    teamStrengthAdvantage: 88,
   };
 
   const excludeIds = new Set();

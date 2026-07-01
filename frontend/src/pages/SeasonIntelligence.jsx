@@ -256,7 +256,7 @@ function SeasonIntelligence() {
     }));
   }, [data?.topBowlers]);
 
-  if (loadingSeasons || (isLoading && !isPlaceholderData)) {
+  if (loadingSeasons || !selectedYear) {
     return (
       <Box sx={{ maxWidth: "100%", mx: "auto", px: 2 }}>
         <LoadingCard
@@ -267,6 +267,9 @@ function SeasonIntelligence() {
       </Box>
     );
   }
+
+  const isCurrentDataLoading =
+    !data || data.year?.toString() !== selectedYear?.toString();
 
   const renderChampionCard = (year, seasonData, isCompare = false) => {
     if (!seasonData?.champion) return null;
@@ -840,839 +843,682 @@ function SeasonIntelligence() {
           </Box>
         </Box>
 
-        {data && (
+        {isCurrentDataLoading ? (
           <Box
             sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              py: 12,
+              gap: 3,
               width: "100%",
-              opacity: isPlaceholderData ? 0.6 : 1,
-              transition: "opacity 0.3s",
             }}
           >
-            {compareMode && compareData && (
-              <GlassCard sx={{ mb: 4, borderTop: "4px solid #6366f1" }}>
-                <SectionHeader
-                  icon={CompareArrowsIcon}
-                  title="Tale of Two Seasons"
-                  subtitle={`Comparing IPL ${selectedYear} vs IPL ${compareYear}`}
-                  color="#6366f1"
-                />
-                <TableContainer sx={{ overflowX: "auto" }}>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell
-                          align="center"
-                          sx={{ fontWeight: 800, color: "text.secondary" }}
-                        >
-                          Metric
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          sx={{
-                            fontWeight: 900,
-                            color: "primary.main",
-                            fontSize: "1.1rem",
-                          }}
-                        >
-                          IPL {selectedYear}
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          sx={{
-                            fontWeight: 900,
-                            color: "#f59e0b",
-                            fontSize: "1.1rem",
-                          }}
-                        >
-                          IPL {compareYear}
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 800 }}>
-                          Diff
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {[
-                        {
-                          label: "Total Matches",
-                          key: "totalMatches",
-                          d1: data.overview.totalMatches,
-                          d2: compareData.overview.totalMatches,
-                          unit: "",
-                        },
-                        {
-                          label: "Total Runs",
-                          key: "totalRuns",
-                          d1: data.overview.totalRuns,
-                          d2: compareData.overview.totalRuns,
-                          unit: "",
-                        },
-                        {
-                          label: "Total Wickets",
-                          key: "totalWickets",
-                          d1: data.overview.totalWickets,
-                          d2: compareData.overview.totalWickets,
-                          unit: "",
-                        },
-                        {
-                          label: "Total Sixes",
-                          key: "totalSixes",
-                          d1: data.overview.totalSixes,
-                          d2: compareData.overview.totalSixes,
-                          unit: "",
-                        },
-                        {
-                          label: "Average Score / Match",
-                          key: "avgScore",
-                          d1: data.overview.avgScorePerMatch,
-                          d2: compareData.overview.avgScorePerMatch,
-                          unit: "",
-                        },
-                        {
-                          label: "Bat First Win %",
-                          key: "batFirst",
-                          d1: data.trends.batFirstWinPct,
-                          d2: compareData.trends.batFirstWinPct,
-                          unit: "%",
-                        },
-                        {
-                          label: "Chase Win %",
-                          key: "chase",
-                          d1: data.trends.chaseWinPct,
-                          d2: compareData.trends.chaseWinPct,
-                          unit: "%",
-                        },
-                      ].map((row) => {
-                        const diff = row.d1 - row.d2;
-                        const diffColor =
-                          diff > 0
-                            ? "success.main"
-                            : diff < 0
-                              ? "error.main"
-                              : "text.secondary";
-                        return (
-                          <TableRow key={row.key} hover>
-                            <TableCell align="center" sx={{ fontWeight: 700 }}>
-                              {row.label}
-                            </TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 800 }}>
-                              {row.d1.toLocaleString()}
-                              {row.unit}
-                            </TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 800 }}>
-                              {row.d2.toLocaleString()}
-                              {row.unit}
-                            </TableCell>
-                            <TableCell
-                              align="center"
-                              sx={{ fontWeight: 900, color: diffColor }}
-                            >
-                              {diff > 0 ? "+" : ""}
-                              {diff.toLocaleString()}
-                              {row.unit}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </GlassCard>
-            )}
+            <LinearProgress
+              sx={{
+                width: "100%",
+                maxWidth: 320,
+                height: 4,
+                borderRadius: 2,
+                bgcolor: "rgba(99, 102, 241, 0.1)",
+                "& .MuiLinearProgress-bar": {
+                  bgcolor: "primary.main",
+                },
+              }}
+            />
+            <Typography variant="body2" color="text.secondary" fontWeight={500}>
+              Loading season intelligence for IPL {selectedYear}...
+            </Typography>
+          </Box>
+        ) : (
+          data && (
+            <Box
+              sx={{
+                width: "100%",
+                opacity: isPlaceholderData ? 0.6 : 1,
+                transition: "opacity 0.3s",
+              }}
+            >
+              {compareMode && compareData && (
+                <GlassCard sx={{ mb: 4, borderTop: "4px solid #6366f1" }}>
+                  <SectionHeader
+                    icon={CompareArrowsIcon}
+                    title="Tale of Two Seasons"
+                    subtitle={`Comparing IPL ${selectedYear} vs IPL ${compareYear}`}
+                    color="#6366f1"
+                  />
+                  <TableContainer sx={{ overflowX: "auto" }}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell
+                            align="center"
+                            sx={{ fontWeight: 800, color: "text.secondary" }}
+                          >
+                            Metric
+                          </TableCell>
+                          <TableCell
+                            align="center"
+                            sx={{
+                              fontWeight: 900,
+                              color: "primary.main",
+                              fontSize: "1.1rem",
+                            }}
+                          >
+                            IPL {selectedYear}
+                          </TableCell>
+                          <TableCell
+                            align="center"
+                            sx={{
+                              fontWeight: 900,
+                              color: "#f59e0b",
+                              fontSize: "1.1rem",
+                            }}
+                          >
+                            IPL {compareYear}
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 800 }}>
+                            Diff
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {[
+                          {
+                            label: "Total Matches",
+                            key: "totalMatches",
+                            d1: data.overview.totalMatches,
+                            d2: compareData.overview.totalMatches,
+                            unit: "",
+                          },
+                          {
+                            label: "Total Runs",
+                            key: "totalRuns",
+                            d1: data.overview.totalRuns,
+                            d2: compareData.overview.totalRuns,
+                            unit: "",
+                          },
+                          {
+                            label: "Total Wickets",
+                            key: "totalWickets",
+                            d1: data.overview.totalWickets,
+                            d2: compareData.overview.totalWickets,
+                            unit: "",
+                          },
+                          {
+                            label: "Total Sixes",
+                            key: "totalSixes",
+                            d1: data.overview.totalSixes,
+                            d2: compareData.overview.totalSixes,
+                            unit: "",
+                          },
+                          {
+                            label: "Average Score / Match",
+                            key: "avgScore",
+                            d1: data.overview.avgScorePerMatch,
+                            d2: compareData.overview.avgScorePerMatch,
+                            unit: "",
+                          },
+                          {
+                            label: "Bat First Win %",
+                            key: "batFirst",
+                            d1: data.trends.batFirstWinPct,
+                            d2: compareData.trends.batFirstWinPct,
+                            unit: "%",
+                          },
+                          {
+                            label: "Chase Win %",
+                            key: "chase",
+                            d1: data.trends.chaseWinPct,
+                            d2: compareData.trends.chaseWinPct,
+                            unit: "%",
+                          },
+                        ].map((row) => {
+                          const diff = row.d1 - row.d2;
+                          const diffColor =
+                            diff > 0
+                              ? "success.main"
+                              : diff < 0
+                                ? "error.main"
+                                : "text.secondary";
+                          return (
+                            <TableRow key={row.key} hover>
+                              <TableCell
+                                align="center"
+                                sx={{ fontWeight: 700 }}
+                              >
+                                {row.label}
+                              </TableCell>
+                              <TableCell
+                                align="center"
+                                sx={{ fontWeight: 800 }}
+                              >
+                                {row.d1.toLocaleString()}
+                                {row.unit}
+                              </TableCell>
+                              <TableCell
+                                align="center"
+                                sx={{ fontWeight: 800 }}
+                              >
+                                {row.d2.toLocaleString()}
+                                {row.unit}
+                              </TableCell>
+                              <TableCell
+                                align="center"
+                                sx={{ fontWeight: 900, color: diffColor }}
+                              >
+                                {diff > 0 ? "+" : ""}
+                                {diff.toLocaleString()}
+                                {row.unit}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </GlassCard>
+              )}
 
-            {data.champion && (
-              <Box sx={{ mb: 4, width: "100%" }}>
-                {compareMode && compareData?.champion ? (
-                  <Grid
-                    container
-                    spacing={3}
-                    justifyContent="center"
-                    alignItems="stretch"
-                    sx={{ width: "100%", m: 0 }}
-                  >
+              {data.champion && (
+                <Box sx={{ mb: 4, width: "100%" }}>
+                  {compareMode && compareData?.champion ? (
                     <Grid
-                      size={{ xs: 6 }}
-                      sx={{ display: "flex", justifyContent: "center" }}
+                      container
+                      spacing={3}
+                      justifyContent="center"
+                      alignItems="stretch"
+                      sx={{ width: "100%", m: 0 }}
                     >
-                      <Box sx={{ width: "100%", height: "100%" }}>
-                        {renderChampionCard(selectedYear, data, true)}
-                      </Box>
+                      <Grid
+                        size={{ xs: 6 }}
+                        sx={{ display: "flex", justifyContent: "center" }}
+                      >
+                        <Box sx={{ width: "100%", height: "100%" }}>
+                          {renderChampionCard(selectedYear, data, true)}
+                        </Box>
+                      </Grid>
+                      <Grid
+                        size={{ xs: 6 }}
+                        sx={{ display: "flex", justifyContent: "center" }}
+                      >
+                        <Box sx={{ width: "100%", height: "100%" }}>
+                          {renderChampionCard(compareYear, compareData, true)}
+                        </Box>
+                      </Grid>
                     </Grid>
-                    <Grid
-                      size={{ xs: 6 }}
-                      sx={{ display: "flex", justifyContent: "center" }}
-                    >
-                      <Box sx={{ width: "100%", height: "100%" }}>
-                        {renderChampionCard(compareYear, compareData, true)}
-                      </Box>
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      width: "100%",
-                    }}
-                  >
+                  ) : (
                     <Box
                       sx={{
+                        display: "flex",
+                        justifyContent: "center",
                         width: "100%",
-                        maxWidth: compareMode ? "50%" : "100%",
                       }}
                     >
-                      {renderChampionCard(selectedYear, data, false)}
+                      <Box
+                        sx={{
+                          width: "100%",
+                          maxWidth: compareMode ? "50%" : "100%",
+                        }}
+                      >
+                        {renderChampionCard(selectedYear, data, false)}
+                      </Box>
                     </Box>
-                  </Box>
-                )}
-              </Box>
-            )}
+                  )}
+                </Box>
+              )}
 
-            <Grid
-              container
-              spacing={{ xs: 2, md: 4 }}
-              sx={{ mb: 4 }}
-              justifyContent="center"
-              alignItems="stretch"
-            >
-              {[data, compareMode && compareData ? compareData : null]
-                .filter(Boolean)
-                .map((d, dIdx) => {
-                  const aw = d.seasonAwards;
-                  if (!d) return null;
+              <Grid
+                container
+                spacing={{ xs: 2, md: 4 }}
+                sx={{ mb: 4 }}
+                justifyContent="center"
+                alignItems="stretch"
+              >
+                {[data, compareMode && compareData ? compareData : null]
+                  .filter(Boolean)
+                  .map((d, dIdx) => {
+                    const aw = d.seasonAwards;
+                    if (!d) return null;
 
+                    return (
+                      <Grid
+                        item
+                        xs={12}
+                        md={compareMode && compareData ? 6 : 12}
+                        key={`awards-${d.year}`}
+                      ></Grid>
+                    );
+                  })}
+              </Grid>
+
+              <Grid
+                container
+                spacing={{ xs: 2, md: 4 }}
+                sx={{ mb: 4 }}
+                justifyContent="center"
+                alignItems="stretch"
+              >
+                {(() => {
+                  const hasData1 =
+                    data.recordsCheck && data.recordsCheck.length > 0;
+                  const hasData2 =
+                    compareMode &&
+                    compareData &&
+                    compareData.recordsCheck &&
+                    compareData.recordsCheck.length > 0;
+
+                  if (!hasData1 && !hasData2) return null;
+
+                  if (compareMode && compareData) {
+                    const totalBroken1 = data.recordsCheck
+                      ? data.recordsCheck.filter((r) => r.isBroken).length
+                      : 0;
+                    const totalBroken2 = compareData.recordsCheck
+                      ? compareData.recordsCheck.filter((r) => r.isBroken)
+                          .length
+                      : 0;
+
+                    return (
+                      <Grid size={{ xs: 12 }}>
+                        <Box sx={{ width: "100%", pl: { xs: 3, sm: 0 } }}>
+                          <SectionHeader
+                            icon={CampaignIcon}
+                            title={`Records Check (${selectedYear} vs ${compareYear})`}
+                            subtitle={`${totalBroken1} broken in ${selectedYear} • ${totalBroken2} broken in ${compareYear}`}
+                            color="#ef4444"
+                          />
+                          <Box
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: {
+                                xs: "1fr",
+                                sm: "repeat(2, 1fr)",
+                                md: "repeat(4, 1fr)",
+                              },
+                              justifyContent: "center",
+                              justifyItems: "center",
+                              gap: 2,
+                              width: "100%",
+                            }}
+                          >
+                            {hasData1 &&
+                              data.recordsCheck.map((rec, i) => (
+                                <GlassCard
+                                  key={`sel-${i}`}
+                                  sx={{
+                                    borderTop: `4px solid ${rec.isBroken ? "#ef4444" : "#3b82f6"}`,
+                                    p: 2,
+                                    opacity: rec.isBroken ? 1 : 0.95,
+                                    minHeight: 250,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "space-between",
+                                    width: "100%",
+                                    maxWidth: { xs: 360, sm: "100%" },
+                                    mx: "auto",
+                                    boxSizing: "border-box",
+                                    bgcolor: rec.isBroken
+                                      ? "rgba(239, 68, 68, 0.12)"
+                                      : "rgba(30, 41, 59, 0.75)",
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      width: "100%",
+                                      height: "100%",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      justifyContent: "space-between",
+                                    }}
+                                  >
+                                    <Box>
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          alignItems: "center",
+                                          mb: 1,
+                                        }}
+                                      >
+                                        <Chip
+                                          label={selectedYear}
+                                          size="small"
+                                          sx={{
+                                            height: 18,
+                                            fontSize: "0.65rem",
+                                            fontWeight: 800,
+                                            bgcolor: "primary.main",
+                                            color: "white",
+                                          }}
+                                        />
+                                        {rec.isBroken ? (
+                                          <CheckCircleIcon
+                                            sx={{
+                                              color: "#ef4444",
+                                              fontSize: 16,
+                                            }}
+                                          />
+                                        ) : (
+                                          <CancelIcon
+                                            sx={{
+                                              color: "text.secondary",
+                                              fontSize: 16,
+                                            }}
+                                          />
+                                        )}
+                                      </Box>
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          alignItems: "center",
+                                          textAlign: "center",
+                                          gap: 0.5,
+                                          mb: 1.5,
+                                        }}
+                                      >
+                                        <Typography
+                                          variant="caption"
+                                          color={
+                                            rec.isBroken
+                                              ? "text.primary"
+                                              : "text.secondary"
+                                          }
+                                          fontWeight={800}
+                                          textTransform="uppercase"
+                                          sx={{
+                                            fontSize: "0.85rem",
+                                            lineHeight: 1.2,
+                                            wordBreak: "break-word",
+                                          }}
+                                        >
+                                          {rec.title}
+                                        </Typography>
+                                      </Box>
+
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          gap: 0.25,
+                                          mt: 0.5,
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        <Typography
+                                          variant="subtitle1"
+                                          fontWeight={900}
+                                          sx={{
+                                            color: rec.isBroken
+                                              ? "#ef4444"
+                                              : "text.primary",
+                                            fontSize: "1.3rem",
+                                            lineHeight: 1.2,
+                                          }}
+                                        >
+                                          {rec.new}{" "}
+                                          {rec.isBroken && (
+                                            <Typography
+                                              component="span"
+                                              variant="caption"
+                                              sx={{
+                                                ml: 0.5,
+                                                color: "#ef4444",
+                                                fontWeight: 850,
+                                                fontSize: "0.75rem",
+                                              }}
+                                            >
+                                              (New)
+                                            </Typography>
+                                          )}
+                                        </Typography>
+                                        <Typography
+                                          variant="caption"
+                                          color="text.secondary"
+                                          sx={{
+                                            fontSize: "0.88rem",
+                                            textDecoration: "none",
+                                          }}
+                                        >
+                                          {rec.isBroken
+                                            ? `was ${rec.old} ${rec.oldPlayer ? `(${rec.oldPlayer})` : ""}`
+                                            : `(Record: ${rec.old} ${rec.oldPlayer ? `by ${rec.oldPlayer}` : ""})`}
+                                        </Typography>
+                                      </Box>
+                                    </Box>
+                                    {rec.player && (
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                          gap: 0.75,
+                                          mt: 1.5,
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={() =>
+                                          navigate(`/players/${rec.player.id}`)
+                                        }
+                                      >
+                                        <Avatar
+                                          src={rec.player.imageUrl}
+                                          sx={{ width: 22, height: 22 }}
+                                        >
+                                          {rec.player.name?.[0]}
+                                        </Avatar>
+                                        <Typography
+                                          variant="caption"
+                                          fontWeight={700}
+                                          color="text.primary"
+                                          sx={{ fontSize: "0.8rem" }}
+                                        >
+                                          {rec.player.name}
+                                        </Typography>
+                                      </Box>
+                                    )}
+                                  </Box>
+                                </GlassCard>
+                              ))}
+
+                            {hasData2 &&
+                              compareData.recordsCheck.map((rec, i) => (
+                                <GlassCard
+                                  key={`comp-${i}`}
+                                  sx={{
+                                    borderTop: `4px solid ${rec.isBroken ? "#ef4444" : "#3b82f6"}`,
+                                    p: 2,
+                                    opacity: rec.isBroken ? 1 : 0.95,
+                                    minHeight: 250,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "space-between",
+                                    width: "100%",
+                                    maxWidth: { xs: 360, sm: "100%" },
+                                    mx: "auto",
+                                    boxSizing: "border-box",
+                                    bgcolor: rec.isBroken
+                                      ? "rgba(239, 68, 68, 0.12)"
+                                      : "rgba(30, 41, 59, 0.75)",
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      width: "100%",
+                                      height: "100%",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      justifyContent: "space-between",
+                                    }}
+                                  >
+                                    <Box>
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          alignItems: "center",
+                                          mb: 1,
+                                        }}
+                                      >
+                                        <Chip
+                                          label={compareYear}
+                                          size="small"
+                                          sx={{
+                                            height: 18,
+                                            fontSize: "0.65rem",
+                                            fontWeight: 800,
+                                            bgcolor: "#f59e0b",
+                                            color: "white",
+                                          }}
+                                        />
+                                        {rec.isBroken ? (
+                                          <CheckCircleIcon
+                                            sx={{
+                                              color: "#ef4444",
+                                              fontSize: 16,
+                                            }}
+                                          />
+                                        ) : (
+                                          <CancelIcon
+                                            sx={{
+                                              color: "text.secondary",
+                                              fontSize: 16,
+                                            }}
+                                          />
+                                        )}
+                                      </Box>
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          alignItems: "center",
+                                          textAlign: "center",
+                                          gap: 0.5,
+                                          mb: 1.5,
+                                        }}
+                                      >
+                                        <Typography
+                                          variant="caption"
+                                          color={
+                                            rec.isBroken
+                                              ? "text.primary"
+                                              : "text.secondary"
+                                          }
+                                          fontWeight={800}
+                                          textTransform="uppercase"
+                                          sx={{
+                                            fontSize: "0.85rem",
+                                            lineHeight: 1.2,
+                                            wordBreak: "break-word",
+                                          }}
+                                        >
+                                          {rec.title}
+                                        </Typography>
+                                      </Box>
+
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          gap: 0.25,
+                                          mt: 0.5,
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        <Typography
+                                          variant="subtitle1"
+                                          fontWeight={900}
+                                          sx={{
+                                            color: rec.isBroken
+                                              ? "#ef4444"
+                                              : "text.primary",
+                                            fontSize: "1.3rem",
+                                            lineHeight: 1.2,
+                                          }}
+                                        >
+                                          {rec.new}{" "}
+                                          {rec.isBroken && (
+                                            <Typography
+                                              component="span"
+                                              variant="caption"
+                                              sx={{
+                                                ml: 0.5,
+                                                color: "#ef4444",
+                                                fontWeight: 850,
+                                                fontSize: "0.75rem",
+                                              }}
+                                            >
+                                              (New)
+                                            </Typography>
+                                          )}
+                                        </Typography>
+                                        <Typography
+                                          variant="caption"
+                                          color="text.secondary"
+                                          sx={{
+                                            fontSize: "0.88rem",
+                                            textDecoration: "none",
+                                          }}
+                                        >
+                                          {rec.isBroken
+                                            ? `was ${rec.old} ${rec.oldPlayer ? `(${rec.oldPlayer})` : ""}`
+                                            : `(Record: ${rec.old} ${rec.oldPlayer ? `by ${rec.oldPlayer}` : ""})`}
+                                        </Typography>
+                                      </Box>
+                                    </Box>
+                                    {rec.player && (
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                          gap: 0.75,
+                                          mt: 1.5,
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={() =>
+                                          navigate(`/players/${rec.player.id}`)
+                                        }
+                                      >
+                                        <Avatar
+                                          src={rec.player.imageUrl}
+                                          sx={{ width: 22, height: 22 }}
+                                        >
+                                          {rec.player.name?.[0]}
+                                        </Avatar>
+                                        <Typography
+                                          variant="caption"
+                                          fontWeight={700}
+                                          color="text.primary"
+                                          sx={{ fontSize: "0.8rem" }}
+                                        >
+                                          {rec.player.name}
+                                        </Typography>
+                                      </Box>
+                                    )}
+                                  </Box>
+                                </GlassCard>
+                              ))}
+                          </Box>
+                        </Box>
+                      </Grid>
+                    );
+                  }
+
+                  const d = data;
                   return (
-                    <Grid
-                      item
-                      xs={12}
-                      md={compareMode && compareData ? 6 : 12}
-                      key={`awards-${d.year}`}
-                    ></Grid>
-                  );
-                })}
-            </Grid>
-
-            <Grid
-              container
-              spacing={{ xs: 2, md: 4 }}
-              sx={{ mb: 4 }}
-              justifyContent="center"
-              alignItems="stretch"
-            >
-              {(() => {
-                const hasData1 =
-                  data.recordsCheck && data.recordsCheck.length > 0;
-                const hasData2 =
-                  compareMode &&
-                  compareData &&
-                  compareData.recordsCheck &&
-                  compareData.recordsCheck.length > 0;
-
-                if (!hasData1 && !hasData2) return null;
-
-                if (compareMode && compareData) {
-                  const totalBroken1 = data.recordsCheck
-                    ? data.recordsCheck.filter((r) => r.isBroken).length
-                    : 0;
-                  const totalBroken2 = compareData.recordsCheck
-                    ? compareData.recordsCheck.filter((r) => r.isBroken).length
-                    : 0;
-
-                  return (
-                    <Grid size={{ xs: 12 }}>
+                    <Grid size={{ xs: 12 }} key={`records-${d.year}`}>
                       <Box sx={{ width: "100%", pl: { xs: 3, sm: 0 } }}>
                         <SectionHeader
                           icon={CampaignIcon}
-                          title={`Records Check (${selectedYear} vs ${compareYear})`}
-                          subtitle={`${totalBroken1} broken in ${selectedYear} • ${totalBroken2} broken in ${compareYear}`}
-                          color="#ef4444"
-                        />
-                        <Box
-                          sx={{
-                            display: "grid",
-                            gridTemplateColumns: {
-                              xs: "1fr",
-                              sm: "repeat(2, 1fr)",
-                              md: "repeat(4, 1fr)",
-                            },
-                            justifyContent: "center",
-                            justifyItems: "center",
-                            gap: 2,
-                            width: "100%",
-                          }}
-                        >
-                          {hasData1 &&
-                            data.recordsCheck.map((rec, i) => (
-                              <GlassCard
-                                key={`sel-${i}`}
-                                sx={{
-                                  borderTop: `4px solid ${rec.isBroken ? "#ef4444" : "#3b82f6"}`,
-                                  p: 2,
-                                  opacity: rec.isBroken ? 1 : 0.95,
-                                  minHeight: 250,
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  justifyContent: "space-between",
-                                  width: "100%",
-                                  maxWidth: { xs: 360, sm: "100%" },
-                                  mx: "auto",
-                                  boxSizing: "border-box",
-                                  bgcolor: rec.isBroken
-                                    ? "rgba(239, 68, 68, 0.12)"
-                                    : "rgba(30, 41, 59, 0.75)",
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    width: "100%",
-                                    height: "100%",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    justifyContent: "space-between",
-                                  }}
-                                >
-                                  <Box>
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        mb: 1,
-                                      }}
-                                    >
-                                      <Chip
-                                        label={selectedYear}
-                                        size="small"
-                                        sx={{
-                                          height: 18,
-                                          fontSize: "0.65rem",
-                                          fontWeight: 800,
-                                          bgcolor: "primary.main",
-                                          color: "white",
-                                        }}
-                                      />
-                                      {rec.isBroken ? (
-                                        <CheckCircleIcon
-                                          sx={{
-                                            color: "#ef4444",
-                                            fontSize: 16,
-                                          }}
-                                        />
-                                      ) : (
-                                        <CancelIcon
-                                          sx={{
-                                            color: "text.secondary",
-                                            fontSize: 16,
-                                          }}
-                                        />
-                                      )}
-                                    </Box>
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        textAlign: "center",
-                                        gap: 0.5,
-                                        mb: 1.5,
-                                      }}
-                                    >
-                                      <Typography
-                                        variant="caption"
-                                        color={
-                                          rec.isBroken
-                                            ? "text.primary"
-                                            : "text.secondary"
-                                        }
-                                        fontWeight={800}
-                                        textTransform="uppercase"
-                                        sx={{
-                                          fontSize: "0.85rem",
-                                          lineHeight: 1.2,
-                                          wordBreak: "break-word",
-                                        }}
-                                      >
-                                        {rec.title}
-                                      </Typography>
-                                    </Box>
-
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        gap: 0.25,
-                                        mt: 0.5,
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      <Typography
-                                        variant="subtitle1"
-                                        fontWeight={900}
-                                        sx={{
-                                          color: rec.isBroken
-                                            ? "#ef4444"
-                                            : "text.primary",
-                                          fontSize: "1.3rem",
-                                          lineHeight: 1.2,
-                                        }}
-                                      >
-                                        {rec.new}{" "}
-                                        {rec.isBroken && (
-                                          <Typography
-                                            component="span"
-                                            variant="caption"
-                                            sx={{
-                                              ml: 0.5,
-                                              color: "#ef4444",
-                                              fontWeight: 850,
-                                              fontSize: "0.75rem",
-                                            }}
-                                          >
-                                            (New)
-                                          </Typography>
-                                        )}
-                                      </Typography>
-                                      <Typography
-                                        variant="caption"
-                                        color="text.secondary"
-                                        sx={{
-                                          fontSize: "0.88rem",
-                                          textDecoration: "none",
-                                        }}
-                                      >
-                                        {rec.isBroken
-                                          ? `was ${rec.old} ${rec.oldPlayer ? `(${rec.oldPlayer})` : ""}`
-                                          : `(Record: ${rec.old} ${rec.oldPlayer ? `by ${rec.oldPlayer}` : ""})`}
-                                      </Typography>
-                                    </Box>
-                                  </Box>
-                                  {rec.player && (
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        gap: 0.75,
-                                        mt: 1.5,
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        navigate(`/players/${rec.player.id}`)
-                                      }
-                                    >
-                                      <Avatar
-                                        src={rec.player.imageUrl}
-                                        sx={{ width: 22, height: 22 }}
-                                      >
-                                        {rec.player.name?.[0]}
-                                      </Avatar>
-                                      <Typography
-                                        variant="caption"
-                                        fontWeight={700}
-                                        color="text.primary"
-                                        sx={{ fontSize: "0.8rem" }}
-                                      >
-                                        {rec.player.name}
-                                      </Typography>
-                                    </Box>
-                                  )}
-                                </Box>
-                              </GlassCard>
-                            ))}
-
-                          {hasData2 &&
-                            compareData.recordsCheck.map((rec, i) => (
-                              <GlassCard
-                                key={`comp-${i}`}
-                                sx={{
-                                  borderTop: `4px solid ${rec.isBroken ? "#ef4444" : "#3b82f6"}`,
-                                  p: 2,
-                                  opacity: rec.isBroken ? 1 : 0.95,
-                                  minHeight: 250,
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  justifyContent: "space-between",
-                                  width: "100%",
-                                  maxWidth: { xs: 360, sm: "100%" },
-                                  mx: "auto",
-                                  boxSizing: "border-box",
-                                  bgcolor: rec.isBroken
-                                    ? "rgba(239, 68, 68, 0.12)"
-                                    : "rgba(30, 41, 59, 0.75)",
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    width: "100%",
-                                    height: "100%",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    justifyContent: "space-between",
-                                  }}
-                                >
-                                  <Box>
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        mb: 1,
-                                      }}
-                                    >
-                                      <Chip
-                                        label={compareYear}
-                                        size="small"
-                                        sx={{
-                                          height: 18,
-                                          fontSize: "0.65rem",
-                                          fontWeight: 800,
-                                          bgcolor: "#f59e0b",
-                                          color: "white",
-                                        }}
-                                      />
-                                      {rec.isBroken ? (
-                                        <CheckCircleIcon
-                                          sx={{
-                                            color: "#ef4444",
-                                            fontSize: 16,
-                                          }}
-                                        />
-                                      ) : (
-                                        <CancelIcon
-                                          sx={{
-                                            color: "text.secondary",
-                                            fontSize: 16,
-                                          }}
-                                        />
-                                      )}
-                                    </Box>
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        textAlign: "center",
-                                        gap: 0.5,
-                                        mb: 1.5,
-                                      }}
-                                    >
-                                      <Typography
-                                        variant="caption"
-                                        color={
-                                          rec.isBroken
-                                            ? "text.primary"
-                                            : "text.secondary"
-                                        }
-                                        fontWeight={800}
-                                        textTransform="uppercase"
-                                        sx={{
-                                          fontSize: "0.85rem",
-                                          lineHeight: 1.2,
-                                          wordBreak: "break-word",
-                                        }}
-                                      >
-                                        {rec.title}
-                                      </Typography>
-                                    </Box>
-
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        gap: 0.25,
-                                        mt: 0.5,
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      <Typography
-                                        variant="subtitle1"
-                                        fontWeight={900}
-                                        sx={{
-                                          color: rec.isBroken
-                                            ? "#ef4444"
-                                            : "text.primary",
-                                          fontSize: "1.3rem",
-                                          lineHeight: 1.2,
-                                        }}
-                                      >
-                                        {rec.new}{" "}
-                                        {rec.isBroken && (
-                                          <Typography
-                                            component="span"
-                                            variant="caption"
-                                            sx={{
-                                              ml: 0.5,
-                                              color: "#ef4444",
-                                              fontWeight: 850,
-                                              fontSize: "0.75rem",
-                                            }}
-                                          >
-                                            (New)
-                                          </Typography>
-                                        )}
-                                      </Typography>
-                                      <Typography
-                                        variant="caption"
-                                        color="text.secondary"
-                                        sx={{
-                                          fontSize: "0.88rem",
-                                          textDecoration: "none",
-                                        }}
-                                      >
-                                        {rec.isBroken
-                                          ? `was ${rec.old} ${rec.oldPlayer ? `(${rec.oldPlayer})` : ""}`
-                                          : `(Record: ${rec.old} ${rec.oldPlayer ? `by ${rec.oldPlayer}` : ""})`}
-                                      </Typography>
-                                    </Box>
-                                  </Box>
-                                  {rec.player && (
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        gap: 0.75,
-                                        mt: 1.5,
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        navigate(`/players/${rec.player.id}`)
-                                      }
-                                    >
-                                      <Avatar
-                                        src={rec.player.imageUrl}
-                                        sx={{ width: 22, height: 22 }}
-                                      >
-                                        {rec.player.name?.[0]}
-                                      </Avatar>
-                                      <Typography
-                                        variant="caption"
-                                        fontWeight={700}
-                                        color="text.primary"
-                                        sx={{ fontSize: "0.8rem" }}
-                                      >
-                                        {rec.player.name}
-                                      </Typography>
-                                    </Box>
-                                  )}
-                                </Box>
-                              </GlassCard>
-                            ))}
-                        </Box>
-                      </Box>
-                    </Grid>
-                  );
-                }
-
-                const d = data;
-                return (
-                  <Grid size={{ xs: 12 }} key={`records-${d.year}`}>
-                    <Box sx={{ width: "100%", pl: { xs: 3, sm: 0 } }}>
-                      <SectionHeader
-                        icon={CampaignIcon}
-                        title={`Records Check (${d.year})`}
-                        subtitle={`${d.recordsCheck.filter((r) => r.isBroken).length} Records Broken this season`}
-                        color={
-                          d.recordsCheck.some((r) => r.isBroken)
-                            ? "#ef4444"
-                            : "#94a3b8"
-                        }
-                      />
-                      <Box
-                        sx={{
-                          display: "grid",
-                          gridTemplateColumns: {
-                            xs: "1fr",
-                            sm: "repeat(2, 1fr)",
-                            md: "repeat(3, 1fr)",
-                            lg: "repeat(5, 1fr)",
-                          },
-                          justifyContent: "center",
-                          justifyItems: "center",
-                          gap: 2,
-                          width: "100%",
-                        }}
-                      >
-                        {d.recordsCheck.map((rec, i) => (
-                          <GlassCard
-                            key={i}
-                            sx={{
-                              borderTop: `4px solid ${rec.isBroken ? "#ef4444" : "#3b82f6"}`,
-                              p: 2,
-                              opacity: rec.isBroken ? 1 : 0.95,
-                              minHeight: 230,
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              width: "100%",
-                              maxWidth: { xs: 360, sm: "100%" },
-                              mx: "auto",
-                              boxSizing: "border-box",
-                              bgcolor: rec.isBroken
-                                ? "rgba(239, 68, 68, 0.12)"
-                                : "rgba(30, 41, 59, 0.75)",
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                width: "100%",
-                                height: "100%",
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Box>
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    textAlign: "center",
-                                    gap: 0.75,
-                                    mb: 1.5,
-                                  }}
-                                >
-                                  {rec.isBroken ? (
-                                    <CheckCircleIcon
-                                      sx={{ color: "#ef4444", fontSize: 18 }}
-                                    />
-                                  ) : (
-                                    <CancelIcon
-                                      sx={{
-                                        color: "text.secondary",
-                                        fontSize: 18,
-                                      }}
-                                    />
-                                  )}
-                                  <Typography
-                                    variant="caption"
-                                    color={
-                                      rec.isBroken
-                                        ? "text.primary"
-                                        : "text.secondary"
-                                    }
-                                    fontWeight={800}
-                                    textTransform="uppercase"
-                                    sx={{
-                                      fontSize: "0.85rem",
-                                      lineHeight: 1.2,
-                                      wordBreak: "break-word",
-                                    }}
-                                  >
-                                    {rec.title}
-                                  </Typography>
-                                </Box>
-
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 0.25,
-                                    mt: 0.5,
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  <Typography
-                                    variant="subtitle1"
-                                    fontWeight={900}
-                                    sx={{
-                                      color: rec.isBroken
-                                        ? "#ef4444"
-                                        : "text.primary",
-                                      fontSize: "1.3rem",
-                                      lineHeight: 1.2,
-                                    }}
-                                  >
-                                    {rec.new}{" "}
-                                    {rec.isBroken && (
-                                      <Typography
-                                        component="span"
-                                        variant="caption"
-                                        sx={{
-                                          ml: 0.5,
-                                          color: "#ef4444",
-                                          fontWeight: 850,
-                                          fontSize: "0.75rem",
-                                        }}
-                                      >
-                                        (New)
-                                      </Typography>
-                                    )}
-                                  </Typography>
-                                  <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                    sx={{
-                                      fontSize: "0.88rem",
-                                      textDecoration: "none",
-                                    }}
-                                  >
-                                    {rec.isBroken
-                                      ? `was ${rec.old} ${rec.oldPlayer ? `(${rec.oldPlayer})` : ""}`
-                                      : `(Record: ${rec.old} ${rec.oldPlayer ? `by ${rec.oldPlayer}` : ""})`}
-                                  </Typography>
-                                </Box>
-                              </Box>
-                              {rec.player && (
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    gap: 0.75,
-                                    mt: 1.5,
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    navigate(`/players/${rec.player.id}`)
-                                  }
-                                >
-                                  <Avatar
-                                    src={rec.player.imageUrl}
-                                    sx={{ width: 22, height: 22 }}
-                                  >
-                                    {rec.player.name?.[0]}
-                                  </Avatar>
-                                  <Typography
-                                    variant="caption"
-                                    fontWeight={700}
-                                    color="text.primary"
-                                    sx={{ fontSize: "0.8rem" }}
-                                  >
-                                    {rec.player.name}
-                                  </Typography>
-                                </Box>
-                              )}
-                            </Box>
-                          </GlassCard>
-                        ))}
-                      </Box>
-                    </Box>
-                  </Grid>
-                );
-              })()}
-            </Grid>
-
-            <Grid
-              container
-              spacing={{ xs: 2, md: 4 }}
-              sx={{ mb: 4 }}
-              justifyContent="center"
-              alignItems="stretch"
-            >
-              {[data, compareMode && compareData ? compareData : null]
-                .filter(Boolean)
-                .map((d, dIdx) => {
-                  if (!d.storyline) return null;
-                  return (
-                    <Grid size={{ xs: 12, md: 12 }} key={`storyline-${d.year}`}>
-                      <Box sx={{ width: "100%" }}>
-                        <SectionHeader
-                          icon={MenuBookIcon}
-                          title={`Season Storyline (${d.year})`}
-                          subtitle="The defining extremes and moments of the year"
-                          color="#f59e0b"
+                          title={`Records Check (${d.year})`}
+                          subtitle={`${d.recordsCheck.filter((r) => r.isBroken).length} Records Broken this season`}
+                          color={
+                            d.recordsCheck.some((r) => r.isBroken)
+                              ? "#ef4444"
+                              : "#94a3b8"
+                          }
                         />
                         <Box
                           sx={{
@@ -1681,7 +1527,7 @@ function SeasonIntelligence() {
                               xs: "1fr",
                               sm: "repeat(2, 1fr)",
                               md: "repeat(3, 1fr)",
-                              lg: "repeat(4, 1fr)",
+                              lg: "repeat(5, 1fr)",
                             },
                             justifyContent: "center",
                             justifyItems: "center",
@@ -1689,348 +1535,936 @@ function SeasonIntelligence() {
                             width: "100%",
                           }}
                         >
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #f59e0b",
-                              py: 2.5,
-                              px: 2,
-                              minHeight: 150,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
-                            >
-                              Highest Team Total (Est.)
-                            </Typography>
-                            <Typography
-                              variant="h5"
-                              fontWeight={900}
+                          {d.recordsCheck.map((rec, i) => (
+                            <GlassCard
+                              key={i}
                               sx={{
-                                mt: 0.5,
-                                color: getFranchiseColor(
-                                  d.storyline.highestTeamTotal?.team,
-                                ),
+                                borderTop: `4px solid ${rec.isBroken ? "#ef4444" : "#3b82f6"}`,
+                                p: 2,
+                                opacity: rec.isBroken ? 1 : 0.95,
+                                minHeight: 230,
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                maxWidth: { xs: 360, sm: "100%" },
+                                mx: "auto",
+                                boxSizing: "border-box",
+                                bgcolor: rec.isBroken
+                                  ? "rgba(239, 68, 68, 0.12)"
+                                  : "rgba(30, 41, 59, 0.75)",
                               }}
                             >
-                              {d.storyline.highestTeamTotal?.team} —{" "}
-                              {d.storyline.highestTeamTotal?.score}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              vs {d.storyline.highestTeamTotal?.opponent}
-                            </Typography>
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #10b981",
-                              py: 2.5,
-                              px: 2,
-                              minHeight: 150,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
-                            >
-                              Biggest Successful Chase
-                            </Typography>
-                            <Typography
-                              variant="h5"
-                              fontWeight={900}
-                              sx={{
-                                mt: 0.5,
-                                color: getFranchiseColor(
-                                  d.storyline.biggestChase?.team,
-                                ),
-                              }}
-                            >
-                              {d.storyline.biggestChase?.team} chased{" "}
-                              {d.storyline.biggestChase?.target}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              vs {d.storyline.biggestChase?.opponent}
-                            </Typography>
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #ef4444",
-                              py: 2.5,
-                              px: 2,
-                              minHeight: 150,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
-                            >
-                              Closest Finish
-                            </Typography>
-                            {d.storyline.closestMatch?.isSuperOver ? (
-                              <Typography
-                                variant="h6"
-                                fontWeight={900}
+                              <Box
                                 sx={{
-                                  mt: 0.5,
-                                  color: "#8b5cf6",
-                                  lineHeight: 1.2,
+                                  width: "100%",
+                                  height: "100%",
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                Match Tied
-                                <br />
-                                (Super Over)
+                                <Box>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      alignItems: "center",
+                                      textAlign: "center",
+                                      gap: 0.75,
+                                      mb: 1.5,
+                                    }}
+                                  >
+                                    {rec.isBroken ? (
+                                      <CheckCircleIcon
+                                        sx={{ color: "#ef4444", fontSize: 18 }}
+                                      />
+                                    ) : (
+                                      <CancelIcon
+                                        sx={{
+                                          color: "text.secondary",
+                                          fontSize: 18,
+                                        }}
+                                      />
+                                    )}
+                                    <Typography
+                                      variant="caption"
+                                      color={
+                                        rec.isBroken
+                                          ? "text.primary"
+                                          : "text.secondary"
+                                      }
+                                      fontWeight={800}
+                                      textTransform="uppercase"
+                                      sx={{
+                                        fontSize: "0.85rem",
+                                        lineHeight: 1.2,
+                                        wordBreak: "break-word",
+                                      }}
+                                    >
+                                      {rec.title}
+                                    </Typography>
+                                  </Box>
+
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: 0.25,
+                                      mt: 0.5,
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <Typography
+                                      variant="subtitle1"
+                                      fontWeight={900}
+                                      sx={{
+                                        color: rec.isBroken
+                                          ? "#ef4444"
+                                          : "text.primary",
+                                        fontSize: "1.3rem",
+                                        lineHeight: 1.2,
+                                      }}
+                                    >
+                                      {rec.new}{" "}
+                                      {rec.isBroken && (
+                                        <Typography
+                                          component="span"
+                                          variant="caption"
+                                          sx={{
+                                            ml: 0.5,
+                                            color: "#ef4444",
+                                            fontWeight: 850,
+                                            fontSize: "0.75rem",
+                                          }}
+                                        >
+                                          (New)
+                                        </Typography>
+                                      )}
+                                    </Typography>
+                                    <Typography
+                                      variant="caption"
+                                      color="text.secondary"
+                                      sx={{
+                                        fontSize: "0.88rem",
+                                        textDecoration: "none",
+                                      }}
+                                    >
+                                      {rec.isBroken
+                                        ? `was ${rec.old} ${rec.oldPlayer ? `(${rec.oldPlayer})` : ""}`
+                                        : `(Record: ${rec.old} ${rec.oldPlayer ? `by ${rec.oldPlayer}` : ""})`}
+                                    </Typography>
+                                  </Box>
+                                </Box>
+                                {rec.player && (
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      gap: 0.75,
+                                      mt: 1.5,
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      navigate(`/players/${rec.player.id}`)
+                                    }
+                                  >
+                                    <Avatar
+                                      src={rec.player.imageUrl}
+                                      sx={{ width: 22, height: 22 }}
+                                    >
+                                      {rec.player.name?.[0]}
+                                    </Avatar>
+                                    <Typography
+                                      variant="caption"
+                                      fontWeight={700}
+                                      color="text.primary"
+                                      sx={{ fontSize: "0.8rem" }}
+                                    >
+                                      {rec.player.name}
+                                    </Typography>
+                                  </Box>
+                                )}
+                              </Box>
+                            </GlassCard>
+                          ))}
+                        </Box>
+                      </Box>
+                    </Grid>
+                  );
+                })()}
+              </Grid>
+
+              <Grid
+                container
+                spacing={{ xs: 2, md: 4 }}
+                sx={{ mb: 4 }}
+                justifyContent="center"
+                alignItems="stretch"
+              >
+                {[data, compareMode && compareData ? compareData : null]
+                  .filter(Boolean)
+                  .map((d, dIdx) => {
+                    if (!d.storyline) return null;
+                    return (
+                      <Grid
+                        size={{ xs: 12, md: 12 }}
+                        key={`storyline-${d.year}`}
+                      >
+                        <Box sx={{ width: "100%" }}>
+                          <SectionHeader
+                            icon={MenuBookIcon}
+                            title={`Season Storyline (${d.year})`}
+                            subtitle="The defining extremes and moments of the year"
+                            color="#f59e0b"
+                          />
+                          <Box
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: {
+                                xs: "1fr",
+                                sm: "repeat(2, 1fr)",
+                                md: "repeat(3, 1fr)",
+                                lg: "repeat(4, 1fr)",
+                              },
+                              justifyContent: "center",
+                              justifyItems: "center",
+                              gap: 2,
+                              width: "100%",
+                            }}
+                          >
+                            <GlassCard
+                              sx={{
+                                borderTop: "3px solid #f59e0b",
+                                py: 2.5,
+                                px: 2,
+                                minHeight: 150,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Highest Team Total (Est.)
                               </Typography>
-                            ) : (
                               <Typography
                                 variant="h5"
                                 fontWeight={900}
                                 sx={{
                                   mt: 0.5,
                                   color: getFranchiseColor(
-                                    d.storyline.closestMatch?.winner,
+                                    d.storyline.highestTeamTotal?.team,
                                   ),
                                 }}
                               >
-                                {d.storyline.closestMatch?.winner} won by{" "}
-                                {d.storyline.closestMatch?.margin} runs
+                                {d.storyline.highestTeamTotal?.team} —{" "}
+                                {d.storyline.highestTeamTotal?.score}
                               </Typography>
-                            )}
-                            <Typography variant="body2" color="text.secondary">
-                              {d.storyline.closestMatch?.match?.team1} vs{" "}
-                              {d.storyline.closestMatch?.match?.team2}
-                            </Typography>
-                          </GlassCard>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                vs {d.storyline.highestTeamTotal?.opponent}
+                              </Typography>
+                            </GlassCard>
 
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #3b82f6",
-                              py: 2.5,
-                              px: 2,
-                              minHeight: 150,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
-                            >
-                              Lowest Total (Bat 1st, Est.)
-                            </Typography>
-                            <Typography
-                              variant="h5"
-                              fontWeight={900}
+                            <GlassCard
                               sx={{
-                                mt: 0.5,
-                                color: getFranchiseColor(
-                                  d.storyline.lowestTeamTotalBatFirst?.team,
-                                ),
+                                borderTop: "3px solid #10b981",
+                                py: 2.5,
+                                px: 2,
+                                minHeight: 150,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
                               }}
                             >
-                              {d.storyline.lowestTeamTotalBatFirst?.team} —{" "}
-                              {d.storyline.lowestTeamTotalBatFirst?.score}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              vs {d.storyline.lowestTeamTotalBatFirst?.opponent}
-                            </Typography>
-                          </GlassCard>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Biggest Successful Chase
+                              </Typography>
+                              <Typography
+                                variant="h5"
+                                fontWeight={900}
+                                sx={{
+                                  mt: 0.5,
+                                  color: getFranchiseColor(
+                                    d.storyline.biggestChase?.team,
+                                  ),
+                                }}
+                              >
+                                {d.storyline.biggestChase?.team} chased{" "}
+                                {d.storyline.biggestChase?.target}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                vs {d.storyline.biggestChase?.opponent}
+                              </Typography>
+                            </GlassCard>
 
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #8b5cf6",
-                              py: 2.5,
-                              px: 2,
-                              cursor: "pointer",
-                              minHeight: 150,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                            onClick={() =>
-                              navigate(
-                                `/players/${d.storyline.highestIndividualScore?.player?.id}`,
-                              )
-                            }
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
+                            <GlassCard
+                              sx={{
+                                borderTop: "3px solid #ef4444",
+                                py: 2.5,
+                                px: 2,
+                                minHeight: 150,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
                             >
-                              Highest Individual Score
-                            </Typography>
-                            <Typography
-                              variant="h5"
-                              fontWeight={900}
-                              sx={{ mt: 0.5, color: "#8b5cf6" }}
-                            >
-                              {d.storyline.highestIndividualScore?.score}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {d.storyline.highestIndividualScore?.player?.name}
-                            </Typography>
-                          </GlassCard>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Closest Finish
+                              </Typography>
+                              {d.storyline.closestMatch?.isSuperOver ? (
+                                <Typography
+                                  variant="h6"
+                                  fontWeight={900}
+                                  sx={{
+                                    mt: 0.5,
+                                    color: "#8b5cf6",
+                                    lineHeight: 1.2,
+                                  }}
+                                >
+                                  Match Tied
+                                  <br />
+                                  (Super Over)
+                                </Typography>
+                              ) : (
+                                <Typography
+                                  variant="h5"
+                                  fontWeight={900}
+                                  sx={{
+                                    mt: 0.5,
+                                    color: getFranchiseColor(
+                                      d.storyline.closestMatch?.winner,
+                                    ),
+                                  }}
+                                >
+                                  {d.storyline.closestMatch?.winner} won by{" "}
+                                  {d.storyline.closestMatch?.margin} runs
+                                </Typography>
+                              )}
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {d.storyline.closestMatch?.match?.team1} vs{" "}
+                                {d.storyline.closestMatch?.match?.team2}
+                              </Typography>
+                            </GlassCard>
 
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #d946ef",
-                              py: 2.5,
-                              px: 2,
-                              cursor: "pointer",
-                              minHeight: 150,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                            onClick={() =>
-                              navigate(
-                                `/players/${d.storyline.bestBowlingSpell?.player?.id}`,
-                              )
-                            }
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
+                            <GlassCard
+                              sx={{
+                                borderTop: "3px solid #3b82f6",
+                                py: 2.5,
+                                px: 2,
+                                minHeight: 150,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
                             >
-                              Best Bowling Spell
-                            </Typography>
-                            <Typography
-                              variant="h5"
-                              fontWeight={900}
-                              sx={{ mt: 0.5, color: "#d946ef" }}
-                            >
-                              {d.storyline.bestBowlingSpell?.bestBowling}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {d.storyline.bestBowlingSpell?.player?.name}
-                            </Typography>
-                          </GlassCard>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Lowest Total (Bat 1st, Est.)
+                              </Typography>
+                              <Typography
+                                variant="h5"
+                                fontWeight={900}
+                                sx={{
+                                  mt: 0.5,
+                                  color: getFranchiseColor(
+                                    d.storyline.lowestTeamTotalBatFirst?.team,
+                                  ),
+                                }}
+                              >
+                                {d.storyline.lowestTeamTotalBatFirst?.team} —{" "}
+                                {d.storyline.lowestTeamTotalBatFirst?.score}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                vs{" "}
+                                {d.storyline.lowestTeamTotalBatFirst?.opponent}
+                              </Typography>
+                            </GlassCard>
 
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #a855f7",
-                              py: 2.5,
-                              px: 2,
-                              minHeight: 150,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
+                            <GlassCard
+                              sx={{
+                                borderTop: "3px solid #8b5cf6",
+                                py: 2.5,
+                                px: 2,
+                                cursor: "pointer",
+                                minHeight: 150,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
+                              onClick={() =>
+                                navigate(
+                                  `/players/${d.storyline.highestIndividualScore?.player?.id}`,
+                                )
+                              }
                             >
-                              Super Over Matches
-                            </Typography>
-                            <Typography
-                              variant="h5"
-                              fontWeight={900}
-                              sx={{ mt: 0.5, color: "#a855f7" }}
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Highest Individual Score
+                              </Typography>
+                              <Typography
+                                variant="h5"
+                                fontWeight={900}
+                                sx={{ mt: 0.5, color: "#8b5cf6" }}
+                              >
+                                {d.storyline.highestIndividualScore?.score}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {
+                                  d.storyline.highestIndividualScore?.player
+                                    ?.name
+                                }
+                              </Typography>
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                borderTop: "3px solid #d946ef",
+                                py: 2.5,
+                                px: 2,
+                                cursor: "pointer",
+                                minHeight: 150,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
+                              onClick={() =>
+                                navigate(
+                                  `/players/${d.storyline.bestBowlingSpell?.player?.id}`,
+                                )
+                              }
                             >
-                              {d.seasonMilestones?.superOvers?.length || 0}
-                            </Typography>
-                            <Box sx={{ mt: 0.5 }}>
-                              {d.seasonMilestones?.superOvers?.length > 0 ? (
-                                d.seasonMilestones.superOvers.map((so, i) => (
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Best Bowling Spell
+                              </Typography>
+                              <Typography
+                                variant="h5"
+                                fontWeight={900}
+                                sx={{ mt: 0.5, color: "#d946ef" }}
+                              >
+                                {d.storyline.bestBowlingSpell?.bestBowling}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {d.storyline.bestBowlingSpell?.player?.name}
+                              </Typography>
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                borderTop: "3px solid #a855f7",
+                                py: 2.5,
+                                px: 2,
+                                minHeight: 150,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Super Over Matches
+                              </Typography>
+                              <Typography
+                                variant="h5"
+                                fontWeight={900}
+                                sx={{ mt: 0.5, color: "#a855f7" }}
+                              >
+                                {d.seasonMilestones?.superOvers?.length || 0}
+                              </Typography>
+                              <Box sx={{ mt: 0.5 }}>
+                                {d.seasonMilestones?.superOvers?.length > 0 ? (
+                                  d.seasonMilestones.superOvers.map((so, i) => (
+                                    <Typography
+                                      key={i}
+                                      variant="body2"
+                                      color="text.secondary"
+                                      fontWeight={700}
+                                      sx={{ display: "block" }}
+                                    >
+                                      {so.matchInfo} ({so.winner} won)
+                                    </Typography>
+                                  ))
+                                ) : (
                                   <Typography
-                                    key={i}
                                     variant="body2"
                                     color="text.secondary"
                                     fontWeight={700}
-                                    sx={{ display: "block" }}
                                   >
-                                    {so.matchInfo} ({so.winner} won)
+                                    No Super Overs
                                   </Typography>
-                                ))
-                              ) : (
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  fontWeight={700}
-                                >
-                                  No Super Overs
-                                </Typography>
-                              )}
-                            </Box>
-                          </GlassCard>
+                                )}
+                              </Box>
+                            </GlassCard>
 
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #0ea5e9",
-                              py: 2.5,
-                              px: 2,
-                              minHeight: 150,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
-                            >
-                              Matches Abandoned
-                            </Typography>
-                            <Typography
-                              variant="h5"
-                              fontWeight={900}
-                              sx={{ mt: 0.5, color: "#0ea5e9" }}
-                            >
-                              {d.seasonMilestones?.abandonedMatches || 0}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              fontWeight={700}
-                              sx={{ mt: 0.5 }}
-                            >
-                              No Result / Washed out
-                            </Typography>
-                          </GlassCard>
-                        </Box>
-
-                        {d.hallOfFameMatch && (
-                          <Box sx={{ mt: 3 }}>
                             <GlassCard
                               sx={{
-                                borderLeft: "4px solid #f59e0b",
-                                background:
-                                  "linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(17, 24, 39, 0.8) 100%)",
+                                borderTop: "3px solid #0ea5e9",
+                                py: 2.5,
+                                px: 2,
+                                minHeight: 150,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Matches Abandoned
+                              </Typography>
+                              <Typography
+                                variant="h5"
+                                fontWeight={900}
+                                sx={{ mt: 0.5, color: "#0ea5e9" }}
+                              >
+                                {d.seasonMilestones?.abandonedMatches || 0}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                fontWeight={700}
+                                sx={{ mt: 0.5 }}
+                              >
+                                No Result / Washed out
+                              </Typography>
+                            </GlassCard>
+                          </Box>
+
+                          {d.hallOfFameMatch && (
+                            <Box sx={{ mt: 3 }}>
+                              <GlassCard
+                                sx={{
+                                  borderLeft: "4px solid #f59e0b",
+                                  background:
+                                    "linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(17, 24, 39, 0.8) 100%)",
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    textAlign: "center",
+                                    flexWrap: "wrap",
+                                    gap: 2,
+                                  }}
+                                >
+                                  <Box>
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: 1.5,
+                                        mb: 1,
+                                      }}
+                                    >
+                                      <StarsIcon sx={{ color: "#f59e0b" }} />
+                                      <Typography
+                                        variant="overline"
+                                        sx={{
+                                          color: "#f59e0b",
+                                          fontWeight: 800,
+                                          letterSpacing: 1,
+                                        }}
+                                      >
+                                        HALL OF FAME MATCH
+                                      </Typography>
+                                    </Box>
+                                    <Typography
+                                      variant="h5"
+                                      fontWeight={900}
+                                      sx={{ mb: 0.5 }}
+                                    >
+                                      {d.hallOfFameMatch.match.team1} vs{" "}
+                                      {d.hallOfFameMatch.match.team2}
+                                    </Typography>
+                                    <Typography
+                                      variant="body2"
+                                      color="text.secondary"
+                                      sx={{ mb: 2 }}
+                                    >
+                                      {new Date(
+                                        d.hallOfFameMatch.match.date,
+                                      ).toLocaleDateString()}{" "}
+                                      • {d.hallOfFameMatch.match.venue}
+                                    </Typography>
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        gap: 1,
+                                        flexWrap: "wrap",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      {d.hallOfFameMatch.summary.map(
+                                        (tag, i) => (
+                                          <Chip
+                                            key={i}
+                                            label={tag}
+                                            size="small"
+                                            sx={{
+                                              bgcolor:
+                                                "rgba(245, 158, 11, 0.1)",
+                                              color: "#f59e0b",
+                                              fontWeight: 700,
+                                              borderRadius: 1,
+                                            }}
+                                          />
+                                        ),
+                                      )}
+                                    </Box>
+                                  </Box>
+                                </Box>
+                              </GlassCard>
+                            </Box>
+                          )}
+                        </Box>
+                      </Grid>
+                    );
+                  })}
+              </Grid>
+
+              <Grid
+                container
+                spacing={{ xs: 2, md: 4 }}
+                sx={{ mb: 4 }}
+                justifyContent="stretch"
+                alignItems="stretch"
+              >
+                {[data, compareMode && compareData ? compareData : null]
+                  .filter(Boolean)
+                  .map((d, dIdx) => {
+                    if (!d.trends) return null;
+                    return (
+                      <Grid size={{ xs: 12, md: 12 }} key={`trends-${d.year}`}>
+                        <Box sx={{ width: "100%", pl: { xs: 3, sm: 0 } }}>
+                          <SectionHeader
+                            icon={TimelineIcon}
+                            title={`Season Meta & Trends (${d.year})`}
+                            subtitle="Analyzing the winning formulas"
+                            color="#10b981"
+                          />
+                          <Box
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: {
+                                xs: "1fr",
+                                sm: "repeat(2, 1fr)",
+                                md: "repeat(4, 1fr)",
+                                lg: "repeat(4, 1fr)",
+                              },
+                              justifyContent: "center",
+                              justifyItems: "center",
+                              gap: 2,
+                              width: "100%",
+                            }}
+                          >
+                            <GlassCard
+                              sx={{
+                                textAlign: "center",
+                                py: 2.5,
+                                px: 3,
+                                bgcolor: "rgba(16,185,129,0.05)",
+                                borderTop: "2px solid #10b981",
+                                width: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                minHeight: 140,
+                                height: "100%",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                              >
+                                AT FIRST WIN %
+                              </Typography>
+                              <Typography
+                                variant="h4"
+                                fontWeight={900}
+                                color="#10b981"
+                                sx={{ my: 0.5 }}
+                              >
+                                {d.trends.batFirstWinPct}%
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {d.trends.batFirstWins} wins
+                              </Typography>
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                textAlign: "center",
+                                py: 2.5,
+                                px: 3,
+                                bgcolor: "rgba(59,130,246,0.05)",
+                                borderTop: "2px solid #3b82f6",
+                                width: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                minHeight: 140,
+                                height: "100%",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                              >
+                                CHASING WIN %
+                              </Typography>
+                              <Typography
+                                variant="h4"
+                                fontWeight={900}
+                                color="#3b82f6"
+                                sx={{ my: 0.5 }}
+                              >
+                                {d.trends.chaseWinPct}%
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {d.trends.chaseWins} wins
+                              </Typography>
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                textAlign: "center",
+                                py: 2.5,
+                                px: 3,
+                                bgcolor: "rgba(245,158,11,0.05)",
+                                borderTop: "2px solid #f59e0b",
+                                width: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                minHeight: 140,
+                                height: "100%",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                              >
+                                AVG 1ST INNS
+                              </Typography>
+                              <Typography
+                                variant="h4"
+                                fontWeight={900}
+                                color="#f59e0b"
+                                sx={{ my: 0.5 }}
+                              >
+                                {d.trends.avgFirstInningsScore}
+                              </Typography>
+                              <Box />
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                textAlign: "center",
+                                py: 2.5,
+                                px: 3,
+                                bgcolor: "rgba(139,92,246,0.05)",
+                                borderTop: "2px solid #8b5cf6",
+                                width: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                minHeight: 140,
+                                height: "100%",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                              >
+                                AVG WIN SCORE
+                              </Typography>
+                              <Typography
+                                variant="h4"
+                                fontWeight={900}
+                                color="#8b5cf6"
+                                sx={{ my: 0.5 }}
+                              >
+                                {d.trends.avgWinningScore}
+                              </Typography>
+                              <Box />
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                textAlign: "center",
+                                py: 2.5,
+                                px: 3,
+                                bgcolor: "rgba(14,165,233,0.05)",
+                                borderTop: "2px solid #0ea5e9",
+                                width: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                minHeight: 140,
+                                height: "100%",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                              >
+                                AVG RUNS / MATCH
+                              </Typography>
+                              <Typography
+                                variant="h4"
+                                fontWeight={900}
+                                color="#0ea5e9"
+                                sx={{ my: 0.5 }}
+                              >
+                                {d.overview?.totalMatches
+                                  ? Math.round(
+                                      d.overview.totalRuns /
+                                        d.overview.totalMatches,
+                                    )
+                                  : 0}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {d.overview?.totalRuns?.toLocaleString()} total
+                                runs
+                              </Typography>
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                textAlign: "center",
+                                py: 2.5,
+                                px: 3,
+                                bgcolor: "rgba(236,72,153,0.05)",
+                                borderTop: "2px solid #ec4899",
+                                width: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                minHeight: 140,
+                                height: "100%",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                              >
+                                AVG SIXES / MATCH
+                              </Typography>
+                              <Typography
+                                variant="h4"
+                                fontWeight={900}
+                                color="#ec4899"
+                                sx={{ my: 0.5 }}
+                              >
+                                {d.overview?.totalMatches
+                                  ? (
+                                      d.overview.totalSixes /
+                                      d.overview.totalMatches
+                                    ).toFixed(1)
+                                  : 0}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {d.overview?.totalSixes?.toLocaleString()} total
+                                sixes
+                              </Typography>
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                py: 2.5,
+                                px: 3,
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                textAlign: "center",
+                                bgcolor: "rgba(16,185,129,0.05)",
+                                borderTop: "2px solid #10b981",
+                                gridColumn: "span 1",
+                                minHeight: 140,
+                                height: "100%",
                               }}
                             >
                               <Box
@@ -2040,669 +2474,163 @@ function SeasonIntelligence() {
                                   flexDirection: "column",
                                   alignItems: "center",
                                   textAlign: "center",
-                                  flexWrap: "wrap",
-                                  gap: 2,
+                                  mb: 1,
                                 }}
                               >
-                                <Box>
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                      gap: 1.5,
-                                      mb: 1,
-                                    }}
-                                  >
-                                    <StarsIcon sx={{ color: "#f59e0b" }} />
-                                    <Typography
-                                      variant="overline"
-                                      sx={{
-                                        color: "#f59e0b",
-                                        fontWeight: 800,
-                                        letterSpacing: 1,
-                                      }}
-                                    >
-                                      HALL OF FAME MATCH
-                                    </Typography>
-                                  </Box>
-                                  <Typography
-                                    variant="h5"
-                                    fontWeight={900}
-                                    sx={{ mb: 0.5 }}
-                                  >
-                                    {d.hallOfFameMatch.match.team1} vs{" "}
-                                    {d.hallOfFameMatch.match.team2}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    sx={{ mb: 2 }}
-                                  >
-                                    {new Date(
-                                      d.hallOfFameMatch.match.date,
-                                    ).toLocaleDateString()}{" "}
-                                    • {d.hallOfFameMatch.match.venue}
-                                  </Typography>
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      gap: 1,
-                                      flexWrap: "wrap",
-                                      justifyContent: "center",
-                                    }}
-                                  >
-                                    {d.hallOfFameMatch.summary.map((tag, i) => (
-                                      <Chip
-                                        key={i}
-                                        label={tag}
-                                        size="small"
-                                        sx={{
-                                          bgcolor: "rgba(245, 158, 11, 0.1)",
-                                          color: "#f59e0b",
-                                          fontWeight: 700,
-                                          borderRadius: 1,
-                                        }}
-                                      />
-                                    ))}
-                                  </Box>
-                                </Box>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  fontWeight={800}
+                                >
+                                  LOWEST SCORING VENUE
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight={900}
+                                  color="error.main"
+                                >
+                                  Avg Match Aggregate:{" "}
+                                  {d.trends.lowestScoringVenue?.avg}
+                                </Typography>
                               </Box>
+                              <Typography
+                                variant="body2"
+                                fontWeight={700}
+                                sx={{ wordBreak: "break-word" }}
+                              >
+                                {d.trends.lowestScoringVenue?.venue}
+                              </Typography>
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                py: 2.5,
+                                px: 3,
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                textAlign: "center",
+                                bgcolor: "rgba(239,68,68,0.05)",
+                                borderTop: "2px solid #ef4444",
+                                gridColumn: "span 1",
+                                minHeight: 140,
+                                height: "100%",
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  flexDirection: "column",
+                                  alignItems: "center",
+                                  textAlign: "center",
+                                  mb: 1,
+                                }}
+                              >
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  fontWeight={800}
+                                >
+                                  HIGHEST SCORING VENUE
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight={900}
+                                  color="success.main"
+                                >
+                                  Avg Match Aggregate:{" "}
+                                  {d.trends.highestScoringVenue?.avg}
+                                </Typography>
+                              </Box>
+                              <Typography
+                                variant="body2"
+                                fontWeight={700}
+                                sx={{ wordBreak: "break-word" }}
+                              >
+                                {d.trends.highestScoringVenue?.venue}
+                              </Typography>
                             </GlassCard>
                           </Box>
-                        )}
-                      </Box>
-                    </Grid>
-                  );
-                })}
-            </Grid>
+                        </Box>
+                      </Grid>
+                    );
+                  })}
+              </Grid>
 
-            <Grid
-              container
-              spacing={{ xs: 2, md: 4 }}
-              sx={{ mb: 4 }}
-              justifyContent="stretch"
-              alignItems="stretch"
-            >
-              {[data, compareMode && compareData ? compareData : null]
-                .filter(Boolean)
-                .map((d, dIdx) => {
-                  if (!d.trends) return null;
-                  return (
-                    <Grid size={{ xs: 12, md: 12 }} key={`trends-${d.year}`}>
-                      <Box sx={{ width: "100%", pl: { xs: 3, sm: 0 } }}>
-                        <SectionHeader
-                          icon={TimelineIcon}
-                          title={`Season Meta & Trends (${d.year})`}
-                          subtitle="Analyzing the winning formulas"
-                          color="#10b981"
-                        />
-                        <Box
-                          sx={{
-                            display: "grid",
-                            gridTemplateColumns: {
-                              xs: "1fr",
-                              sm: "repeat(2, 1fr)",
-                              md: "repeat(4, 1fr)",
-                              lg: "repeat(4, 1fr)",
-                            },
-                            justifyContent: "center",
-                            justifyItems: "center",
-                            gap: 2,
-                            width: "100%",
-                          }}
-                        >
-                          <GlassCard
-                            sx={{
-                              textAlign: "center",
-                              py: 2.5,
-                              px: 3,
-                              bgcolor: "rgba(16,185,129,0.05)",
-                              borderTop: "2px solid #10b981",
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              minHeight: 140,
-                              height: "100%",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                            >
-                              AT FIRST WIN %
-                            </Typography>
-                            <Typography
-                              variant="h4"
-                              fontWeight={900}
-                              color="#10b981"
-                              sx={{ my: 0.5 }}
-                            >
-                              {d.trends.batFirstWinPct}%
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                            >
-                              {d.trends.batFirstWins} wins
-                            </Typography>
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              textAlign: "center",
-                              py: 2.5,
-                              px: 3,
-                              bgcolor: "rgba(59,130,246,0.05)",
-                              borderTop: "2px solid #3b82f6",
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              minHeight: 140,
-                              height: "100%",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                            >
-                              CHASING WIN %
-                            </Typography>
-                            <Typography
-                              variant="h4"
-                              fontWeight={900}
-                              color="#3b82f6"
-                              sx={{ my: 0.5 }}
-                            >
-                              {d.trends.chaseWinPct}%
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                            >
-                              {d.trends.chaseWins} wins
-                            </Typography>
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              textAlign: "center",
-                              py: 2.5,
-                              px: 3,
-                              bgcolor: "rgba(245,158,11,0.05)",
-                              borderTop: "2px solid #f59e0b",
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              minHeight: 140,
-                              height: "100%",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                            >
-                              AVG 1ST INNS
-                            </Typography>
-                            <Typography
-                              variant="h4"
-                              fontWeight={900}
-                              color="#f59e0b"
-                              sx={{ my: 0.5 }}
-                            >
-                              {d.trends.avgFirstInningsScore}
-                            </Typography>
-                            <Box />
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              textAlign: "center",
-                              py: 2.5,
-                              px: 3,
-                              bgcolor: "rgba(139,92,246,0.05)",
-                              borderTop: "2px solid #8b5cf6",
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              minHeight: 140,
-                              height: "100%",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                            >
-                              AVG WIN SCORE
-                            </Typography>
-                            <Typography
-                              variant="h4"
-                              fontWeight={900}
-                              color="#8b5cf6"
-                              sx={{ my: 0.5 }}
-                            >
-                              {d.trends.avgWinningScore}
-                            </Typography>
-                            <Box />
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              textAlign: "center",
-                              py: 2.5,
-                              px: 3,
-                              bgcolor: "rgba(14,165,233,0.05)",
-                              borderTop: "2px solid #0ea5e9",
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              minHeight: 140,
-                              height: "100%",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                            >
-                              AVG RUNS / MATCH
-                            </Typography>
-                            <Typography
-                              variant="h4"
-                              fontWeight={900}
-                              color="#0ea5e9"
-                              sx={{ my: 0.5 }}
-                            >
-                              {d.overview?.totalMatches
-                                ? Math.round(
-                                    d.overview.totalRuns /
-                                      d.overview.totalMatches,
-                                  )
-                                : 0}
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                            >
-                              {d.overview?.totalRuns?.toLocaleString()} total
-                              runs
-                            </Typography>
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              textAlign: "center",
-                              py: 2.5,
-                              px: 3,
-                              bgcolor: "rgba(236,72,153,0.05)",
-                              borderTop: "2px solid #ec4899",
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              minHeight: 140,
-                              height: "100%",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                            >
-                              AVG SIXES / MATCH
-                            </Typography>
-                            <Typography
-                              variant="h4"
-                              fontWeight={900}
+              <Grid
+                container
+                spacing={{ xs: 2, md: 4 }}
+                sx={{ mb: 4 }}
+                justifyContent="center"
+                alignItems="stretch"
+              >
+                {[data, compareMode && compareData ? compareData : null]
+                  .filter(Boolean)
+                  .map((d, dIdx) => {
+                    const hasPressure =
+                      d.pressureIndex?.clutchBatter ||
+                      d.pressureIndex?.clutchBowler;
+                    if (
+                      !hasPressure &&
+                      !d.mostImprovedPlayer &&
+                      (!d.seasonRivalries || d.seasonRivalries.length === 0)
+                    )
+                      return null;
+                    return (
+                      <Grid item xs={12} md={12} key={`clutch-${d.year}`}>
+                        {hasPressure && (
+                          <Box sx={{ mb: 4 }}>
+                            <SectionHeader
+                              icon={PsychologyIcon}
+                              title={`Pressure Index (${d.year})`}
+                              subtitle="Most clutch performers in high-stakes situations"
                               color="#ec4899"
-                              sx={{ my: 0.5 }}
-                            >
-                              {d.overview?.totalMatches
-                                ? (
-                                    d.overview.totalSixes /
-                                    d.overview.totalMatches
-                                  ).toFixed(1)
-                                : 0}
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                            >
-                              {d.overview?.totalSixes?.toLocaleString()} total
-                              sixes
-                            </Typography>
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              py: 2.5,
-                              px: 3,
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "center",
-                              textAlign: "center",
-                              bgcolor: "rgba(16,185,129,0.05)",
-                              borderTop: "2px solid #10b981",
-                              gridColumn: "span 1",
-                              minHeight: 140,
-                              height: "100%",
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                textAlign: "center",
-                                mb: 1,
-                              }}
-                            >
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                fontWeight={800}
-                              >
-                                LOWEST SCORING VENUE
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                fontWeight={900}
-                                color="error.main"
-                              >
-                                Avg Match Aggregate:{" "}
-                                {d.trends.lowestScoringVenue?.avg}
-                              </Typography>
-                            </Box>
-                            <Typography
-                              variant="body2"
-                              fontWeight={700}
-                              sx={{ wordBreak: "break-word" }}
-                            >
-                              {d.trends.lowestScoringVenue?.venue}
-                            </Typography>
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              py: 2.5,
-                              px: 3,
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "center",
-                              textAlign: "center",
-                              bgcolor: "rgba(239,68,68,0.05)",
-                              borderTop: "2px solid #ef4444",
-                              gridColumn: "span 1",
-                              minHeight: 140,
-                              height: "100%",
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                textAlign: "center",
-                                mb: 1,
-                              }}
-                            >
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                fontWeight={800}
-                              >
-                                HIGHEST SCORING VENUE
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                fontWeight={900}
-                                color="success.main"
-                              >
-                                Avg Match Aggregate:{" "}
-                                {d.trends.highestScoringVenue?.avg}
-                              </Typography>
-                            </Box>
-                            <Typography
-                              variant="body2"
-                              fontWeight={700}
-                              sx={{ wordBreak: "break-word" }}
-                            >
-                              {d.trends.highestScoringVenue?.venue}
-                            </Typography>
-                          </GlassCard>
-                        </Box>
-                      </Box>
-                    </Grid>
-                  );
-                })}
-            </Grid>
-
-            <Grid
-              container
-              spacing={{ xs: 2, md: 4 }}
-              sx={{ mb: 4 }}
-              justifyContent="center"
-              alignItems="stretch"
-            >
-              {[data, compareMode && compareData ? compareData : null]
-                .filter(Boolean)
-                .map((d, dIdx) => {
-                  const hasPressure =
-                    d.pressureIndex?.clutchBatter ||
-                    d.pressureIndex?.clutchBowler;
-                  if (
-                    !hasPressure &&
-                    !d.mostImprovedPlayer &&
-                    (!d.seasonRivalries || d.seasonRivalries.length === 0)
-                  )
-                    return null;
-                  return (
-                    <Grid item xs={12} md={12} key={`clutch-${d.year}`}>
-                      {hasPressure && (
-                        <Box sx={{ mb: 4 }}>
-                          <SectionHeader
-                            icon={PsychologyIcon}
-                            title={`Pressure Index (${d.year})`}
-                            subtitle="Most clutch performers in high-stakes situations"
-                            color="#ec4899"
-                          />
-                          <Grid container spacing={2}>
-                            {d.pressureIndex.clutchBatter && (
-                              <Grid item xs={12} sm={6}>
-                                <GlassCard
-                                  sx={{
-                                    borderTop: "3px solid #ec4899",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    navigate(
-                                      `/players/${d.pressureIndex.clutchBatter.player.id}`,
-                                    )
-                                  }
-                                >
-                                  <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                    fontWeight={800}
-                                    textTransform="uppercase"
-                                  >
-                                    Most Clutch Batter
-                                  </Typography>
-                                  <Box
+                            />
+                            <Grid container spacing={2}>
+                              {d.pressureIndex.clutchBatter && (
+                                <Grid item xs={12} sm={6}>
+                                  <GlassCard
                                     sx={{
-                                      display: "flex",
-                                      justifyContent: "center",
-                                      flexDirection: "column",
-                                      alignItems: "center",
-                                      textAlign: "center",
-                                      mt: 1,
+                                      borderTop: "3px solid #ec4899",
+                                      cursor: "pointer",
                                     }}
+                                    onClick={() =>
+                                      navigate(
+                                        `/players/${d.pressureIndex.clutchBatter.player.id}`,
+                                      )
+                                    }
                                   >
-                                    <Typography variant="h6" fontWeight={800}>
-                                      {d.pressureIndex.clutchBatter.player.name}
-                                    </Typography>
                                     <Typography
-                                      variant="h5"
-                                      fontWeight={900}
-                                      color="#ec4899"
+                                      variant="caption"
+                                      color="text.secondary"
+                                      fontWeight={800}
+                                      textTransform="uppercase"
                                     >
-                                      {d.pressureIndex.clutchBatter.runs}{" "}
-                                      <Typography
-                                        component="span"
-                                        variant="caption"
-                                        color="text.secondary"
-                                      >
-                                        runs
-                                      </Typography>
+                                      Most Clutch Batter
                                     </Typography>
-                                  </Box>
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    sx={{ mt: 1, fontSize: "0.75rem" }}
-                                  >
-                                    *In Death Overs or 3+ wickets down
-                                  </Typography>
-                                </GlassCard>
-                              </Grid>
-                            )}
-                            {d.pressureIndex.clutchBowler && (
-                              <Grid item xs={12} sm={6}>
-                                <GlassCard
-                                  sx={{
-                                    borderTop: "3px solid #ec4899",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    navigate(
-                                      `/players/${d.pressureIndex.clutchBowler.player.id}`,
-                                    )
-                                  }
-                                >
-                                  <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                    fontWeight={800}
-                                    textTransform="uppercase"
-                                  >
-                                    Most Clutch Bowler
-                                  </Typography>
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "center",
-                                      flexDirection: "column",
-                                      alignItems: "center",
-                                      textAlign: "center",
-                                      mt: 1,
-                                    }}
-                                  >
-                                    <Typography variant="h6" fontWeight={800}>
-                                      {d.pressureIndex.clutchBowler.player.name}
-                                    </Typography>
-                                    <Typography
-                                      variant="h5"
-                                      fontWeight={900}
-                                      color="#ec4899"
-                                    >
-                                      {d.pressureIndex.clutchBowler.wickets}{" "}
-                                      <Typography
-                                        component="span"
-                                        variant="caption"
-                                        color="text.secondary"
-                                      >
-                                        wkts
-                                      </Typography>
-                                    </Typography>
-                                  </Box>
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    sx={{ mt: 1, fontSize: "0.75rem" }}
-                                  >
-                                    *In Death Overs or Playoffs
-                                  </Typography>
-                                </GlassCard>
-                              </Grid>
-                            )}
-                          </Grid>
-                        </Box>
-                      )}
-
-                      {d.seasonRivalries && d.seasonRivalries.length > 0 && (
-                        <Box>
-                          <SectionHeader
-                            icon={LocalFireDepartmentIcon}
-                            title={`Season Rivalries (${d.year})`}
-                            subtitle="Highest intensity H2H battles"
-                            color="#f97316"
-                          />
-                          <Grid container spacing={2}>
-                            {d.seasonRivalries.map((riv, i) => (
-                              <Grid item xs={12} key={i}>
-                                <GlassCard
-                                  sx={{
-                                    py: 1.5,
-                                    px: 2,
-                                    borderLeft:
-                                      i === 0
-                                        ? "4px solid #f97316"
-                                        : "1px solid rgba(148, 163, 184, 0.08)",
-                                  }}
-                                >
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "center",
-                                      flexDirection: "column",
-                                      alignItems: "center",
-                                      textAlign: "center",
-                                      flexWrap: "wrap",
-                                      gap: 2,
-                                    }}
-                                  >
-                                    <Box sx={{ flex: 1, minWidth: 150 }}>
-                                      <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                        fontWeight={700}
-                                      >
-                                        Batter
-                                      </Typography>
-                                      <Typography
-                                        variant="subtitle1"
-                                        fontWeight={800}
-                                      >
-                                        {riv.batter}
-                                      </Typography>
-                                    </Box>
                                     <Box
                                       sx={{
-                                        px: 2,
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        flexDirection: "column",
+                                        alignItems: "center",
                                         textAlign: "center",
-                                        borderRight:
-                                          "1px solid rgba(255,255,255,0.1)",
-                                        borderLeft:
-                                          "1px solid rgba(255,255,255,0.1)",
+                                        mt: 1,
                                       }}
                                     >
+                                      <Typography variant="h6" fontWeight={800}>
+                                        {
+                                          d.pressureIndex.clutchBatter.player
+                                            .name
+                                        }
+                                      </Typography>
                                       <Typography
-                                        variant="h6"
+                                        variant="h5"
                                         fontWeight={900}
-                                        color="#f97316"
+                                        color="#ec4899"
                                       >
-                                        {riv.runs}{" "}
+                                        {d.pressureIndex.clutchBatter.runs}{" "}
                                         <Typography
                                           component="span"
                                           variant="caption"
@@ -2711,642 +2639,585 @@ function SeasonIntelligence() {
                                           runs
                                         </Typography>
                                       </Typography>
-                                      <Typography
-                                        variant="caption"
-                                        color="text.secondary"
-                                        fontWeight={700}
-                                      >
-                                        {riv.balls} balls • {riv.strikeRate} SR
-                                      </Typography>
                                     </Box>
-                                    <Box
-                                      sx={{
-                                        flex: 1,
-                                        textAlign: "center",
-                                        minWidth: 150,
-                                      }}
+                                    <Typography
+                                      variant="body2"
+                                      color="text.secondary"
+                                      sx={{ mt: 1, fontSize: "0.75rem" }}
                                     >
-                                      <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                        fontWeight={700}
-                                      >
-                                        Bowler
-                                      </Typography>
-                                      <Typography
-                                        variant="subtitle1"
-                                        fontWeight={800}
-                                      >
-                                        {riv.bowler}
-                                      </Typography>
-                                      {riv.dismissals > 0 && (
-                                        <Typography
-                                          variant="caption"
-                                          color="error.main"
-                                          fontWeight={800}
-                                        >
-                                          {riv.dismissals} dismissals
-                                        </Typography>
-                                      )}
-                                    </Box>
-                                  </Box>
-                                </GlassCard>
-                              </Grid>
-                            ))}
-                          </Grid>
-                        </Box>
-                      )}
-                    </Grid>
-                  );
-                })}
-            </Grid>
-
-            <Grid
-              container
-              spacing={{ xs: 2, md: 4 }}
-              sx={{ mb: 4 }}
-              justifyContent="center"
-              alignItems="stretch"
-            >
-              {[data, compareMode && compareData ? compareData : null]
-                .filter(Boolean)
-                .map((d, dIdx) => {
-                  if (!d.seasonMilestones) return null;
-                  return (
-                    <Grid item xs={12} md={12} key={`milestones-${d.year}`}>
-                      <Box sx={{ width: "100%", pl: { xs: 3, sm: 0 } }}>
-                        <SectionHeader
-                          icon={EmojiEventsIcon}
-                          title={`Season Milestones (${d.year})`}
-                          subtitle="Shareable moments from the season"
-                          color="#f43f5e"
-                        />
-                        <Box
-                          sx={{
-                            display: "grid",
-                            gridTemplateColumns: {
-                              xs: "1fr",
-                              sm: "repeat(2, 1fr)",
-                              md: "repeat(4, 1fr)",
-                              lg: "repeat(4, 1fr)",
-                            },
-                            justifyContent: "center",
-                            justifyItems: "center",
-                            gap: 2,
-                            width: "100%",
-                          }}
-                        >
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #f43f5e",
-                              py: 2,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
-                            >
-                              Most Sixes in an Innings
-                            </Typography>
-                            {d.seasonMilestones.mostSixesInnings ? (
-                              <>
-                                <Typography
-                                  variant="h4"
-                                  fontWeight={900}
-                                  sx={{ mt: 0.5, color: "#f43f5e" }}
-                                >
-                                  {d.seasonMilestones.mostSixesInnings.sixes}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  fontWeight={700}
-                                  sx={{ mt: 0.5 }}
-                                >
-                                  {
-                                    d.seasonMilestones.mostSixesInnings.player
-                                      .name
-                                  }{" "}
-                                  ({d.seasonMilestones.mostSixesInnings.runs}{" "}
-                                  runs)
-                                </Typography>
-                              </>
-                            ) : (
-                              <Typography
-                                variant="h6"
-                                fontWeight={700}
-                                color="text.secondary"
-                                sx={{ mt: 0.5 }}
-                              >
-                                -
-                              </Typography>
-                            )}
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #f59e0b",
-                              py: 2,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
-                            >
-                              Most Explosive Innings (min 50)
-                            </Typography>
-                            {d.seasonMilestones.fastestFifty ? (
-                              <>
-                                <Typography
-                                  variant="h4"
-                                  fontWeight={900}
-                                  sx={{ mt: 0.5, color: "#f59e0b" }}
-                                >
-                                  {d.seasonMilestones.fastestFifty.sr} SR
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  fontWeight={700}
-                                  sx={{ mt: 0.5 }}
-                                >
-                                  {d.seasonMilestones.fastestFifty.player.name}{" "}
-                                  ({d.seasonMilestones.fastestFifty.runs} off{" "}
-                                  {d.seasonMilestones.fastestFifty.balls})
-                                </Typography>
-                              </>
-                            ) : (
-                              <Typography
-                                variant="h6"
-                                fontWeight={700}
-                                color="text.secondary"
-                                sx={{ mt: 0.5 }}
-                              >
-                                -
-                              </Typography>
-                            )}
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #14b8a6",
-                              py: 2,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
-                            >
-                              Most Economical Spell (min 4 overs)
-                            </Typography>
-                            {d.seasonMilestones.mostEconomicalSpell ? (
-                              <>
-                                <Typography
-                                  variant="h4"
-                                  fontWeight={900}
-                                  sx={{ mt: 0.5, color: "#14b8a6" }}
-                                >
-                                  {d.seasonMilestones.mostEconomicalSpell.econ}{" "}
-                                  Econ
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  fontWeight={700}
-                                  sx={{ mt: 0.5 }}
-                                >
-                                  {
-                                    d.seasonMilestones.mostEconomicalSpell
-                                      .player.name
-                                  }{" "}
-                                  (
-                                  {
-                                    d.seasonMilestones.mostEconomicalSpell
-                                      .figures
-                                  }{" "}
-                                  in 4 ovs)
-                                </Typography>
-                              </>
-                            ) : (
-                              <Typography
-                                variant="h6"
-                                fontWeight={700}
-                                color="text.secondary"
-                                sx={{ mt: 0.5 }}
-                              >
-                                -
-                              </Typography>
-                            )}
-                          </GlassCard>
-
-                          <GlassCard
-                            sx={{
-                              borderTop: "3px solid #d946ef",
-                              py: 2,
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={800}
-                              textTransform="uppercase"
-                            >
-                              Most Dot Balls in an Innings
-                            </Typography>
-                            {d.seasonMilestones.mostDotsInnings ? (
-                              <>
-                                <Typography
-                                  variant="h4"
-                                  fontWeight={900}
-                                  sx={{ mt: 0.5, color: "#d946ef" }}
-                                >
-                                  {d.seasonMilestones.mostDotsInnings.dotBalls}{" "}
-                                  Dots
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  fontWeight={700}
-                                  sx={{ mt: 0.5 }}
-                                >
-                                  {
-                                    d.seasonMilestones.mostDotsInnings.player
-                                      .name
-                                  }{" "}
-                                  ({d.seasonMilestones.mostDotsInnings.figures})
-                                </Typography>
-                              </>
-                            ) : (
-                              <Typography
-                                variant="h6"
-                                fontWeight={700}
-                                color="text.secondary"
-                                sx={{ mt: 0.5 }}
-                              >
-                                -
-                              </Typography>
-                            )}
-                          </GlassCard>
-                        </Box>
-                      </Box>
-                    </Grid>
-                  );
-                })}
-            </Grid>
-
-            <Grid
-              container
-              spacing={{ xs: 2, md: 4 }}
-              sx={{ mb: 4 }}
-              justifyContent="stretch"
-              alignItems="stretch"
-            >
-              {[data, compareMode && compareData ? compareData : null]
-                .filter(Boolean)
-                .map((d, dIdx) => {
-                  return (
-                    <Grid
-                      size={{ xs: 12, md: 6 }}
-                      key={`bestxi-${d.year}`}
-                      sx={{ display: "flex", flexDirection: "column" }}
-                    >
-                      <SectionHeader
-                        icon={StarIcon}
-                        title={`Dominant XI of IPL ${d.year}`}
-                        subtitle="Algorithmic selection based on role constraints and performance"
-                        color="#FFD700"
-                      />
-                      <GlassCard
-                        sx={{
-                          flexGrow: 1,
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "stretch",
-                          p: 0,
-                          overflow: "hidden",
-                          background:
-                            "linear-gradient(180deg, rgba(16,185,129,0.05) 0%, rgba(17,24,39,0.9) 100%)",
-                          borderTop: "4px solid #FFD700",
-                        }}
-                      >
-                        <TableContainer sx={{ flexGrow: 1, overflowY: "auto" }}>
-                          <Table
-                            size="medium"
-                            sx={{
-                              "& .MuiTableCell-root": {
-                                px: { xs: 0.4, sm: 0.6, md: 0.8 },
-                                py: { xs: 2, sm: 2.5, md: 3 },
-                                fontSize: {
-                                  xs: "0.7rem",
-                                  sm: "0.75rem",
-                                  md: "0.78rem",
-                                },
-                              },
-                            }}
-                          >
-                            <TableHead>
-                              <TableRow>
-                                <TableCell
-                                  align="center"
-                                  sx={{
-                                    fontWeight: 800,
-                                    color: "text.secondary",
-                                  }}
-                                >
-                                  Role
-                                </TableCell>
-                                <TableCell
-                                  align="center"
-                                  sx={{
-                                    fontWeight: 800,
-                                    color: "text.secondary",
-                                  }}
-                                >
-                                  Player
-                                </TableCell>
-                                <TableCell
-                                  align="center"
-                                  sx={{
-                                    fontWeight: 800,
-                                    color: "text.secondary",
-                                    display: {
-                                      xs: "none",
-                                      sm: "table-cell",
-                                    },
-                                  }}
-                                >
-                                  Team
-                                </TableCell>
-                                <TableCell
-                                  align="center"
-                                  sx={{
-                                    fontWeight: 800,
-                                    color: "text.secondary",
-                                  }}
-                                >
-                                  Key Stat
-                                </TableCell>
-                                <TableCell
-                                  align="center"
-                                  sx={{
-                                    fontWeight: 800,
-                                    color: "text.secondary",
-                                  }}
-                                >
-                                  Score
-                                </TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {d.bestXI.map((p, i) => (
-                                <TableRow
-                                  key={i}
-                                  hover
-                                  onClick={() =>
-                                    navigate(`/players/${p.player.id}`)
-                                  }
-                                  sx={{ cursor: "pointer" }}
-                                >
-                                  <TableCell align="center">
+                                      *In Death Overs or 3+ wickets down
+                                    </Typography>
+                                  </GlassCard>
+                                </Grid>
+                              )}
+                              {d.pressureIndex.clutchBowler && (
+                                <Grid item xs={12} sm={6}>
+                                  <GlassCard
+                                    sx={{
+                                      borderTop: "3px solid #ec4899",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      navigate(
+                                        `/players/${d.pressureIndex.clutchBowler.player.id}`,
+                                      )
+                                    }
+                                  >
+                                    <Typography
+                                      variant="caption"
+                                      color="text.secondary"
+                                      fontWeight={800}
+                                      textTransform="uppercase"
+                                    >
+                                      Most Clutch Bowler
+                                    </Typography>
                                     <Box
                                       sx={{
                                         display: "flex",
                                         justifyContent: "center",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        textAlign: "center",
+                                        mt: 1,
                                       }}
                                     >
-                                      <Chip
-                                        size="small"
-                                        label={
-                                          p.role === "Wicket-Keeper"
-                                            ? "WK"
-                                            : p.role
+                                      <Typography variant="h6" fontWeight={800}>
+                                        {
+                                          d.pressureIndex.clutchBowler.player
+                                            .name
                                         }
-                                        sx={{
-                                          fontWeight: 800,
-                                          fontSize: "0.7rem",
-                                          height: 24,
-                                          bgcolor:
-                                            p.role === "Batter"
-                                              ? "rgba(59,130,246,0.1)"
-                                              : p.role === "Bowler"
-                                                ? "rgba(239,68,68,0.1)"
-                                                : p.role === "All-Rounder"
-                                                  ? "rgba(16,185,129,0.1)"
-                                                  : "rgba(245,158,11,0.1)",
-                                        }}
-                                      />
+                                      </Typography>
+                                      <Typography
+                                        variant="h5"
+                                        fontWeight={900}
+                                        color="#ec4899"
+                                      >
+                                        {d.pressureIndex.clutchBowler.wickets}{" "}
+                                        <Typography
+                                          component="span"
+                                          variant="caption"
+                                          color="text.secondary"
+                                        >
+                                          wkts
+                                        </Typography>
+                                      </Typography>
                                     </Box>
-                                  </TableCell>
-                                  <TableCell align="center">
                                     <Typography
+                                      variant="body2"
+                                      color="text.secondary"
+                                      sx={{ mt: 1, fontSize: "0.75rem" }}
+                                    >
+                                      *In Death Overs or Playoffs
+                                    </Typography>
+                                  </GlassCard>
+                                </Grid>
+                              )}
+                            </Grid>
+                          </Box>
+                        )}
+
+                        {d.seasonRivalries && d.seasonRivalries.length > 0 && (
+                          <Box>
+                            <SectionHeader
+                              icon={LocalFireDepartmentIcon}
+                              title={`Season Rivalries (${d.year})`}
+                              subtitle="Highest intensity H2H battles"
+                              color="#f97316"
+                            />
+                            <Grid container spacing={2}>
+                              {d.seasonRivalries.map((riv, i) => (
+                                <Grid item xs={12} key={i}>
+                                  <GlassCard
+                                    sx={{
+                                      py: 1.5,
+                                      px: 2,
+                                      borderLeft:
+                                        i === 0
+                                          ? "4px solid #f97316"
+                                          : "1px solid rgba(148, 163, 184, 0.08)",
+                                    }}
+                                  >
+                                    <Box
                                       sx={{
-                                        fontSize: "inherit",
-                                        fontWeight: 800,
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        textAlign: "center",
+                                        flexWrap: "wrap",
+                                        gap: 2,
                                       }}
                                     >
-                                      {p.player.name}
-                                      {p.isCaptain && (
+                                      <Box sx={{ flex: 1, minWidth: 150 }}>
                                         <Typography
-                                          component="span"
-                                          sx={{
-                                            ml: 0.5,
-                                            color: "#FFD700",
-                                            fontWeight: 900,
-                                            fontSize: "0.75rem",
-                                          }}
+                                          variant="body2"
+                                          color="text.secondary"
+                                          fontWeight={700}
                                         >
-                                          (C)
+                                          Batter
                                         </Typography>
-                                      )}
-                                      {p.isViceCaptain && (
                                         <Typography
-                                          component="span"
-                                          sx={{
-                                            ml: 0.5,
-                                            color: "#C0C0C0",
-                                            fontWeight: 900,
-                                            fontSize: "0.75rem",
-                                          }}
+                                          variant="subtitle1"
+                                          fontWeight={800}
                                         >
-                                          (VC)
+                                          {riv.batter}
                                         </Typography>
-                                      )}
-                                    </Typography>
+                                      </Box>
+                                      <Box
+                                        sx={{
+                                          px: 2,
+                                          textAlign: "center",
+                                          borderRight:
+                                            "1px solid rgba(255,255,255,0.1)",
+                                          borderLeft:
+                                            "1px solid rgba(255,255,255,0.1)",
+                                        }}
+                                      >
+                                        <Typography
+                                          variant="h6"
+                                          fontWeight={900}
+                                          color="#f97316"
+                                        >
+                                          {riv.runs}{" "}
+                                          <Typography
+                                            component="span"
+                                            variant="caption"
+                                            color="text.secondary"
+                                          >
+                                            runs
+                                          </Typography>
+                                        </Typography>
+                                        <Typography
+                                          variant="caption"
+                                          color="text.secondary"
+                                          fontWeight={700}
+                                        >
+                                          {riv.balls} balls • {riv.strikeRate}{" "}
+                                          SR
+                                        </Typography>
+                                      </Box>
+                                      <Box
+                                        sx={{
+                                          flex: 1,
+                                          textAlign: "center",
+                                          minWidth: 150,
+                                        }}
+                                      >
+                                        <Typography
+                                          variant="body2"
+                                          color="text.secondary"
+                                          fontWeight={700}
+                                        >
+                                          Bowler
+                                        </Typography>
+                                        <Typography
+                                          variant="subtitle1"
+                                          fontWeight={800}
+                                        >
+                                          {riv.bowler}
+                                        </Typography>
+                                        {riv.dismissals > 0 && (
+                                          <Typography
+                                            variant="caption"
+                                            color="error.main"
+                                            fontWeight={800}
+                                          >
+                                            {riv.dismissals} dismissals
+                                          </Typography>
+                                        )}
+                                      </Box>
+                                    </Box>
+                                  </GlassCard>
+                                </Grid>
+                              ))}
+                            </Grid>
+                          </Box>
+                        )}
+                      </Grid>
+                    );
+                  })}
+              </Grid>
+
+              <Grid
+                container
+                spacing={{ xs: 2, md: 4 }}
+                sx={{ mb: 4 }}
+                justifyContent="center"
+                alignItems="stretch"
+              >
+                {[data, compareMode && compareData ? compareData : null]
+                  .filter(Boolean)
+                  .map((d, dIdx) => {
+                    if (!d.seasonMilestones) return null;
+                    return (
+                      <Grid item xs={12} md={12} key={`milestones-${d.year}`}>
+                        <Box sx={{ width: "100%", pl: { xs: 3, sm: 0 } }}>
+                          <SectionHeader
+                            icon={EmojiEventsIcon}
+                            title={`Season Milestones (${d.year})`}
+                            subtitle="Shareable moments from the season"
+                            color="#f43f5e"
+                          />
+                          <Box
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: {
+                                xs: "1fr",
+                                sm: "repeat(2, 1fr)",
+                                md: "repeat(4, 1fr)",
+                                lg: "repeat(4, 1fr)",
+                              },
+                              justifyContent: "center",
+                              justifyItems: "center",
+                              gap: 2,
+                              width: "100%",
+                            }}
+                          >
+                            <GlassCard
+                              sx={{
+                                borderTop: "3px solid #f43f5e",
+                                py: 2,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Most Sixes in an Innings
+                              </Typography>
+                              {d.seasonMilestones.mostSixesInnings ? (
+                                <>
+                                  <Typography
+                                    variant="h4"
+                                    fontWeight={900}
+                                    sx={{ mt: 0.5, color: "#f43f5e" }}
+                                  >
+                                    {d.seasonMilestones.mostSixesInnings.sixes}
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    fontWeight={700}
+                                    sx={{ mt: 0.5 }}
+                                  >
+                                    {
+                                      d.seasonMilestones.mostSixesInnings.player
+                                        .name
+                                    }{" "}
+                                    ({d.seasonMilestones.mostSixesInnings.runs}{" "}
+                                    runs)
+                                  </Typography>
+                                </>
+                              ) : (
+                                <Typography
+                                  variant="h6"
+                                  fontWeight={700}
+                                  color="text.secondary"
+                                  sx={{ mt: 0.5 }}
+                                >
+                                  -
+                                </Typography>
+                              )}
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                borderTop: "3px solid #f59e0b",
+                                py: 2,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Most Explosive Innings (min 50)
+                              </Typography>
+                              {d.seasonMilestones.fastestFifty ? (
+                                <>
+                                  <Typography
+                                    variant="h4"
+                                    fontWeight={900}
+                                    sx={{ mt: 0.5, color: "#f59e0b" }}
+                                  >
+                                    {d.seasonMilestones.fastestFifty.sr} SR
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    fontWeight={700}
+                                    sx={{ mt: 0.5 }}
+                                  >
+                                    {
+                                      d.seasonMilestones.fastestFifty.player
+                                        .name
+                                    }{" "}
+                                    ({d.seasonMilestones.fastestFifty.runs} off{" "}
+                                    {d.seasonMilestones.fastestFifty.balls})
+                                  </Typography>
+                                </>
+                              ) : (
+                                <Typography
+                                  variant="h6"
+                                  fontWeight={700}
+                                  color="text.secondary"
+                                  sx={{ mt: 0.5 }}
+                                >
+                                  -
+                                </Typography>
+                              )}
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                borderTop: "3px solid #14b8a6",
+                                py: 2,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Most Economical Spell (min 4 overs)
+                              </Typography>
+                              {d.seasonMilestones.mostEconomicalSpell ? (
+                                <>
+                                  <Typography
+                                    variant="h4"
+                                    fontWeight={900}
+                                    sx={{ mt: 0.5, color: "#14b8a6" }}
+                                  >
+                                    {
+                                      d.seasonMilestones.mostEconomicalSpell
+                                        .econ
+                                    }{" "}
+                                    Econ
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    fontWeight={700}
+                                    sx={{ mt: 0.5 }}
+                                  >
+                                    {
+                                      d.seasonMilestones.mostEconomicalSpell
+                                        .player.name
+                                    }{" "}
+                                    (
+                                    {
+                                      d.seasonMilestones.mostEconomicalSpell
+                                        .figures
+                                    }{" "}
+                                    in 4 ovs)
+                                  </Typography>
+                                </>
+                              ) : (
+                                <Typography
+                                  variant="h6"
+                                  fontWeight={700}
+                                  color="text.secondary"
+                                  sx={{ mt: 0.5 }}
+                                >
+                                  -
+                                </Typography>
+                              )}
+                            </GlassCard>
+
+                            <GlassCard
+                              sx={{
+                                borderTop: "3px solid #d946ef",
+                                py: 2,
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                textTransform="uppercase"
+                              >
+                                Most Dot Balls in an Innings
+                              </Typography>
+                              {d.seasonMilestones.mostDotsInnings ? (
+                                <>
+                                  <Typography
+                                    variant="h4"
+                                    fontWeight={900}
+                                    sx={{ mt: 0.5, color: "#d946ef" }}
+                                  >
+                                    {
+                                      d.seasonMilestones.mostDotsInnings
+                                        .dotBalls
+                                    }{" "}
+                                    Dots
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    fontWeight={700}
+                                    sx={{ mt: 0.5 }}
+                                  >
+                                    {
+                                      d.seasonMilestones.mostDotsInnings.player
+                                        .name
+                                    }{" "}
+                                    (
+                                    {d.seasonMilestones.mostDotsInnings.figures}
+                                    )
+                                  </Typography>
+                                </>
+                              ) : (
+                                <Typography
+                                  variant="h6"
+                                  fontWeight={700}
+                                  color="text.secondary"
+                                  sx={{ mt: 0.5 }}
+                                >
+                                  -
+                                </Typography>
+                              )}
+                            </GlassCard>
+                          </Box>
+                        </Box>
+                      </Grid>
+                    );
+                  })}
+              </Grid>
+
+              <Grid
+                container
+                spacing={{ xs: 2, md: 4 }}
+                sx={{ mb: 4 }}
+                justifyContent="stretch"
+                alignItems="stretch"
+              >
+                {[data, compareMode && compareData ? compareData : null]
+                  .filter(Boolean)
+                  .map((d, dIdx) => {
+                    return (
+                      <Grid
+                        size={{ xs: 12, md: 6 }}
+                        key={`bestxi-${d.year}`}
+                        sx={{ display: "flex", flexDirection: "column" }}
+                      >
+                        <SectionHeader
+                          icon={StarIcon}
+                          title={`Dominant XI of IPL ${d.year}`}
+                          subtitle="Algorithmic selection based on role constraints and performance"
+                          color="#FFD700"
+                        />
+                        <GlassCard
+                          sx={{
+                            flexGrow: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "stretch",
+                            p: 0,
+                            overflow: "hidden",
+                            background:
+                              "linear-gradient(180deg, rgba(16,185,129,0.05) 0%, rgba(17,24,39,0.9) 100%)",
+                            borderTop: "4px solid #FFD700",
+                          }}
+                        >
+                          <TableContainer
+                            sx={{ flexGrow: 1, overflowY: "auto" }}
+                          >
+                            <Table
+                              size="medium"
+                              sx={{
+                                "& .MuiTableCell-root": {
+                                  px: { xs: 0.4, sm: 0.6, md: 0.8 },
+                                  py: { xs: 2, sm: 2.5, md: 3 },
+                                  fontSize: {
+                                    xs: "0.7rem",
+                                    sm: "0.75rem",
+                                    md: "0.78rem",
+                                  },
+                                },
+                              }}
+                            >
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell
+                                    align="center"
+                                    sx={{
+                                      fontWeight: 800,
+                                      color: "text.secondary",
+                                    }}
+                                  >
+                                    Role
                                   </TableCell>
                                   <TableCell
                                     align="center"
                                     sx={{
+                                      fontWeight: 800,
+                                      color: "text.secondary",
+                                    }}
+                                  >
+                                    Player
+                                  </TableCell>
+                                  <TableCell
+                                    align="center"
+                                    sx={{
+                                      fontWeight: 800,
+                                      color: "text.secondary",
                                       display: {
                                         xs: "none",
                                         sm: "table-cell",
                                       },
                                     }}
                                   >
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                      }}
-                                    >
-                                      <Chip
-                                        label={p.team}
-                                        size="small"
-                                        sx={{
-                                          height: 24,
-                                          fontSize: "0.7rem",
-                                          fontWeight: 800,
-                                          bgcolor: `${getFranchiseColor(p.team)}33`,
-                                          color: getFranchiseColor(p.team),
-                                        }}
-                                      />
-                                    </Box>
+                                    Team
                                   </TableCell>
-                                  <TableCell align="center">
-                                    <Typography
-                                      sx={{
-                                        fontSize: "inherit",
-                                        fontWeight: 700,
-                                      }}
-                                    >
-                                      {p.role === "Batter" ||
-                                      p.role === "Wicket-Keeper"
-                                        ? `${p.totalRuns} runs`
-                                        : p.role === "Bowler"
-                                          ? `${p.totalWickets} wkts`
-                                          : `${p.totalRuns}r / ${p.totalWickets}w`}
-                                    </Typography>
-                                  </TableCell>
-                                  <TableCell align="center">
-                                    <Typography
-                                      sx={{
-                                        fontSize: "inherit",
-                                        fontWeight: 900,
-                                      }}
-                                      color="primary.main"
-                                    >
-                                      {p.performanceScore}
-                                    </Typography>
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </TableContainer>
-                      </GlassCard>
-                    </Grid>
-                  );
-                })}
-              {[data, compareMode && compareData ? compareData : null]
-                .filter(Boolean)
-                .map((d, dIdx) => {
-                  return (
-                    <Grid
-                      size={{ xs: 12, md: 6 }}
-                      key={`standings-${d.year}`}
-                      sx={{ display: "flex", flexDirection: "column" }}
-                    >
-                      <SectionHeader
-                        icon={GroupIcon}
-                        title={`Franchise Standings (${d.year})`}
-                        subtitle="Final positions, match statistics, and ROI rankings"
-                        color="#FFD700"
-                      />
-                      <GlassCard
-                        sx={{
-                          flexGrow: 1,
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "stretch",
-                          p: 0,
-                          overflow: "hidden",
-                          borderTop: "4px solid #FFD700",
-                        }}
-                      >
-                        <TableContainer sx={{ flexGrow: 1, overflowY: "auto" }}>
-                          <Table
-                            size="medium"
-                            sx={{
-                              "& .MuiTableCell-root": {
-                                px: { xs: 0.25, sm: 0.5, md: 0.75 },
-                                py: { xs: 1.5, sm: 1.75, md: 2 },
-                                fontSize: {
-                                  xs: "0.68rem",
-                                  sm: "0.72rem",
-                                  md: "0.76rem",
-                                },
-                              },
-                            }}
-                          >
-                            <TableHead>
-                              <TableRow>
-                                {[
-                                  "Pos",
-                                  "Franchise",
-                                  "P",
-                                  "W",
-                                  "L",
-                                  "Win %",
-                                  ...(d.hasAuctionData &&
-                                  (!compareMode || !compareData)
-                                    ? ["Spent", "ROI"]
-                                    : []),
-                                ].map((h) => (
                                   <TableCell
-                                    key={h}
                                     align="center"
                                     sx={{
                                       fontWeight: 800,
-                                      fontSize: "0.7rem",
-                                      textTransform: "uppercase",
-                                      bgcolor: "rgba(17,24,39,0.95)",
+                                      color: "text.secondary",
                                     }}
                                   >
-                                    {h}
+                                    Key Stat
                                   </TableCell>
-                                ))}
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {[...d.franchiseStandings]
-                                .sort((a, b) => {
-                                  const posA = a.finalPosition || 99;
-                                  const posB = b.finalPosition || 99;
-                                  if (posA !== posB) return posA - posB;
-                                  return b.matchesWon - a.matchesWon;
-                                })
-                                .map((f, i) => (
-                                  <TableRow
-                                    key={f.franchise.id}
+                                  <TableCell
+                                    align="center"
                                     sx={{
-                                      bgcolor: f.isChampion
-                                        ? "rgba(255,215,0,0.08)"
-                                        : "transparent",
-                                      "&:hover": {
-                                        bgcolor: "rgba(99,102,241,0.08)",
-                                      },
+                                      fontWeight: 800,
+                                      color: "text.secondary",
                                     }}
+                                  >
+                                    Score
+                                  </TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {d.bestXI.map((p, i) => (
+                                  <TableRow
+                                    key={i}
+                                    hover
+                                    onClick={() =>
+                                      navigate(`/players/${p.player.id}`)
+                                    }
+                                    sx={{ cursor: "pointer" }}
                                   >
                                     <TableCell align="center">
                                       <Box
@@ -3355,57 +3226,92 @@ function SeasonIntelligence() {
                                           justifyContent: "center",
                                         }}
                                       >
-                                        <PositionBadge
-                                          position={i + 1}
-                                          isChampion={f.isChampion}
-                                        />
-                                      </Box>
-                                    </TableCell>
-                                    <TableCell align="left">
-                                      <Box
-                                        sx={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                          gap: 1.5,
-                                        }}
-                                      >
-                                        <Box
+                                        <Chip
+                                          size="small"
+                                          label={
+                                            p.role === "Wicket-Keeper"
+                                              ? "WK"
+                                              : p.role
+                                          }
                                           sx={{
-                                            width: 4,
-                                            height: 28,
-                                            borderRadius: 4,
-                                            bgcolor: getFranchiseColor(
-                                              f.franchise.shortName,
-                                            ),
-                                          }}
-                                        />
-                                        <Typography
-                                          sx={{
-                                            fontSize: "inherit",
                                             fontWeight: 800,
+                                            fontSize: "0.7rem",
+                                            height: 24,
+                                            bgcolor:
+                                              p.role === "Batter"
+                                                ? "rgba(59,130,246,0.1)"
+                                                : p.role === "Bowler"
+                                                  ? "rgba(239,68,68,0.1)"
+                                                  : p.role === "All-Rounder"
+                                                    ? "rgba(16,185,129,0.1)"
+                                                    : "rgba(245,158,11,0.1)",
                                           }}
-                                        >
-                                          {f.franchise.name}{" "}
-                                          {f.isChampion && (
-                                            <Typography
-                                              component="span"
-                                              sx={{
-                                                ml: 0.5,
-                                                fontSize: "0.7rem",
-                                                color: "#FFD700",
-                                                fontWeight: 900,
-                                              }}
-                                            >
-                                              🏆
-                                            </Typography>
-                                          )}
-                                        </Typography>
+                                        />
                                       </Box>
                                     </TableCell>
                                     <TableCell align="center">
-                                      <Typography sx={{ fontSize: "inherit" }}>
-                                        {f.matchesPlayed}
+                                      <Typography
+                                        sx={{
+                                          fontSize: "inherit",
+                                          fontWeight: 800,
+                                        }}
+                                      >
+                                        {p.player.name}
+                                        {p.isCaptain && (
+                                          <Typography
+                                            component="span"
+                                            sx={{
+                                              ml: 0.5,
+                                              color: "#FFD700",
+                                              fontWeight: 900,
+                                              fontSize: "0.75rem",
+                                            }}
+                                          >
+                                            (C)
+                                          </Typography>
+                                        )}
+                                        {p.isViceCaptain && (
+                                          <Typography
+                                            component="span"
+                                            sx={{
+                                              ml: 0.5,
+                                              color: "#C0C0C0",
+                                              fontWeight: 900,
+                                              fontSize: "0.75rem",
+                                            }}
+                                          >
+                                            (VC)
+                                          </Typography>
+                                        )}
                                       </Typography>
+                                    </TableCell>
+                                    <TableCell
+                                      align="center"
+                                      sx={{
+                                        display: {
+                                          xs: "none",
+                                          sm: "table-cell",
+                                        },
+                                      }}
+                                    >
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          justifyContent: "center",
+                                        }}
+                                      >
+                                        <Chip
+                                          label={p.team}
+                                          size="small"
+                                          sx={{
+                                            height: 24,
+                                            fontSize: "0.7rem",
+                                            fontWeight: 800,
+                                            bgcolor: `${getFranchiseColor(p.team)}33`,
+                                            color: getFranchiseColor(p.team),
+                                          }}
+                                        />
+                                      </Box>
                                     </TableCell>
                                     <TableCell align="center">
                                       <Typography
@@ -3413,712 +3319,344 @@ function SeasonIntelligence() {
                                           fontSize: "inherit",
                                           fontWeight: 700,
                                         }}
-                                        color="success.main"
                                       >
-                                        {f.matchesWon}
+                                        {p.role === "Batter" ||
+                                        p.role === "Wicket-Keeper"
+                                          ? `${p.totalRuns} runs`
+                                          : p.role === "Bowler"
+                                            ? `${p.totalWickets} wkts`
+                                            : `${p.totalRuns}r / ${p.totalWickets}w`}
                                       </Typography>
                                     </TableCell>
                                     <TableCell align="center">
                                       <Typography
-                                        sx={{ fontSize: "inherit" }}
-                                        color="error.main"
+                                        sx={{
+                                          fontSize: "inherit",
+                                          fontWeight: 900,
+                                        }}
+                                        color="primary.main"
                                       >
-                                        {f.matchesLost}
+                                        {p.performanceScore}
                                       </Typography>
                                     </TableCell>
-                                    <TableCell align="center">
-                                      <Box
-                                        sx={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                          gap: 1,
-                                          justifyContent: "center",
-                                        }}
-                                      >
-                                        <Typography
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        </GlassCard>
+                      </Grid>
+                    );
+                  })}
+                {[data, compareMode && compareData ? compareData : null]
+                  .filter(Boolean)
+                  .map((d, dIdx) => {
+                    return (
+                      <Grid
+                        size={{ xs: 12, md: 6 }}
+                        key={`standings-${d.year}`}
+                        sx={{ display: "flex", flexDirection: "column" }}
+                      >
+                        <SectionHeader
+                          icon={GroupIcon}
+                          title={`Franchise Standings (${d.year})`}
+                          subtitle="Final positions, match statistics, and ROI rankings"
+                          color="#FFD700"
+                        />
+                        <GlassCard
+                          sx={{
+                            flexGrow: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "stretch",
+                            p: 0,
+                            overflow: "hidden",
+                            borderTop: "4px solid #FFD700",
+                          }}
+                        >
+                          <TableContainer
+                            sx={{ flexGrow: 1, overflowY: "auto" }}
+                          >
+                            <Table
+                              size="medium"
+                              sx={{
+                                "& .MuiTableCell-root": {
+                                  px: { xs: 0.25, sm: 0.5, md: 0.75 },
+                                  py: { xs: 1.5, sm: 1.75, md: 2 },
+                                  fontSize: {
+                                    xs: "0.68rem",
+                                    sm: "0.72rem",
+                                    md: "0.76rem",
+                                  },
+                                },
+                              }}
+                            >
+                              <TableHead>
+                                <TableRow>
+                                  {[
+                                    "Pos",
+                                    "Franchise",
+                                    "P",
+                                    "W",
+                                    "L",
+                                    "Win %",
+                                    ...(d.hasAuctionData &&
+                                    (!compareMode || !compareData)
+                                      ? ["Spent", "ROI"]
+                                      : []),
+                                  ].map((h) => (
+                                    <TableCell
+                                      key={h}
+                                      align="center"
+                                      sx={{
+                                        fontWeight: 800,
+                                        fontSize: "0.7rem",
+                                        textTransform: "uppercase",
+                                        bgcolor: "rgba(17,24,39,0.95)",
+                                      }}
+                                    >
+                                      {h}
+                                    </TableCell>
+                                  ))}
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {[...d.franchiseStandings]
+                                  .sort((a, b) => {
+                                    const posA = a.finalPosition || 99;
+                                    const posB = b.finalPosition || 99;
+                                    if (posA !== posB) return posA - posB;
+                                    return b.matchesWon - a.matchesWon;
+                                  })
+                                  .map((f, i) => (
+                                    <TableRow
+                                      key={f.franchise.id}
+                                      sx={{
+                                        bgcolor: f.isChampion
+                                          ? "rgba(255,215,0,0.08)"
+                                          : "transparent",
+                                        "&:hover": {
+                                          bgcolor: "rgba(99,102,241,0.08)",
+                                        },
+                                      }}
+                                    >
+                                      <TableCell align="center">
+                                        <Box
                                           sx={{
-                                            fontSize: "inherit",
-                                            fontWeight: 800,
+                                            display: "flex",
+                                            justifyContent: "center",
                                           }}
                                         >
-                                          {f.winPercentage}%
-                                        </Typography>
-                                        <LinearProgress
-                                          variant="determinate"
-                                          value={f.winPercentage}
+                                          <PositionBadge
+                                            position={i + 1}
+                                            isChampion={f.isChampion}
+                                          />
+                                        </Box>
+                                      </TableCell>
+                                      <TableCell align="left">
+                                        <Box
                                           sx={{
-                                            width: 40,
-                                            height: 6,
-                                            borderRadius: 3,
-                                            bgcolor: "rgba(255,255,255,0.06)",
-                                            "& .MuiLinearProgress-bar": {
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1.5,
+                                          }}
+                                        >
+                                          <Box
+                                            sx={{
+                                              width: 4,
+                                              height: 28,
+                                              borderRadius: 4,
                                               bgcolor: getFranchiseColor(
                                                 f.franchise.shortName,
                                               ),
-                                              borderRadius: 3,
-                                            },
+                                            }}
+                                          />
+                                          <Typography
+                                            sx={{
+                                              fontSize: "inherit",
+                                              fontWeight: 800,
+                                            }}
+                                          >
+                                            {f.franchise.name}{" "}
+                                            {f.isChampion && (
+                                              <Typography
+                                                component="span"
+                                                sx={{
+                                                  ml: 0.5,
+                                                  fontSize: "0.7rem",
+                                                  color: "#FFD700",
+                                                  fontWeight: 900,
+                                                }}
+                                              >
+                                                🏆
+                                              </Typography>
+                                            )}
+                                          </Typography>
+                                        </Box>
+                                      </TableCell>
+                                      <TableCell align="center">
+                                        <Typography
+                                          sx={{ fontSize: "inherit" }}
+                                        >
+                                          {f.matchesPlayed}
+                                        </Typography>
+                                      </TableCell>
+                                      <TableCell align="center">
+                                        <Typography
+                                          sx={{
+                                            fontSize: "inherit",
+                                            fontWeight: 700,
                                           }}
-                                        />
-                                      </Box>
-                                    </TableCell>
-                                    {d.hasAuctionData &&
-                                      (!compareMode || !compareData) && (
-                                        <>
-                                          <TableCell align="center">
-                                            <Typography
-                                              sx={{ fontSize: "inherit" }}
-                                            >
-                                              ₹{Math.round(f.totalSpent)}L
-                                            </Typography>
-                                          </TableCell>
-                                          <TableCell align="center">
-                                            <Typography
-                                              sx={{
-                                                fontSize: "inherit",
-                                                fontWeight: 700,
-                                              }}
-                                            >
-                                              {f.roiScore?.toFixed(2)}
-                                            </Typography>
-                                          </TableCell>
-                                        </>
-                                      )}
-                                  </TableRow>
-                                ))}
-                            </TableBody>
-                          </Table>
-                        </TableContainer>
-                      </GlassCard>
-                    </Grid>
-                  );
-                })}
-            </Grid>
+                                          color="success.main"
+                                        >
+                                          {f.matchesWon}
+                                        </Typography>
+                                      </TableCell>
+                                      <TableCell align="center">
+                                        <Typography
+                                          sx={{ fontSize: "inherit" }}
+                                          color="error.main"
+                                        >
+                                          {f.matchesLost}
+                                        </Typography>
+                                      </TableCell>
+                                      <TableCell align="center">
+                                        <Box
+                                          sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1,
+                                            justifyContent: "center",
+                                          }}
+                                        >
+                                          <Typography
+                                            sx={{
+                                              fontSize: "inherit",
+                                              fontWeight: 800,
+                                            }}
+                                          >
+                                            {f.winPercentage}%
+                                          </Typography>
+                                          <LinearProgress
+                                            variant="determinate"
+                                            value={f.winPercentage}
+                                            sx={{
+                                              width: 40,
+                                              height: 6,
+                                              borderRadius: 3,
+                                              bgcolor: "rgba(255,255,255,0.06)",
+                                              "& .MuiLinearProgress-bar": {
+                                                bgcolor: getFranchiseColor(
+                                                  f.franchise.shortName,
+                                                ),
+                                                borderRadius: 3,
+                                              },
+                                            }}
+                                          />
+                                        </Box>
+                                      </TableCell>
+                                      {d.hasAuctionData &&
+                                        (!compareMode || !compareData) && (
+                                          <>
+                                            <TableCell align="center">
+                                              <Typography
+                                                sx={{ fontSize: "inherit" }}
+                                              >
+                                                ₹{Math.round(f.totalSpent)}L
+                                              </Typography>
+                                            </TableCell>
+                                            <TableCell align="center">
+                                              <Typography
+                                                sx={{
+                                                  fontSize: "inherit",
+                                                  fontWeight: 700,
+                                                }}
+                                              >
+                                                {f.roiScore?.toFixed(2)}
+                                              </Typography>
+                                            </TableCell>
+                                          </>
+                                        )}
+                                    </TableRow>
+                                  ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        </GlassCard>
+                      </Grid>
+                    );
+                  })}
+              </Grid>
 
-            <Grid
-              container
-              spacing={{ xs: 2, md: 4 }}
-              sx={{ mb: 4 }}
-              justifyContent="stretch"
-              alignItems="stretch"
-            >
-              {[data, compareMode && compareData ? compareData : null]
-                .filter(Boolean)
-                .map((d, dIdx) => (
-                  <Grid
-                    size={{ xs: 12, md: compareMode && compareData ? 6 : 12 }}
-                    key={`elite-clutch-${d.year}`}
-                  >
-                    <Box sx={{ width: "100%" }}>
-                      {!compareMode || !compareData ? (
-                        <SectionHeader
-                          icon={EmojiEventsIcon}
-                          title={`Elite Awards & Playoff Heroes (${d.year})`}
-                          subtitle="Season MVP, Cap Winners, and Top Playoff Performers"
-                          color="#FFD700"
-                        />
-                      ) : (
-                        <Typography
-                          variant="h5"
-                          fontWeight={800}
+              <Grid
+                container
+                spacing={{ xs: 2, md: 4 }}
+                sx={{ mb: 4 }}
+                justifyContent="stretch"
+                alignItems="stretch"
+              >
+                {[data, compareMode && compareData ? compareData : null]
+                  .filter(Boolean)
+                  .map((d, dIdx) => (
+                    <Grid
+                      size={{ xs: 12, md: compareMode && compareData ? 6 : 12 }}
+                      key={`elite-clutch-${d.year}`}
+                    >
+                      <Box sx={{ width: "100%" }}>
+                        {!compareMode || !compareData ? (
+                          <SectionHeader
+                            icon={EmojiEventsIcon}
+                            title={`Elite Awards & Playoff Heroes (${d.year})`}
+                            subtitle="Season MVP, Cap Winners, and Top Playoff Performers"
+                            color="#FFD700"
+                          />
+                        ) : (
+                          <Typography
+                            variant="h5"
+                            fontWeight={800}
+                            sx={{
+                              mb: 2,
+                              color: "text.secondary",
+                              textAlign: "center",
+                            }}
+                          >
+                            IPL {d.year} Elite Awards & Playoff Heroes
+                          </Typography>
+                        )}
+                        <Box
                           sx={{
-                            mb: 2,
-                            color: "text.secondary",
-                            textAlign: "center",
+                            display: "grid",
+                            gridTemplateColumns:
+                              compareMode && compareData
+                                ? { xs: "1fr", md: "repeat(2, 1fr)" }
+                                : {
+                                    xs: "1fr",
+                                    sm: "repeat(2, 1fr)",
+                                    md: "repeat(6, 1fr)",
+                                    lg: "repeat(6, 1fr)",
+                                  },
+                            justifyContent: "center",
+                            justifyItems: "center",
+                            gap: 2,
+                            width: "100%",
                           }}
                         >
-                          IPL {d.year} Elite Awards & Playoff Heroes
-                        </Typography>
-                      )}
-                      <Box
-                        sx={{
-                          display: "grid",
-                          gridTemplateColumns:
-                            compareMode && compareData
-                              ? { xs: "1fr", md: "repeat(2, 1fr)" }
-                              : {
-                                  xs: "1fr",
-                                  sm: "repeat(2, 1fr)",
-                                  md: "repeat(6, 1fr)",
-                                  lg: "repeat(6, 1fr)",
-                                },
-                          justifyContent: "center",
-                          justifyItems: "center",
-                          gap: 2,
-                          width: "100%",
-                        }}
-                      >
-                        {d.clutchPerformers?.playoffBatter && (
-                          <GlassCard
-                            sx={{
-                              borderLeft: "4px solid #ef4444",
-                              cursor: "pointer",
-                              height: { xs: 220, sm: 280 },
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              p: { xs: 1.5, sm: 2 },
-                            }}
-                            onClick={() =>
-                              navigate(
-                                `/players/${d.clutchPerformers.playoffBatter.player.id}`,
-                              )
-                            }
-                          >
-                            <Box sx={{ width: "100%", textAlign: "center" }}>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  gap: 1,
-                                  mb: 1.5,
-                                  width: "100%",
-                                }}
-                              >
-                                <Typography
-                                  variant="overline"
-                                  sx={{
-                                    color: "#ef4444",
-                                    fontWeight: 900,
-                                    letterSpacing: 1.5,
-                                    fontSize: "0.8rem",
-                                    lineHeight: 1,
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Playoff Batter
-                                </Typography>
-                              </Box>
-                              <Typography
-                                variant="subtitle1"
-                                fontWeight={900}
-                                sx={{
-                                  mb: 0.5,
-                                  fontSize: "1.1rem",
-                                  textAlign: "center",
-                                }}
-                                noWrap
-                              >
-                                {d.clutchPerformers.playoffBatter.player.name}
-                              </Typography>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  mb: 1.5,
-                                  display: "block",
-                                  fontSize: "0.8rem",
-                                  textAlign: "center",
-                                }}
-                                noWrap
-                              >
-                                {d.clutchPerformers.playoffBatter.team}
-                              </Typography>
-                            </Box>
-                            <Box
-                              sx={{
-                                width: "100%",
-                                textAlign: "center",
-                                bgcolor: "rgba(239,68,68,0.1)",
-                                p: 1.25,
-                                borderRadius: 2,
-                              }}
-                            >
-                              <Typography
-                                variant="h4"
-                                fontWeight={900}
-                                sx={{ color: "#ef4444", fontSize: "1.6rem" }}
-                              >
-                                {d.clutchPerformers.playoffBatter.runs}
-                              </Typography>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                fontWeight={700}
-                                sx={{ fontSize: "0.75rem" }}
-                              >
-                                Runs in Playoffs
-                              </Typography>
-                            </Box>
-                          </GlassCard>
-                        )}
-
-                        {d.clutchPerformers?.playoffBowler && (
-                          <GlassCard
-                            sx={{
-                              borderLeft: "4px solid #f59e0b",
-                              cursor: "pointer",
-                              height: { xs: 220, sm: 280 },
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              p: { xs: 1.5, sm: 2 },
-                            }}
-                            onClick={() =>
-                              navigate(
-                                `/players/${d.clutchPerformers.playoffBowler.player.id}`,
-                              )
-                            }
-                          >
-                            <Box sx={{ width: "100%", textAlign: "center" }}>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  gap: 1,
-                                  mb: 1.5,
-                                  width: "100%",
-                                }}
-                              >
-                                <Typography
-                                  variant="overline"
-                                  sx={{
-                                    color: "#f59e0b",
-                                    fontWeight: 900,
-                                    letterSpacing: 1.5,
-                                    fontSize: "0.8rem",
-                                    lineHeight: 1,
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Playoff Bowler
-                                </Typography>
-                              </Box>
-                              <Typography
-                                variant="subtitle1"
-                                fontWeight={900}
-                                sx={{
-                                  mb: 0.5,
-                                  fontSize: "1.1rem",
-                                  textAlign: "center",
-                                }}
-                                noWrap
-                              >
-                                {d.clutchPerformers.playoffBowler.player.name}
-                              </Typography>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  mb: 1.5,
-                                  display: "block",
-                                  fontSize: "0.8rem",
-                                  textAlign: "center",
-                                }}
-                                noWrap
-                              >
-                                {d.clutchPerformers.playoffBowler.team}
-                              </Typography>
-                            </Box>
-                            <Box
-                              sx={{
-                                width: "100%",
-                                textAlign: "center",
-                                bgcolor: "rgba(245,158,11,0.1)",
-                                p: 1.25,
-                                borderRadius: 2,
-                              }}
-                            >
-                              <Typography
-                                variant="h4"
-                                fontWeight={900}
-                                sx={{ color: "#f59e0b", fontSize: "1.6rem" }}
-                              >
-                                {d.clutchPerformers.playoffBowler.wickets}
-                              </Typography>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                fontWeight={700}
-                                sx={{ fontSize: "0.75rem" }}
-                              >
-                                Wickets in Playoffs
-                              </Typography>
-                            </Box>
-                          </GlassCard>
-                        )}
-
-                        {d.seasonMvp && (
-                          <GlassCard
-                            sx={{
-                              cursor: "pointer",
-                              background:
-                                "linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(17,24,39,0.8) 70%)",
-                              borderLeft: "4px solid #3b82f6",
-                              "&:hover": {
-                                boxShadow: "0 0 32px rgba(59,130,246,0.2)",
-                              },
-                              height: { xs: 220, sm: 280 },
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              p: { xs: 1.5, sm: 2 },
-                            }}
-                            onClick={() =>
-                              navigate(`/players/${d.seasonMvp.player.id}`)
-                            }
-                          >
-                            <Box sx={{ width: "100%", textAlign: "center" }}>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  gap: 1,
-                                  mb: 1.5,
-                                  width: "100%",
-                                }}
-                              >
-                                <Typography
-                                  variant="overline"
-                                  sx={{
-                                    color: "#3b82f6",
-                                    fontWeight: 900,
-                                    letterSpacing: 1.5,
-                                    fontSize: "0.8rem",
-                                    lineHeight: 1,
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Season MVP
-                                </Typography>
-                              </Box>
-                              <Typography
-                                variant="subtitle1"
-                                fontWeight={900}
-                                sx={{
-                                  mb: 0.5,
-                                  fontSize: "1.1rem",
-                                  textAlign: "center",
-                                }}
-                                noWrap
-                              >
-                                {d.seasonMvp.player.name}
-                              </Typography>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  mb: 1.5,
-                                  display: "block",
-                                  fontSize: "0.8rem",
-                                  textAlign: "center",
-                                }}
-                                noWrap
-                              >
-                                {d.seasonMvp.team} • {d.seasonMvp.matches}{" "}
-                                matches
-                              </Typography>
-                            </Box>
-                            <Box
-                              sx={{
-                                width: "100%",
-                                textAlign: "center",
-                                bgcolor: "rgba(59,130,246,0.1)",
-                                p: 1.25,
-                                borderRadius: 2,
-                              }}
-                            >
-                              <Typography
-                                variant="h4"
-                                fontWeight={900}
-                                sx={{ color: "#3b82f6", fontSize: "1.6rem" }}
-                              >
-                                {d.seasonMvp.performanceScore}
-                              </Typography>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                fontWeight={700}
-                                sx={{ fontSize: "0.75rem" }}
-                              >
-                                Performance Score
-                              </Typography>
-                            </Box>
-                          </GlassCard>
-                        )}
-
-                        {d.orangeCap && (
-                          <GlassCard
-                            sx={{
-                              cursor: "pointer",
-                              height: { xs: 220, sm: 280 },
-                              width: "100%",
-                              background:
-                                "linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(17,24,39,0.8) 70%)",
-                              borderLeft: "4px solid #f59e0b",
-                              "&:hover": {
-                                boxShadow: "0 0 32px rgba(245,158,11,0.2)",
-                              },
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              p: { xs: 1.5, sm: 2 },
-                            }}
-                            onClick={() =>
-                              navigate(`/players/${d.orangeCap.player.id}`)
-                            }
-                          >
-                            <Box sx={{ width: "100%", textAlign: "center" }}>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  gap: 1,
-                                  mb: 1.5,
-                                  width: "100%",
-                                }}
-                              >
-                                <Typography
-                                  variant="overline"
-                                  sx={{
-                                    color: "#f59e0b",
-                                    fontWeight: 900,
-                                    letterSpacing: 1.5,
-                                    fontSize: "0.8rem",
-                                    lineHeight: 1,
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Orange Cap
-                                </Typography>
-                              </Box>
-                              <Typography
-                                variant="subtitle1"
-                                fontWeight={900}
-                                sx={{
-                                  mb: 0.5,
-                                  fontSize: "1.1rem",
-                                  textAlign: "center",
-                                }}
-                                noWrap
-                              >
-                                {d.orangeCap.player.name}
-                              </Typography>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  mb: 1.5,
-                                  display: "block",
-                                  fontSize: "0.8rem",
-                                  textAlign: "center",
-                                }}
-                                noWrap
-                              >
-                                {d.orangeCap.team} • {d.orangeCap.innings} inn
-                              </Typography>
-                            </Box>
-                            <Box
-                              sx={{ display: "flex", gap: 1, width: "100%" }}
-                            >
-                              {[
-                                {
-                                  label: "Runs",
-                                  value: d.orangeCap.runs,
-                                  color: "#f59e0b",
-                                },
-                                {
-                                  label: "Avg",
-                                  value: d.orangeCap.average?.toFixed(1),
-                                  color: "#10b981",
-                                },
-                              ].map((s, i) => (
-                                <Box
-                                  key={i}
-                                  sx={{
-                                    flex: 1,
-                                    textAlign: "center",
-                                    bgcolor: `${s.color}15`,
-                                    borderRadius: 1,
-                                    p: 0.75,
-                                  }}
-                                >
-                                  <Typography
-                                    variant="subtitle2"
-                                    fontWeight={900}
-                                    sx={{ color: s.color, fontSize: "0.95rem" }}
-                                  >
-                                    {s.value}
-                                  </Typography>
-                                  <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                    fontWeight={700}
-                                    sx={{ fontSize: "0.7rem" }}
-                                  >
-                                    {s.label}
-                                  </Typography>
-                                </Box>
-                              ))}
-                            </Box>
-                          </GlassCard>
-                        )}
-
-                        {d.purpleCap && (
-                          <GlassCard
-                            sx={{
-                              cursor: "pointer",
-                              height: { xs: 220, sm: 280 },
-                              width: "100%",
-                              background:
-                                "linear-gradient(135deg, rgba(156,39,176,0.15) 0%, rgba(17,24,39,0.8) 70%)",
-                              borderLeft: "4px solid #9c27b0",
-                              "&:hover": {
-                                boxShadow: "0 0 32px rgba(156,39,176,0.2)",
-                              },
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              p: { xs: 1.5, sm: 2 },
-                            }}
-                            onClick={() =>
-                              navigate(`/players/${d.purpleCap.player.id}`)
-                            }
-                          >
-                            <Box sx={{ width: "100%", textAlign: "center" }}>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  gap: 1,
-                                  mb: 1.5,
-                                  width: "100%",
-                                }}
-                              >
-                                <Typography
-                                  variant="overline"
-                                  sx={{
-                                    color: "#9c27b0",
-                                    fontWeight: 900,
-                                    letterSpacing: 1.5,
-                                    fontSize: "0.8rem",
-                                    lineHeight: 1,
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Purple Cap
-                                </Typography>
-                              </Box>
-                              <Typography
-                                variant="subtitle1"
-                                fontWeight={900}
-                                sx={{
-                                  mb: 0.5,
-                                  fontSize: "1.1rem",
-                                  textAlign: "center",
-                                }}
-                                noWrap
-                              >
-                                {d.purpleCap.player.name}
-                              </Typography>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  mb: 1.5,
-                                  display: "block",
-                                  fontSize: "0.8rem",
-                                  textAlign: "center",
-                                }}
-                                noWrap
-                              >
-                                {d.purpleCap.team} • {d.purpleCap.matches}{" "}
-                                matches
-                              </Typography>
-                            </Box>
-                            <Box
-                              sx={{ display: "flex", gap: 1, width: "100%" }}
-                            >
-                              {[
-                                {
-                                  label: "Wkts",
-                                  value: d.purpleCap.wickets,
-                                  color: "#9c27b0",
-                                },
-                                {
-                                  label: "Econ",
-                                  value: d.purpleCap.economyRate?.toFixed(2),
-                                  color: "#10b981",
-                                },
-                              ].map((s, i) => (
-                                <Box
-                                  key={i}
-                                  sx={{
-                                    flex: 1,
-                                    textAlign: "center",
-                                    bgcolor: `${s.color}15`,
-                                    borderRadius: 1,
-                                    p: 0.75,
-                                  }}
-                                >
-                                  <Typography
-                                    variant="subtitle2"
-                                    fontWeight={900}
-                                    sx={{ color: s.color, fontSize: "0.95rem" }}
-                                  >
-                                    {s.value}
-                                  </Typography>
-                                  <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                    fontWeight={700}
-                                    sx={{ fontSize: "0.7rem" }}
-                                  >
-                                    {s.label}
-                                  </Typography>
-                                </Box>
-                              ))}
-                            </Box>
-                          </GlassCard>
-                        )}
-
-                        {(() => {
-                          const award =
-                            d.seasonAwards?.finisher ||
-                            d.seasonAwards?.economyKing ||
-                            d.seasonAwards?.enforcer;
-                          if (!award) return null;
-                          const isFinisher = award === d.seasonAwards?.finisher;
-                          const isEconomy =
-                            award === d.seasonAwards?.economyKing;
-
-                          return (
+                          {d.clutchPerformers?.playoffBatter && (
                             <GlassCard
                               sx={{
+                                borderLeft: "4px solid #ef4444",
                                 cursor: "pointer",
                                 height: { xs: 220, sm: 280 },
                                 width: "100%",
-                                background: isFinisher
-                                  ? "linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(17,24,39,0.8) 70%)"
-                                  : isEconomy
-                                    ? "linear-gradient(135deg, rgba(14,165,233,0.15) 0%, rgba(17,24,39,0.8) 70%)"
-                                    : "linear-gradient(135deg, rgba(236,72,153,0.15) 0%, rgba(17,24,39,0.8) 70%)",
-                                borderLeft: isFinisher
-                                  ? "4px solid #10b981"
-                                  : isEconomy
-                                    ? "4px solid #0ea5e9"
-                                    : "4px solid #ec4899",
-                                "&:hover": {
-                                  boxShadow: isFinisher
-                                    ? "0 0 32px rgba(16,185,129,0.2)"
-                                    : isEconomy
-                                      ? "0 0 32px rgba(14,165,233,0.2)"
-                                      : "0 0 32px rgba(236,72,153,0.2)",
-                                },
                                 display: "flex",
                                 flexDirection: "column",
                                 justifyContent: "space-between",
                                 p: { xs: 1.5, sm: 2 },
                               }}
                               onClick={() =>
-                                navigate(`/players/${award.player.id}`)
+                                navigate(
+                                  `/players/${d.clutchPerformers.playoffBatter.player.id}`,
+                                )
                               }
                             >
                               <Box sx={{ width: "100%", textAlign: "center" }}>
@@ -4135,11 +3673,7 @@ function SeasonIntelligence() {
                                   <Typography
                                     variant="overline"
                                     sx={{
-                                      color: isFinisher
-                                        ? "#10b981"
-                                        : isEconomy
-                                          ? "#0ea5e9"
-                                          : "#ec4899",
+                                      color: "#ef4444",
                                       fontWeight: 900,
                                       letterSpacing: 1.5,
                                       fontSize: "0.8rem",
@@ -4147,11 +3681,7 @@ function SeasonIntelligence() {
                                       textAlign: "center",
                                     }}
                                   >
-                                    {isFinisher
-                                      ? "Finisher Award"
-                                      : isEconomy
-                                        ? "Economy King"
-                                        : "Enforcer Award"}
+                                    Playoff Batter
                                   </Typography>
                                 </Box>
                                 <Typography
@@ -4164,7 +3694,7 @@ function SeasonIntelligence() {
                                   }}
                                   noWrap
                                 >
-                                  {award.player.name}
+                                  {d.clutchPerformers.playoffBatter.player.name}
                                 </Typography>
                                 <Typography
                                   variant="caption"
@@ -4177,19 +3707,14 @@ function SeasonIntelligence() {
                                   }}
                                   noWrap
                                 >
-                                  {award.team ||
-                                    (isFinisher ? "Finisher" : "Bowler")}
+                                  {d.clutchPerformers.playoffBatter.team}
                                 </Typography>
                               </Box>
                               <Box
                                 sx={{
                                   width: "100%",
                                   textAlign: "center",
-                                  bgcolor: isFinisher
-                                    ? "rgba(16,185,129,0.1)"
-                                    : isEconomy
-                                      ? "rgba(14,165,233,0.1)"
-                                      : "rgba(236,72,153,0.1)",
+                                  bgcolor: "rgba(239,68,68,0.1)",
                                   p: 1.25,
                                   borderRadius: 2,
                                 }}
@@ -4197,20 +3722,9 @@ function SeasonIntelligence() {
                                 <Typography
                                   variant="h4"
                                   fontWeight={900}
-                                  sx={{
-                                    color: isFinisher
-                                      ? "#10b981"
-                                      : isEconomy
-                                        ? "#0ea5e9"
-                                        : "#ec4899",
-                                    fontSize: "1.6rem",
-                                  }}
+                                  sx={{ color: "#ef4444", fontSize: "1.6rem" }}
                                 >
-                                  {isFinisher
-                                    ? `${award.strikeRate}% SR`
-                                    : isEconomy
-                                      ? `${award.economyRate?.toFixed(2)} Econ`
-                                      : `${award.topOrderWickets} Wkts`}
+                                  {d.clutchPerformers.playoffBatter.runs}
                                 </Typography>
                                 <Typography
                                   variant="caption"
@@ -4218,68 +3732,666 @@ function SeasonIntelligence() {
                                   fontWeight={700}
                                   sx={{ fontSize: "0.75rem" }}
                                 >
-                                  {isFinisher
-                                    ? `${award.deathRuns} Death Runs`
-                                    : isEconomy
-                                      ? `${award.totalWickets || award.wickets || 0} Season Wkts`
-                                      : "Top Order Wickets"}
+                                  Runs in Playoffs
                                 </Typography>
                               </Box>
                             </GlassCard>
-                          );
-                        })()}
-                      </Box>
-                    </Box>
-                  </Grid>
-                ))}
-            </Grid>
+                          )}
 
-            <Box sx={{ mb: 4, width: "100%" }}>
-              {compareMode && compareData ? (
-                <Grid container spacing={{ xs: 2, md: 3 }} alignItems="stretch">
+                          {d.clutchPerformers?.playoffBowler && (
+                            <GlassCard
+                              sx={{
+                                borderLeft: "4px solid #f59e0b",
+                                cursor: "pointer",
+                                height: { xs: 220, sm: 280 },
+                                width: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                p: { xs: 1.5, sm: 2 },
+                              }}
+                              onClick={() =>
+                                navigate(
+                                  `/players/${d.clutchPerformers.playoffBowler.player.id}`,
+                                )
+                              }
+                            >
+                              <Box sx={{ width: "100%", textAlign: "center" }}>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: 1,
+                                    mb: 1.5,
+                                    width: "100%",
+                                  }}
+                                >
+                                  <Typography
+                                    variant="overline"
+                                    sx={{
+                                      color: "#f59e0b",
+                                      fontWeight: 900,
+                                      letterSpacing: 1.5,
+                                      fontSize: "0.8rem",
+                                      lineHeight: 1,
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    Playoff Bowler
+                                  </Typography>
+                                </Box>
+                                <Typography
+                                  variant="subtitle1"
+                                  fontWeight={900}
+                                  sx={{
+                                    mb: 0.5,
+                                    fontSize: "1.1rem",
+                                    textAlign: "center",
+                                  }}
+                                  noWrap
+                                >
+                                  {d.clutchPerformers.playoffBowler.player.name}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  sx={{
+                                    mb: 1.5,
+                                    display: "block",
+                                    fontSize: "0.8rem",
+                                    textAlign: "center",
+                                  }}
+                                  noWrap
+                                >
+                                  {d.clutchPerformers.playoffBowler.team}
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{
+                                  width: "100%",
+                                  textAlign: "center",
+                                  bgcolor: "rgba(245,158,11,0.1)",
+                                  p: 1.25,
+                                  borderRadius: 2,
+                                }}
+                              >
+                                <Typography
+                                  variant="h4"
+                                  fontWeight={900}
+                                  sx={{ color: "#f59e0b", fontSize: "1.6rem" }}
+                                >
+                                  {d.clutchPerformers.playoffBowler.wickets}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  fontWeight={700}
+                                  sx={{ fontSize: "0.75rem" }}
+                                >
+                                  Wickets in Playoffs
+                                </Typography>
+                              </Box>
+                            </GlassCard>
+                          )}
+
+                          {d.seasonMvp && (
+                            <GlassCard
+                              sx={{
+                                cursor: "pointer",
+                                background:
+                                  "linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(17,24,39,0.8) 70%)",
+                                borderLeft: "4px solid #3b82f6",
+                                "&:hover": {
+                                  boxShadow: "0 0 32px rgba(59,130,246,0.2)",
+                                },
+                                height: { xs: 220, sm: 280 },
+                                width: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                p: { xs: 1.5, sm: 2 },
+                              }}
+                              onClick={() =>
+                                navigate(`/players/${d.seasonMvp.player.id}`)
+                              }
+                            >
+                              <Box sx={{ width: "100%", textAlign: "center" }}>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: 1,
+                                    mb: 1.5,
+                                    width: "100%",
+                                  }}
+                                >
+                                  <Typography
+                                    variant="overline"
+                                    sx={{
+                                      color: "#3b82f6",
+                                      fontWeight: 900,
+                                      letterSpacing: 1.5,
+                                      fontSize: "0.8rem",
+                                      lineHeight: 1,
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    Season MVP
+                                  </Typography>
+                                </Box>
+                                <Typography
+                                  variant="subtitle1"
+                                  fontWeight={900}
+                                  sx={{
+                                    mb: 0.5,
+                                    fontSize: "1.1rem",
+                                    textAlign: "center",
+                                  }}
+                                  noWrap
+                                >
+                                  {d.seasonMvp.player.name}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  sx={{
+                                    mb: 1.5,
+                                    display: "block",
+                                    fontSize: "0.8rem",
+                                    textAlign: "center",
+                                  }}
+                                  noWrap
+                                >
+                                  {d.seasonMvp.team} • {d.seasonMvp.matches}{" "}
+                                  matches
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{
+                                  width: "100%",
+                                  textAlign: "center",
+                                  bgcolor: "rgba(59,130,246,0.1)",
+                                  p: 1.25,
+                                  borderRadius: 2,
+                                }}
+                              >
+                                <Typography
+                                  variant="h4"
+                                  fontWeight={900}
+                                  sx={{ color: "#3b82f6", fontSize: "1.6rem" }}
+                                >
+                                  {d.seasonMvp.performanceScore}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  fontWeight={700}
+                                  sx={{ fontSize: "0.75rem" }}
+                                >
+                                  Performance Score
+                                </Typography>
+                              </Box>
+                            </GlassCard>
+                          )}
+
+                          {d.orangeCap && (
+                            <GlassCard
+                              sx={{
+                                cursor: "pointer",
+                                height: { xs: 220, sm: 280 },
+                                width: "100%",
+                                background:
+                                  "linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(17,24,39,0.8) 70%)",
+                                borderLeft: "4px solid #f59e0b",
+                                "&:hover": {
+                                  boxShadow: "0 0 32px rgba(245,158,11,0.2)",
+                                },
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                p: { xs: 1.5, sm: 2 },
+                              }}
+                              onClick={() =>
+                                navigate(`/players/${d.orangeCap.player.id}`)
+                              }
+                            >
+                              <Box sx={{ width: "100%", textAlign: "center" }}>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: 1,
+                                    mb: 1.5,
+                                    width: "100%",
+                                  }}
+                                >
+                                  <Typography
+                                    variant="overline"
+                                    sx={{
+                                      color: "#f59e0b",
+                                      fontWeight: 900,
+                                      letterSpacing: 1.5,
+                                      fontSize: "0.8rem",
+                                      lineHeight: 1,
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    Orange Cap
+                                  </Typography>
+                                </Box>
+                                <Typography
+                                  variant="subtitle1"
+                                  fontWeight={900}
+                                  sx={{
+                                    mb: 0.5,
+                                    fontSize: "1.1rem",
+                                    textAlign: "center",
+                                  }}
+                                  noWrap
+                                >
+                                  {d.orangeCap.player.name}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  sx={{
+                                    mb: 1.5,
+                                    display: "block",
+                                    fontSize: "0.8rem",
+                                    textAlign: "center",
+                                  }}
+                                  noWrap
+                                >
+                                  {d.orangeCap.team} • {d.orangeCap.innings} inn
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{ display: "flex", gap: 1, width: "100%" }}
+                              >
+                                {[
+                                  {
+                                    label: "Runs",
+                                    value: d.orangeCap.runs,
+                                    color: "#f59e0b",
+                                  },
+                                  {
+                                    label: "Avg",
+                                    value: d.orangeCap.average?.toFixed(1),
+                                    color: "#10b981",
+                                  },
+                                ].map((s, i) => (
+                                  <Box
+                                    key={i}
+                                    sx={{
+                                      flex: 1,
+                                      textAlign: "center",
+                                      bgcolor: `${s.color}15`,
+                                      borderRadius: 1,
+                                      p: 0.75,
+                                    }}
+                                  >
+                                    <Typography
+                                      variant="subtitle2"
+                                      fontWeight={900}
+                                      sx={{
+                                        color: s.color,
+                                        fontSize: "0.95rem",
+                                      }}
+                                    >
+                                      {s.value}
+                                    </Typography>
+                                    <Typography
+                                      variant="caption"
+                                      color="text.secondary"
+                                      fontWeight={700}
+                                      sx={{ fontSize: "0.7rem" }}
+                                    >
+                                      {s.label}
+                                    </Typography>
+                                  </Box>
+                                ))}
+                              </Box>
+                            </GlassCard>
+                          )}
+
+                          {d.purpleCap && (
+                            <GlassCard
+                              sx={{
+                                cursor: "pointer",
+                                height: { xs: 220, sm: 280 },
+                                width: "100%",
+                                background:
+                                  "linear-gradient(135deg, rgba(156,39,176,0.15) 0%, rgba(17,24,39,0.8) 70%)",
+                                borderLeft: "4px solid #9c27b0",
+                                "&:hover": {
+                                  boxShadow: "0 0 32px rgba(156,39,176,0.2)",
+                                },
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                p: { xs: 1.5, sm: 2 },
+                              }}
+                              onClick={() =>
+                                navigate(`/players/${d.purpleCap.player.id}`)
+                              }
+                            >
+                              <Box sx={{ width: "100%", textAlign: "center" }}>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: 1,
+                                    mb: 1.5,
+                                    width: "100%",
+                                  }}
+                                >
+                                  <Typography
+                                    variant="overline"
+                                    sx={{
+                                      color: "#9c27b0",
+                                      fontWeight: 900,
+                                      letterSpacing: 1.5,
+                                      fontSize: "0.8rem",
+                                      lineHeight: 1,
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    Purple Cap
+                                  </Typography>
+                                </Box>
+                                <Typography
+                                  variant="subtitle1"
+                                  fontWeight={900}
+                                  sx={{
+                                    mb: 0.5,
+                                    fontSize: "1.1rem",
+                                    textAlign: "center",
+                                  }}
+                                  noWrap
+                                >
+                                  {d.purpleCap.player.name}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  sx={{
+                                    mb: 1.5,
+                                    display: "block",
+                                    fontSize: "0.8rem",
+                                    textAlign: "center",
+                                  }}
+                                  noWrap
+                                >
+                                  {d.purpleCap.team} • {d.purpleCap.matches}{" "}
+                                  matches
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{ display: "flex", gap: 1, width: "100%" }}
+                              >
+                                {[
+                                  {
+                                    label: "Wkts",
+                                    value: d.purpleCap.wickets,
+                                    color: "#9c27b0",
+                                  },
+                                  {
+                                    label: "Econ",
+                                    value: d.purpleCap.economyRate?.toFixed(2),
+                                    color: "#10b981",
+                                  },
+                                ].map((s, i) => (
+                                  <Box
+                                    key={i}
+                                    sx={{
+                                      flex: 1,
+                                      textAlign: "center",
+                                      bgcolor: `${s.color}15`,
+                                      borderRadius: 1,
+                                      p: 0.75,
+                                    }}
+                                  >
+                                    <Typography
+                                      variant="subtitle2"
+                                      fontWeight={900}
+                                      sx={{
+                                        color: s.color,
+                                        fontSize: "0.95rem",
+                                      }}
+                                    >
+                                      {s.value}
+                                    </Typography>
+                                    <Typography
+                                      variant="caption"
+                                      color="text.secondary"
+                                      fontWeight={700}
+                                      sx={{ fontSize: "0.7rem" }}
+                                    >
+                                      {s.label}
+                                    </Typography>
+                                  </Box>
+                                ))}
+                              </Box>
+                            </GlassCard>
+                          )}
+
+                          {(() => {
+                            const award =
+                              d.seasonAwards?.finisher ||
+                              d.seasonAwards?.economyKing ||
+                              d.seasonAwards?.enforcer;
+                            if (!award) return null;
+                            const isFinisher =
+                              award === d.seasonAwards?.finisher;
+                            const isEconomy =
+                              award === d.seasonAwards?.economyKing;
+
+                            return (
+                              <GlassCard
+                                sx={{
+                                  cursor: "pointer",
+                                  height: { xs: 220, sm: 280 },
+                                  width: "100%",
+                                  background: isFinisher
+                                    ? "linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(17,24,39,0.8) 70%)"
+                                    : isEconomy
+                                      ? "linear-gradient(135deg, rgba(14,165,233,0.15) 0%, rgba(17,24,39,0.8) 70%)"
+                                      : "linear-gradient(135deg, rgba(236,72,153,0.15) 0%, rgba(17,24,39,0.8) 70%)",
+                                  borderLeft: isFinisher
+                                    ? "4px solid #10b981"
+                                    : isEconomy
+                                      ? "4px solid #0ea5e9"
+                                      : "4px solid #ec4899",
+                                  "&:hover": {
+                                    boxShadow: isFinisher
+                                      ? "0 0 32px rgba(16,185,129,0.2)"
+                                      : isEconomy
+                                        ? "0 0 32px rgba(14,165,233,0.2)"
+                                        : "0 0 32px rgba(236,72,153,0.2)",
+                                  },
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  justifyContent: "space-between",
+                                  p: { xs: 1.5, sm: 2 },
+                                }}
+                                onClick={() =>
+                                  navigate(`/players/${award.player.id}`)
+                                }
+                              >
+                                <Box
+                                  sx={{ width: "100%", textAlign: "center" }}
+                                >
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      gap: 1,
+                                      mb: 1.5,
+                                      width: "100%",
+                                    }}
+                                  >
+                                    <Typography
+                                      variant="overline"
+                                      sx={{
+                                        color: isFinisher
+                                          ? "#10b981"
+                                          : isEconomy
+                                            ? "#0ea5e9"
+                                            : "#ec4899",
+                                        fontWeight: 900,
+                                        letterSpacing: 1.5,
+                                        fontSize: "0.8rem",
+                                        lineHeight: 1,
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {isFinisher
+                                        ? "Finisher Award"
+                                        : isEconomy
+                                          ? "Economy King"
+                                          : "Enforcer Award"}
+                                    </Typography>
+                                  </Box>
+                                  <Typography
+                                    variant="subtitle1"
+                                    fontWeight={900}
+                                    sx={{
+                                      mb: 0.5,
+                                      fontSize: "1.1rem",
+                                      textAlign: "center",
+                                    }}
+                                    noWrap
+                                  >
+                                    {award.player.name}
+                                  </Typography>
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                    sx={{
+                                      mb: 1.5,
+                                      display: "block",
+                                      fontSize: "0.8rem",
+                                      textAlign: "center",
+                                    }}
+                                    noWrap
+                                  >
+                                    {award.team ||
+                                      (isFinisher ? "Finisher" : "Bowler")}
+                                  </Typography>
+                                </Box>
+                                <Box
+                                  sx={{
+                                    width: "100%",
+                                    textAlign: "center",
+                                    bgcolor: isFinisher
+                                      ? "rgba(16,185,129,0.1)"
+                                      : isEconomy
+                                        ? "rgba(14,165,233,0.1)"
+                                        : "rgba(236,72,153,0.1)",
+                                    p: 1.25,
+                                    borderRadius: 2,
+                                  }}
+                                >
+                                  <Typography
+                                    variant="h4"
+                                    fontWeight={900}
+                                    sx={{
+                                      color: isFinisher
+                                        ? "#10b981"
+                                        : isEconomy
+                                          ? "#0ea5e9"
+                                          : "#ec4899",
+                                      fontSize: "1.6rem",
+                                    }}
+                                  >
+                                    {isFinisher
+                                      ? `${award.strikeRate}% SR`
+                                      : isEconomy
+                                        ? `${award.economyRate?.toFixed(2)} Econ`
+                                        : `${award.topOrderWickets} Wkts`}
+                                  </Typography>
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                    fontWeight={700}
+                                    sx={{ fontSize: "0.75rem" }}
+                                  >
+                                    {isFinisher
+                                      ? `${award.deathRuns} Death Runs`
+                                      : isEconomy
+                                        ? `${award.totalWickets || award.wickets || 0} Season Wkts`
+                                        : "Top Order Wickets"}
+                                  </Typography>
+                                </Box>
+                              </GlassCard>
+                            );
+                          })()}
+                        </Box>
+                      </Box>
+                    </Grid>
+                  ))}
+              </Grid>
+
+              <Box sx={{ mb: 4, width: "100%" }}>
+                {compareMode && compareData ? (
                   <Grid
-                    size={{ xs: 12, sm: 6 }}
-                    sx={{ display: "flex", flexDirection: "column" }}
+                    container
+                    spacing={{ xs: 2, md: 3 }}
+                    alignItems="stretch"
                   >
-                    {renderRunScorersTable(data, selectedYear)}
+                    <Grid
+                      size={{ xs: 12, sm: 6 }}
+                      sx={{ display: "flex", flexDirection: "column" }}
+                    >
+                      {renderRunScorersTable(data, selectedYear)}
+                    </Grid>
+                    <Grid
+                      size={{ xs: 12, sm: 6 }}
+                      sx={{ display: "flex", flexDirection: "column" }}
+                    >
+                      {renderRunScorersTable(compareData, compareYear)}
+                    </Grid>
+                    <Grid
+                      size={{ xs: 12, sm: 6 }}
+                      sx={{ display: "flex", flexDirection: "column" }}
+                    >
+                      {renderWicketTakersTable(data, selectedYear)}
+                    </Grid>
+                    <Grid
+                      size={{ xs: 12, sm: 6 }}
+                      sx={{ display: "flex", flexDirection: "column" }}
+                    >
+                      {renderWicketTakersTable(compareData, compareYear)}
+                    </Grid>
                   </Grid>
+                ) : (
                   <Grid
-                    size={{ xs: 12, sm: 6 }}
-                    sx={{ display: "flex", flexDirection: "column" }}
+                    container
+                    spacing={{ xs: 2, md: 3 }}
+                    alignItems="stretch"
                   >
-                    {renderRunScorersTable(compareData, compareYear)}
+                    <Grid
+                      size={{ xs: 12, sm: 6 }}
+                      sx={{ display: "flex", flexDirection: "column" }}
+                    >
+                      {renderRunScorersTable(data, selectedYear)}
+                    </Grid>
+                    <Grid
+                      size={{ xs: 12, sm: 6 }}
+                      sx={{ display: "flex", flexDirection: "column" }}
+                    >
+                      {renderWicketTakersTable(data, selectedYear)}
+                    </Grid>
                   </Grid>
-                  <Grid
-                    size={{ xs: 12, sm: 6 }}
-                    sx={{ display: "flex", flexDirection: "column" }}
-                  >
-                    {renderWicketTakersTable(data, selectedYear)}
-                  </Grid>
-                  <Grid
-                    size={{ xs: 12, sm: 6 }}
-                    sx={{ display: "flex", flexDirection: "column" }}
-                  >
-                    {renderWicketTakersTable(compareData, compareYear)}
-                  </Grid>
-                </Grid>
-              ) : (
-                <Grid container spacing={{ xs: 2, md: 3 }} alignItems="stretch">
-                  <Grid
-                    size={{ xs: 12, sm: 6 }}
-                    sx={{ display: "flex", flexDirection: "column" }}
-                  >
-                    {renderRunScorersTable(data, selectedYear)}
-                  </Grid>
-                  <Grid
-                    size={{ xs: 12, sm: 6 }}
-                    sx={{ display: "flex", flexDirection: "column" }}
-                  >
-                    {renderWicketTakersTable(data, selectedYear)}
-                  </Grid>
-                </Grid>
-              )}
+                )}
+              </Box>
             </Box>
-          </Box>
+          )
         )}
       </Box>
     </Box>

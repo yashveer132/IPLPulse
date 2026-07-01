@@ -1,8 +1,9 @@
+import NodeCache from "node-cache";
 import { getPrisma } from "../config/index.js";
 import { computeEliteFeatures } from "./seasonAdvanced.service.js";
 
-const seasonCache = new Map();
-const intelligenceCache = new Map();
+const seasonCache = new NodeCache({ stdTTL: 900, checkperiod: 120 });
+const intelligenceCache = new NodeCache({ stdTTL: 900, checkperiod: 120 });
 
 export async function getSeasons() {
   if (seasonCache.has("all")) return seasonCache.get("all");
@@ -234,8 +235,9 @@ export async function getSeasonIntelligence(year) {
   const matchTeamTotals = {};
   allPlayerMatchStats.forEach((s) => {
     if (!matchTeamTotals[s.matchId]) matchTeamTotals[s.matchId] = {};
-    if (!matchTeamTotals[s.matchId][s.team])
-      {matchTeamTotals[s.matchId][s.team] = 0;}
+    if (!matchTeamTotals[s.matchId][s.team]) {
+      matchTeamTotals[s.matchId][s.team] = 0;
+    }
     matchTeamTotals[s.matchId][s.team] += s.runsScored;
   });
 
@@ -351,8 +353,9 @@ export async function getSeasonIntelligence(year) {
     });
 
     if (m.venue) {
-      if (!venueStats[m.venue])
-        {venueStats[m.venue] = { totalRuns: 0, matches: 0 };}
+      if (!venueStats[m.venue]) {
+        venueStats[m.venue] = { totalRuns: 0, matches: 0 };
+      }
       venueStats[m.venue].totalRuns += matchAggregate;
       venueStats[m.venue].matches += 1;
     }
@@ -376,10 +379,12 @@ export async function getSeasonIntelligence(year) {
   Object.entries(venueStats).forEach(([venue, stats]) => {
     if (stats.matches >= 3) {
       const avg = stats.totalRuns / stats.matches;
-      if (!highestScoringVenue || avg > highestScoringVenue.avg)
-        {highestScoringVenue = { venue, avg: Math.round(avg) };}
-      if (!lowestScoringVenue || avg < lowestScoringVenue.avg)
-        {lowestScoringVenue = { venue, avg: Math.round(avg) };}
+      if (!highestScoringVenue || avg > highestScoringVenue.avg) {
+        highestScoringVenue = { venue, avg: Math.round(avg) };
+      }
+      if (!lowestScoringVenue || avg < lowestScoringVenue.avg) {
+        lowestScoringVenue = { venue, avg: Math.round(avg) };
+      }
     }
   });
 
@@ -435,10 +440,11 @@ export async function getSeasonIntelligence(year) {
       (a, b) =>
         b.totalRuns - a.totalRuns || b.performanceScore - a.performanceScore,
     );
-  if (eligibleWKs.length === 0)
-    {eligibleWKs = playerSeasonStats
+  if (eligibleWKs.length === 0) {
+    eligibleWKs = playerSeasonStats
       .filter((s) => s.player.role === "Wicket-Keeper")
-      .sort((a, b) => b.totalRuns - a.totalRuns);}
+      .sort((a, b) => b.totalRuns - a.totalRuns);
+  }
 
   const selectedWK = eligibleWKs[0];
   const wkId = selectedWK ? selectedWK.playerId : null;

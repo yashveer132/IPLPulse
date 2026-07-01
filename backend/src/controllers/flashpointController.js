@@ -6,17 +6,14 @@ export const getFlashpoints = async (req, res) => {
   try {
     const flashpoints = await prisma.flashpoint.findMany({
       orderBy: { year: "asc" },
-      include: {
-        outgoingRelationships: {
-          include: {
-            target: { select: { id: true, title: true, legacyScore: true } },
-          },
-        },
-        incomingRelationships: {
-          include: {
-            source: { select: { id: true, title: true, legacyScore: true } },
-          },
-        },
+      select: {
+        id: true,
+        title: true,
+        year: true,
+        category: true,
+        tier: true,
+        shortSummary: true,
+        severity: true,
       },
     });
     res.json({ success: true, data: flashpoints });
@@ -177,6 +174,17 @@ export const getFlashpointAnalytics = async (req, res) => {
   try {
     const flashpoints = await prisma.flashpoint.findMany({
       orderBy: { legacyScore: "desc" },
+      select: {
+        id: true,
+        title: true,
+        year: true,
+        category: true,
+        legacyScore: true,
+        affectedTeams: true,
+        affectedPlayers: true,
+        severity: true,
+        tier: true,
+      },
     });
 
     const totalIncidents = flashpoints.length;

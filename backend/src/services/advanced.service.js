@@ -379,18 +379,29 @@ export async function getFastestMilestone(targetRuns) {
 
   if (!fs.existsSync(DIR)) {
     if (fs.existsSync(CACHE_PATH)) {
-      const cacheData = JSON.parse(fs.readFileSync(CACHE_PATH, "utf-8"));
+      const cacheContent = await fs.promises.readFile(CACHE_PATH, "utf-8");
+      const cacheData = JSON.parse(cacheContent);
       return cacheData.milestones[targetRuns] || { fastest: [], slowest: [] };
     }
     throw new Error("Cricsheet raw data and milestones cache not found");
   }
 
-  const files = fs.readdirSync(DIR).filter((f) => f.endsWith(".json"));
+  const files = await fs.promises
+    .readdir(DIR)
+    .then((list) => list.filter((f) => f.endsWith(".json")));
+  const fileContents = await Promise.all(
+    files.map((file) =>
+      fs.promises
+        .readFile(path.join(DIR, file), "utf-8")
+        .then(JSON.parse)
+        .catch(() => null),
+    ),
+  );
+
   const results = [];
 
-  for (const file of files) {
-    const data = JSON.parse(fs.readFileSync(path.join(DIR, file), "utf-8"));
-    if (!data.innings) continue;
+  for (const data of fileContents) {
+    if (!data || !data.innings) continue;
 
     for (const inning of data.innings) {
       const batStats = {};
@@ -559,18 +570,29 @@ export async function getFastestMilestoneCurve() {
 
   if (!fs.existsSync(DIR)) {
     if (fs.existsSync(CACHE_PATH)) {
-      const cacheData = JSON.parse(fs.readFileSync(CACHE_PATH, "utf-8"));
+      const cacheContent = await fs.promises.readFile(CACHE_PATH, "utf-8");
+      const cacheData = JSON.parse(cacheContent);
       return cacheData.curve || [];
     }
     throw new Error("Cricsheet raw data and milestones cache not found");
   }
 
-  const files = fs.readdirSync(DIR).filter((f) => f.endsWith(".json"));
+  const files = await fs.promises
+    .readdir(DIR)
+    .then((list) => list.filter((f) => f.endsWith(".json")));
+  const fileContents = await Promise.all(
+    files.map((file) =>
+      fs.promises
+        .readFile(path.join(DIR, file), "utf-8")
+        .then(JSON.parse)
+        .catch(() => null),
+    ),
+  );
+
   const minBallsPerScore = {};
 
-  for (const file of files) {
-    const data = JSON.parse(fs.readFileSync(path.join(DIR, file), "utf-8"));
-    if (!data.innings) continue;
+  for (const data of fileContents) {
+    if (!data || !data.innings) continue;
 
     for (const inning of data.innings) {
       const batStats = {};

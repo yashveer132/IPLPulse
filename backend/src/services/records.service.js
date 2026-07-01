@@ -1,4 +1,20 @@
+import NodeCache from "node-cache";
 import { getPrisma } from "../config/index.js";
+
+const recordCache = new NodeCache({ stdTTL: 900, checkperiod: 120 });
+
+export async function getDynamicRecord(categoryId, recordId) {
+  if (recordCache.has(recordId)) {
+    return recordCache.get(recordId);
+  }
+
+  const result = await computeDynamicRecord(categoryId, recordId);
+
+  if (Array.isArray(result) && result.length > 0) {
+    recordCache.set(recordId, result);
+  }
+  return result;
+}
 
 export async function getSeasonLeaderboards() {
   const prisma = await getPrisma();
@@ -58,21 +74,6 @@ export async function getSeasonLeaderboards() {
     bestEconomy,
     highestScore,
   };
-}
-
-const recordCache = new Map();
-
-export async function getDynamicRecord(categoryId, recordId) {
-  if (recordCache.has(recordId)) {
-    return recordCache.get(recordId);
-  }
-
-  const result = await computeDynamicRecord(categoryId, recordId);
-
-  if (Array.isArray(result) && result.length > 0) {
-    recordCache.set(recordId, result);
-  }
-  return result;
 }
 
 async function computeDynamicRecord(categoryId, recordId) {
@@ -806,8 +807,12 @@ async function computeDynamicRecord(categoryId, recordId) {
       });
       const seasonMax = {};
       allSeasons.forEach((s) => {
-        if (!seasonMax[s.season] || s.totalRuns > seasonMax[s.season].totalRuns)
-          {seasonMax[s.season] = s;}
+        if (
+          !seasonMax[s.season] ||
+          s.totalRuns > seasonMax[s.season].totalRuns
+        ) {
+          seasonMax[s.season] = s;
+        }
       });
       const capWinners = new Set(
         Object.values(seasonMax).map((s) => s.playerId),
@@ -861,8 +866,9 @@ async function computeDynamicRecord(categoryId, recordId) {
       });
       const losingRuns = {};
       matches.forEach((m) => {
-        if (m.match.winner && m.team !== m.match.winner)
-          {losingRuns[m.playerId] = (losingRuns[m.playerId] || 0) + m.runsScored;}
+        if (m.match.winner && m.team !== m.match.winner) {
+          losingRuns[m.playerId] = (losingRuns[m.playerId] || 0) + m.runsScored;
+        }
       });
       const arr = Object.entries(losingRuns)
         .map(([playerId, runs]) => ({ playerId, runs }))
@@ -886,8 +892,9 @@ async function computeDynamicRecord(categoryId, recordId) {
       });
       const losingWkts = {};
       matches.forEach((m) => {
-        if (m.match.winner && m.team !== m.match.winner)
-          {losingWkts[m.playerId] = (losingWkts[m.playerId] || 0) + m.wickets;}
+        if (m.match.winner && m.team !== m.match.winner) {
+          losingWkts[m.playerId] = (losingWkts[m.playerId] || 0) + m.wickets;
+        }
       });
       const arr = Object.entries(losingWkts)
         .map(([playerId, w]) => ({ playerId, w }))
@@ -928,8 +935,9 @@ async function computeDynamicRecord(categoryId, recordId) {
           }
           totalRuns += log.runs;
         }
-        if (hit100 && totalRuns > 0)
-          {runsBefore100.push({ playerId, totalRuns });}
+        if (hit100 && totalRuns > 0) {
+          runsBefore100.push({ playerId, totalRuns });
+        }
       }
       runsBefore100.sort((a, b) => b.totalRuns - a.totalRuns);
       return await formatRawMatchStats(

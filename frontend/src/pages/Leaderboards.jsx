@@ -388,7 +388,20 @@ function RecordModal({ open, onClose, categoryId, record }) {
             fontWeight={800}
             sx={{ textAlign: "center" }}
           >
-            {record.icon} {record.title}
+            {record.icon === "🧢" ? (
+              <span
+                style={{
+                  display: "inline-block",
+                  filter: "hue-rotate(145deg) saturate(3) brightness(0.9)",
+                  marginRight: "8px",
+                }}
+              >
+                🧢
+              </span>
+            ) : (
+              record.icon + " "
+            )}
+            {record.title}
           </Typography>
           <Typography
             variant="body2"
@@ -553,7 +566,16 @@ function Leaderboards() {
               },
             }}
           >
-            <Typography variant="h3" mb={2}>
+            <Typography
+              variant="h3"
+              mb={2}
+              sx={{
+                filter:
+                  record.icon === "🧢"
+                    ? "hue-rotate(145deg) saturate(3) brightness(0.9)"
+                    : "none",
+              }}
+            >
               {record.icon}
             </Typography>
             <Typography variant="h6" fontWeight={800} gutterBottom>

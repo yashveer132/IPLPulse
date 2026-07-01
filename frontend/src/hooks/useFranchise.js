@@ -40,7 +40,7 @@ export const useCompareFranchises = (ids, options = {}) => {
   return useQuery({
     queryKey: ["compareFranchises", ids],
     queryFn: () => franchiseApi.compareFranchises(ids),
-    enabled: Array.isArray(ids) && ids.length > 1,
+    enabled: Array.isArray(ids) && ids.length > 1 && !!ids[0] && !!ids[1],
     ...options,
   });
 };

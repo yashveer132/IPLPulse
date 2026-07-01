@@ -13,20 +13,33 @@ export async function computeEliteFeatures(
 ) {
   const prisma = await getPrisma();
 
-  const matchFiles = [];
-  matches.forEach((m) => {
-    if (m.cricsheetId) {
+  const results = await Promise.all(
+    matches.map(async (m) => {
+      if (!m.cricsheetId) return null;
       const fp = path.join(RAW_CRICSHEET_DIR, `${m.cricsheetId}.json`);
-      if (fs.existsSync(fp)) {
-        try {
-          matchFiles.push({
-            match: m,
-            raw: JSON.parse(fs.readFileSync(fp, "utf8")),
-          });
-        } catch (e) {
-          console.error(`Error parsing ${fp}: ${e.message}`);
+      try {
+        const content = await fs.promises.readFile(fp, "utf8");
+        return {
+          match: m,
+          raw: JSON.parse(content),
+        };
+      } catch (e) {
+        if (e.code !== "ENOENT") {
+          console.error(`Error reading/parsing ${fp}: ${e.message}`);
         }
+        return null;
       }
+    }),
+  );
+
+  const matchFiles = results.filter(Boolean);
+
+  const pmsByPlayerId = new Map();
+  const pmsByPlayerName = new Map();
+  allPlayerMatchStats.forEach((s) => {
+    pmsByPlayerId.set(`${s.matchId}|${s.playerId}`, s);
+    if (s.player?.name) {
+      pmsByPlayerName.set(`${s.matchId}|${s.player.name}`, s);
     }
   });
 
@@ -127,9 +140,7 @@ export async function computeEliteFeatures(
           dynamicH2H[h2hKey].runs += runs;
 
           if (batterId && isDeathOver) {
-            const pms = allPlayerMatchStats.find(
-              (s) => s.matchId === match.id && s.playerId === batterId,
-            );
+            const pms = pmsByPlayerId.get(`${match.id}|${batterId}`);
             if (pms) {
               const fStat = getFinisherStat(
                 batterId,
@@ -146,9 +157,7 @@ export async function computeEliteFeatures(
             if (!bStats.reachedFifty) {
               bStats.reachedFifty = true;
               if (!fastestFifty || bStats.balls < fastestFifty.balls) {
-                const pms = allPlayerMatchStats.find(
-                  (s) => s.matchId === match.id && s.player.name === batterName,
-                );
+                const pms = pmsByPlayerName.get(`${match.id}|${batterName}`);
                 if (pms) {
                   fastestFifty = {
                     player: pms.player,
@@ -166,9 +175,7 @@ export async function computeEliteFeatures(
             if (!bStats.reachedHundred) {
               bStats.reachedHundred = true;
               if (!fastestHundred || bStats.balls < fastestHundred.balls) {
-                const pms = allPlayerMatchStats.find(
-                  (s) => s.matchId === match.id && s.player.name === batterName,
-                );
+                const pms = pmsByPlayerName.get(`${match.id}|${batterName}`);
                 if (pms) {
                   fastestHundred = {
                     player: pms.player,
@@ -182,9 +189,7 @@ export async function computeEliteFeatures(
           }
 
           if (batterId) {
-            const pms = allPlayerMatchStats.find(
-              (s) => s.matchId === match.id && s.playerId === batterId,
-            );
+            const pms = pmsByPlayerId.get(`${match.id}|${batterId}`);
             if (pms && (isDeathOver || currentWickets >= 3)) {
               const bStat = getBatterStat(
                 batterId,
@@ -212,9 +217,7 @@ export async function computeEliteFeatures(
                 const h2hKey = `${batterName}|${bowlerName}`;
                 if (dynamicH2H[h2hKey]) dynamicH2H[h2hKey].wkts += 1;
 
-                const pms = allPlayerMatchStats.find(
-                  (s) => s.matchId === match.id && s.playerId === bowlerId,
-                );
+                const pms = pmsByPlayerId.get(`${match.id}|${bowlerId}`);
                 if (pms) {
                   const bwStat = getBowlerStat(
                     bowlerId,

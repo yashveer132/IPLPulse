@@ -11,30 +11,37 @@ export async function getFranchises() {
     },
   });
 
-  const enriched = await Promise.all(
-    franchises.map(async (f) => {
-      const stats = await prisma.franchiseSeasonStats.aggregate({
-        where: { franchiseId: f.id },
-        _sum: {
-          totalSpent: true,
-          matchesPlayed: true,
-          matchesWon: true,
-        },
-      });
+  const statsGroup = await prisma.franchiseSeasonStats.groupBy({
+    by: ["franchiseId"],
+    _sum: {
+      totalSpent: true,
+      matchesPlayed: true,
+      matchesWon: true,
+    },
+  });
 
-      return {
-        ...f,
-        totalSpent: stats._sum.totalSpent || 0,
-        totalMatchesPlayed: stats._sum.matchesPlayed || 0,
-        totalMatchesWon: stats._sum.matchesWon || 0,
-        winPct: stats._sum.matchesPlayed
-          ? Math.round(
-              ((stats._sum.matchesWon || 0) / stats._sum.matchesPlayed) * 10000,
-            ) / 100
-          : 0,
-      };
-    }),
-  );
+  const statsMap = {};
+  statsGroup.forEach((g) => {
+    statsMap[g.franchiseId] = g._sum;
+  });
+
+  const enriched = franchises.map((f) => {
+    const stats = statsMap[f.id] || {
+      totalSpent: 0,
+      matchesPlayed: 0,
+      matchesWon: 0,
+    };
+    return {
+      ...f,
+      totalSpent: stats.totalSpent || 0,
+      totalMatchesPlayed: stats.matchesPlayed || 0,
+      totalMatchesWon: stats.matchesWon || 0,
+      winPct: stats.matchesPlayed
+        ? Math.round(((stats.matchesWon || 0) / stats.matchesPlayed) * 10000) /
+          100
+        : 0,
+    };
+  });
 
   return enriched;
 }

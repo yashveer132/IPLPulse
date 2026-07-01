@@ -152,6 +152,34 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
 
   const width = DRAWER_WIDTH;
 
+  const prefetchPage = (path) => {
+    if (path === "/") {
+      import("../../pages/Dashboard.jsx");
+    } else if (path === "/players") {
+      import("../../pages/AuctionExplorer.jsx");
+    } else if (path === "/flashpoints") {
+      import("../../pages/Flashpoints.jsx");
+    } else if (path === "/seasons/intelligence") {
+      import("../../pages/SeasonIntelligence.jsx");
+    } else if (path === "/analytics/player-intelligence") {
+      import("../../pages/PlayerIntelligence.jsx");
+    } else if (path === "/analytics/player-value") {
+      import("../../pages/PlayerValueRankings.jsx");
+    } else if (path === "/analytics/head-to-head") {
+      import("../../pages/HeadToHeadMatchups.jsx");
+    } else if (path === "/analytics/venue-mastery") {
+      import("../../pages/VenueMastery.jsx");
+    } else if (path === "/analytics/milestone-explorer") {
+      import("../../pages/MilestoneExplorer.jsx");
+    } else if (path === "/franchises/compare") {
+      import("../../pages/FranchiseComparison.jsx");
+    } else if (path === "/rankings/leaderboards") {
+      import("../../pages/Leaderboards.jsx");
+    } else if (path.startsWith("/franchises/")) {
+      import("../../pages/FranchiseDashboard.jsx");
+    }
+  };
+
   const drawerContent = (
     <>
       <Box
@@ -254,6 +282,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
                       disableInteractive
                     >
                       <ListItemButton
+                        onMouseEnter={() => prefetchPage(item.path)}
                         onClick={() => {
                           navigate(item.path);
                           if (mobileOpen && handleDrawerToggle)
@@ -363,6 +392,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
                   disableInteractive
                 >
                   <ListItemButton
+                    onMouseEnter={() => prefetchPage(`/franchises/${team.key}`)}
                     onClick={() => {
                       navigate(`/franchises/${team.key}`);
                       if (mobileOpen && handleDrawerToggle)

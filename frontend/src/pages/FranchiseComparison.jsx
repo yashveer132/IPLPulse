@@ -311,8 +311,8 @@ const CompactStat = ({ title, value, icon: Icon, color = "primary.main" }) => (
 );
 
 function FranchiseComparison() {
-  const [team1, setTeam1] = useState("MI");
-  const [team2, setTeam2] = useState("CSK");
+  const [team1, setTeam1] = useState("");
+  const [team2, setTeam2] = useState("");
   const [tabValue, setTabValue] = useState(0);
 
   const { data: franchises } = useFranchises();
@@ -1682,7 +1682,31 @@ function FranchiseComparison() {
             </Box>
           </TabPanel>
         </>
-      ) : null}
+      ) : (
+        <Paper
+          elevation={0}
+          sx={{
+            p: 6,
+            textAlign: "center",
+            borderRadius: 4,
+            border: "1px dashed rgba(255, 255, 255, 0.1)",
+            bgcolor: "rgba(255,255,255,0.01)",
+            mt: 4,
+          }}
+        >
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            sx={{ fontWeight: "bold", mb: 1 }}
+          >
+            Select Teams to Compare
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Choose two franchises from the dropdown menus above to compare their
+            historical records, head-to-head match stats, and tactical metrics.
+          </Typography>
+        </Paper>
+      )}
     </Box>
   );
 }
