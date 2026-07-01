@@ -55,7 +55,23 @@ function VenueMastery() {
   useEffect(() => {
     apiClient
       .get("/players?limit=3000")
-      .then((res) => setPlayers(res.players || []))
+      .then((res) => {
+        const rawPlayers = res.players || [];
+        const seen = new Set();
+        const processed = [];
+        for (let i = 0; i < rawPlayers.length; i++) {
+          const p = rawPlayers[i];
+          if (!p) continue;
+          const disp = getPlayerDisplayName(p);
+          if (!disp || seen.has(disp)) continue;
+          seen.add(disp);
+          processed.push({
+            ...p,
+            displayName: disp,
+          });
+        }
+        setPlayers(processed);
+      })
       .catch((err) => console.error(err));
   }, []);
 
@@ -187,15 +203,17 @@ function VenueMastery() {
         >
           <Autocomplete
             fullWidth
-            options={deduplicatePlayers(players)}
-            getOptionLabel={(option) => getPlayerDisplayName(option)}
+            options={players}
+            getOptionLabel={(option) => option.displayName || option.name}
             filterOptions={(options, state) => {
               const query = (state.inputValue || "").trim().toLowerCase();
               if (!query) return options;
               return options.filter((option) => {
                 if (!option) return false;
                 const displayName = (
-                  getPlayerDisplayName(option) || ""
+                  option.displayName ||
+                  option.name ||
+                  ""
                 ).toLowerCase();
                 return displayName.includes(query);
               });

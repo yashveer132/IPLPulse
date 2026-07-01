@@ -112,27 +112,25 @@ function SearchAutocomplete({
           {...params}
           placeholder={placeholder}
           size={size}
-          slotProps={{
-            input: {
-              ...params.InputProps,
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="action" />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <>
-                  {isLoading ? (
-                    <LoadingCard compact size="small" transparent message="" />
-                  ) : null}
-                  {params.InputProps?.endAdornment}
-                </>
-              ),
-              sx: {
-                borderRadius: 4,
-                bgcolor: "background.paper",
-                ...sx.inputStyle,
-              },
+          InputProps={{
+            ...params.InputProps,
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <>
+                {isLoading ? (
+                  <LoadingCard compact size="small" transparent message="" />
+                ) : null}
+                {params.InputProps?.endAdornment}
+              </>
+            ),
+            sx: {
+              borderRadius: 4,
+              bgcolor: "background.paper",
+              ...sx.inputStyle,
             },
           }}
           inputProps={{

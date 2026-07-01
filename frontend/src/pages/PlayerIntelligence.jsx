@@ -80,7 +80,23 @@ export default function PlayerIntelligence() {
   useEffect(() => {
     apiClient
       .get("/players?limit=3000")
-      .then((res) => setPlayers(res.players || []))
+      .then((res) => {
+        const rawPlayers = res.players || [];
+        const seen = new Set();
+        const processed = [];
+        for (let i = 0; i < rawPlayers.length; i++) {
+          const p = rawPlayers[i];
+          if (!p) continue;
+          const disp = getPlayerDisplayName(p);
+          if (!disp || seen.has(disp)) continue;
+          seen.add(disp);
+          processed.push({
+            ...p,
+            displayName: disp,
+          });
+        }
+        setPlayers(processed);
+      })
       .catch(console.error);
   }, []);
 
@@ -143,15 +159,17 @@ export default function PlayerIntelligence() {
           subtitle="Search for any player to generate their stats profile."
         />
         <Autocomplete
-          options={deduplicatePlayers(players)}
-          getOptionLabel={(option) => getPlayerDisplayName(option)}
+          options={players}
+          getOptionLabel={(option) => option.displayName || option.name}
           filterOptions={(options, state) => {
             const query = (state.inputValue || "").trim().toLowerCase();
             if (!query) return options;
             return options.filter((option) => {
               if (!option) return false;
               const displayName = (
-                getPlayerDisplayName(option) || ""
+                option.displayName ||
+                option.name ||
+                ""
               ).toLowerCase();
               return displayName.includes(query);
             });
@@ -174,6 +192,11 @@ export default function PlayerIntelligence() {
   }
 
   if (loading || !playerInfo || !hof || !trajectory) {
+    const searchedPlayer = id ? players.find((p) => p.id === id) : null;
+    const searchedName = searchedPlayer
+      ? searchedPlayer.displayName || searchedPlayer.name
+      : "";
+
     return (
       <Container maxWidth="xl" sx={{ pt: 0, pb: { xs: 2, md: 4 } }}>
         <Box sx={{ mb: { xs: 1, sm: 2 } }}>
@@ -186,7 +209,20 @@ export default function PlayerIntelligence() {
         <Box sx={{ mb: { xs: 1.5, md: 2 } }}>
           <Autocomplete
             options={players}
-            getOptionLabel={(option) => option.name}
+            getOptionLabel={(option) => option.displayName || option.name}
+            filterOptions={(options, state) => {
+              const query = (state.inputValue || "").trim().toLowerCase();
+              if (!query) return options;
+              return options.filter((option) => {
+                if (!option) return false;
+                const displayName = (
+                  option.displayName ||
+                  option.name ||
+                  ""
+                ).toLowerCase();
+                return displayName.includes(query);
+              });
+            }}
             onChange={(event, newValue) => {
               if (newValue)
                 navigate(`/analytics/player-intelligence/${newValue.id}`);
@@ -194,7 +230,7 @@ export default function PlayerIntelligence() {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Search Another Player (e.g., MS Dhoni)"
+                label="Search Player (e.g., MS Dhoni)"
                 variant="outlined"
               />
             )}
@@ -203,7 +239,11 @@ export default function PlayerIntelligence() {
 
         <LoadingCard
           title="Player Intelligence"
-          message="Synthesizing player stats, value modeling, and career trajectories..."
+          message={
+            searchedName
+              ? `Synthesizing stats, value modeling, and career trajectories for ${searchedName}...`
+              : "Synthesizing player stats, value modeling, and career trajectories..."
+          }
           minHeight="50vh"
         />
       </Container>
@@ -314,7 +354,20 @@ export default function PlayerIntelligence() {
       <Box sx={{ mb: { xs: 1.5, md: 2 } }}>
         <Autocomplete
           options={players}
-          getOptionLabel={(option) => option.name}
+          getOptionLabel={(option) => option.displayName || option.name}
+          filterOptions={(options, state) => {
+            const query = (state.inputValue || "").trim().toLowerCase();
+            if (!query) return options;
+            return options.filter((option) => {
+              if (!option) return false;
+              const displayName = (
+                option.displayName ||
+                option.name ||
+                ""
+              ).toLowerCase();
+              return displayName.includes(query);
+            });
+          }}
           onChange={(event, newValue) => {
             if (newValue)
               navigate(`/analytics/player-intelligence/${newValue.id}`);
@@ -322,7 +375,7 @@ export default function PlayerIntelligence() {
           renderInput={(params) => (
             <TextField
               {...params}
-              label="Search Another Player (e.g., MS Dhoni)"
+              label="Search Player (e.g., MS Dhoni)"
               variant="outlined"
             />
           )}
@@ -351,6 +404,7 @@ export default function PlayerIntelligence() {
               display="flex"
               justifyContent="center"
               gap={1.5}
+              rowGap={1.5}
               mb={2}
               flexWrap="wrap"
             >
@@ -389,7 +443,8 @@ export default function PlayerIntelligence() {
             <Box
               display="flex"
               justifyContent="center"
-              gap={1}
+              gap={1.5}
+              rowGap={1.5}
               mb={3}
               flexWrap="wrap"
             >
@@ -407,20 +462,6 @@ export default function PlayerIntelligence() {
                 />
               ))}
             </Box>
-
-            <Typography
-              variant="body1"
-              sx={{
-                fontSize: "1.15rem",
-                lineHeight: 1.7,
-                color: "rgba(226, 232, 240, 0.85)",
-                maxWidth: "800px",
-                mx: "auto",
-                textAlign: "center",
-              }}
-            >
-              {generateNarrative()}
-            </Typography>
           </GlassCard>
         </Box>
 
@@ -1405,6 +1446,7 @@ export default function PlayerIntelligence() {
               sx={{
                 position: "relative",
                 display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
                 justifyContent: "center",
                 gap: { xs: 4, sm: 8, md: 16 },
                 alignItems: "center",
@@ -1415,11 +1457,13 @@ export default function PlayerIntelligence() {
                 "&::before": {
                   content: '""',
                   position: "absolute",
-                  left: 0,
-                  right: 0,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  height: 2,
+                  left: { xs: "50%", sm: 0 },
+                  right: { xs: "auto", sm: 0 },
+                  top: { xs: 0, sm: "50%" },
+                  bottom: { xs: 0, sm: "auto" },
+                  transform: { xs: "translateX(-50%)", sm: "translateY(-50%)" },
+                  width: { xs: 2, sm: "auto" },
+                  height: { xs: "100%", sm: 2 },
                   bgcolor: "rgba(255,255,255,0.1)",
                   zIndex: 0,
                 },
@@ -1436,6 +1480,7 @@ export default function PlayerIntelligence() {
                     zIndex: 1,
                     bgcolor: "rgba(17, 24, 39, 0.95)",
                     px: 2,
+                    py: { xs: 1, sm: 0 },
                   }}
                 >
                   <Box

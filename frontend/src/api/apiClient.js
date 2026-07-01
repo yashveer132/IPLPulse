@@ -17,28 +17,12 @@ apiClient.interceptors.request.use(
 );
 
 apiClient.interceptors.response.use(
-  async (response) => {
-    const startTime = response.config?.metadata?.startTime;
-    if (startTime) {
-      const duration = new Date() - startTime;
-      const delay = 1000 - duration;
-      if (delay > 0) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
-    }
+  (response) => {
     return response.data?.data !== undefined
       ? response.data.data
       : response.data;
   },
-  async (error) => {
-    const startTime = error.config?.metadata?.startTime;
-    if (startTime) {
-      const duration = new Date() - startTime;
-      const delay = 1000 - duration;
-      if (delay > 0) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
-    }
+  (error) => {
     const message =
       error.response?.data?.message || error.message || "Something went wrong";
 

@@ -1,6 +1,9 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { getPrisma } from "../config/index.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export async function getTeamDevelopmentIndex() {
   const prisma = await getPrisma();
@@ -372,9 +375,14 @@ export async function getPlatformSummary() {
 
 export async function getFastestMilestone(targetRuns) {
   const DIR = path.resolve("data/raw/cricsheet");
+  const CACHE_PATH = path.join(__dirname, "../data/milestones_cache.json");
 
   if (!fs.existsSync(DIR)) {
-    throw new Error("Cricsheet raw data not found");
+    if (fs.existsSync(CACHE_PATH)) {
+      const cacheData = JSON.parse(fs.readFileSync(CACHE_PATH, "utf-8"));
+      return cacheData.milestones[targetRuns] || { fastest: [], slowest: [] };
+    }
+    throw new Error("Cricsheet raw data and milestones cache not found");
   }
 
   const files = fs.readdirSync(DIR).filter((f) => f.endsWith(".json"));
@@ -547,7 +555,15 @@ export async function getFastestMilestone(targetRuns) {
 
 export async function getFastestMilestoneCurve() {
   const DIR = path.resolve("data/raw/cricsheet");
-  if (!fs.existsSync(DIR)) throw new Error("Cricsheet raw data not found");
+  const CACHE_PATH = path.join(__dirname, "../data/milestones_cache.json");
+
+  if (!fs.existsSync(DIR)) {
+    if (fs.existsSync(CACHE_PATH)) {
+      const cacheData = JSON.parse(fs.readFileSync(CACHE_PATH, "utf-8"));
+      return cacheData.curve || [];
+    }
+    throw new Error("Cricsheet raw data and milestones cache not found");
+  }
 
   const files = fs.readdirSync(DIR).filter((f) => f.endsWith(".json"));
   const minBallsPerScore = {};
